@@ -1,0 +1,6 @@
+/** Debug logging — only emitted in development builds. */
+export function devLog(...args: unknown[]): void {
+  if (process.env.NODE_ENV === "development") {
+    console.info(...args);
+  }
+}

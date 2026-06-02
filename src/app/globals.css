@@ -1,26 +1,168 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f6f8fb;
+  --foreground: #334155;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-montserrat);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), sans-serif;
+}
+
+@keyframes fade-up-soft {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 16px, 0) scale(0.992);
+    filter: blur(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes fade-in-soft {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes float-soft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes pulse-glow-soft {
+  0%,
+  100% {
+    box-shadow: 0 10px 24px rgba(52, 89, 126, 0.28);
+  }
+  50% {
+    box-shadow: 0 14px 30px rgba(52, 89, 126, 0.4);
+  }
+}
+
+.motion-fade-in {
+  animation: fade-in-soft 700ms ease-out both;
+}
+
+.motion-reveal {
+  animation: fade-up-soft 760ms cubic-bezier(0.2, 0.72, 0.24, 1) both;
+  animation-delay: var(--reveal-delay, 0ms);
+}
+
+.motion-delay-80 {
+  --reveal-delay: 80ms;
+}
+
+.motion-delay-180 {
+  --reveal-delay: 180ms;
+}
+
+.motion-delay-260 {
+  --reveal-delay: 260ms;
+}
+
+.motion-delay-320 {
+  --reveal-delay: 320ms;
+}
+
+.motion-delay-380 {
+  --reveal-delay: 380ms;
+}
+
+.motion-delay-440 {
+  --reveal-delay: 440ms;
+}
+
+.motion-float-soft {
+  animation: float-soft 4.8s ease-in-out infinite;
+}
+
+.motion-cta-glow {
+  animation: pulse-glow-soft 3.2s ease-in-out infinite;
+}
+
+.motion-hover-lift {
+  transition: transform 240ms ease, box-shadow 240ms ease;
+}
+
+.motion-hover-lift:hover {
+  transform: translateY(-2px);
+}
+
+#services > article {
+  animation: fade-up-soft 760ms cubic-bezier(0.2, 0.72, 0.24, 1) both;
+}
+
+#services > article:nth-child(1) {
+  animation-delay: 320ms;
+}
+
+#services > article:nth-child(2) {
+  animation-delay: 380ms;
+}
+
+#services > article:nth-child(3) {
+  animation-delay: 440ms;
+}
+
+#booking .mt-6 > span {
+  animation: fade-up-soft 700ms cubic-bezier(0.2, 0.72, 0.24, 1) both;
+}
+
+#booking .mt-6 > span:nth-child(1) {
+  animation-delay: 420ms;
+}
+
+#booking .mt-6 > span:nth-child(2) {
+  animation-delay: 470ms;
+}
+
+#booking .mt-6 > span:nth-child(3) {
+  animation-delay: 520ms;
+}
+
+#booking .mt-6 > span:nth-child(4) {
+  animation-delay: 570ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-fade-in,
+  .motion-reveal,
+  .motion-float-soft,
+  .motion-cta-glow {
+    animation: none !important;
+  }
+
+  .motion-hover-lift {
+    transition: none;
+  }
+
+  .motion-hover-lift:hover {
+    transform: none;
+  }
+
+  #services > article,
+  #booking .mt-6 > span {
+    animation: none !important;
+  }
 }
