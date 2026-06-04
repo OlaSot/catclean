@@ -1,0 +1,77 @@
+/** Move Out wizard — booking flow (steps 3–9). */
+export const moveOutBookingDe = {
+  "public.moveOut.step.extras": "Details",
+  "public.moveOut.step.visit": "Besuch",
+  "public.moveOut.step.address": "Adresse",
+  "public.moveOut.step.schedule": "Termin",
+  "public.moveOut.step.contact": "Kontakt",
+  "public.moveOut.step.summary": "Übersicht",
+
+  "public.moveOut.extras.eyebrow": "Zustand & Extras",
+  "public.moveOut.extras.title": "Was trifft auf Ihre Wohnung zu?",
+  "public.moveOut.extras.subtitle":
+    "Hilft uns bei Planung und Preis — Standard und Premium enthalten bereits viel.",
+  "public.moveOut.extras.upsellTitle": "Premium könnte besser passen",
+  "public.moveOut.extras.upsellBody":
+    "Bei starkem Kalk oder Fett empfehlen wir Premium — mehr Zeit für Küche und Bad.",
+  "public.moveOut.extras.switchPremium": "Zu Premium wechseln",
+
+  "public.moveOut.extra.emptyApartment.title": "Leere Wohnung",
+  "public.moveOut.extra.emptyApartment.description": "Keine Möbel — nur leere Schränke und Räume",
+  "public.moveOut.extra.heavyLimescale.title": "Starker Kalk im Bad",
+  "public.moveOut.extra.heavyLimescale.description": "Über üblichen Gebrauchsspuren hinaus",
+  "public.moveOut.extra.heavyDirt.title": "Starker Schmutz / Fett",
+  "public.moveOut.extra.heavyDirt.description": "Sichtbar in Küche oder Wohnbereichen",
+  "public.moveOut.extra.insideCabinets.title": "Schränke innen",
+  "public.moveOut.extra.insideCabinets.description": "Leere Schränke und Schubladen",
+  "public.moveOut.extra.fridgeCleaning.title": "Kühlschrank innen",
+  "public.moveOut.extra.fridgeCleaning.description": "In beiden Paketen enthalten — abwählen falls nicht nötig",
+  "public.moveOut.extra.ovenCleaning.title": "Backofen innen",
+  "public.moveOut.extra.ovenCleaning.description": "In beiden Paketen enthalten — abwählen falls nicht nötig",
+  "public.moveOut.extra.windowsInside.title": "Fenster innen",
+  "public.moveOut.extra.windowsInside.description": "Zusätzliche Glas- und Rahmenreinigung",
+  "public.moveOut.extra.balconyIncluded.title": "Balkon",
+  "public.moveOut.extra.balconyIncluded.description": "Boden und Geländer, soweit erreichbar",
+
+  "public.moveOut.visit.eyebrow": "Vor Ort",
+  "public.moveOut.visit.title": "Was soll das Team wissen?",
+  "public.moveOut.visit.subtitle": "Zugang, Haustiere und Besonderheiten — optional, aber hilfreich.",
+  "public.moveOut.visit.accessNotes": "Zugang & Schlüssel",
+  "public.moveOut.visit.accessPlaceholder": "Türcode, Parkplatz, Klingel …",
+  "public.moveOut.visit.petsInfo": "Haustiere",
+  "public.moveOut.visit.petsPlaceholder": "Keine / Katze im Schlafzimmer …",
+  "public.moveOut.visit.suppliesNote": "Material vor Ort",
+  "public.moveOut.visit.suppliesPlaceholder": "Wasseranschluss, Staubsauger …",
+  "public.moveOut.visit.equipmentNote": "Geräte / Dampfreiniger",
+  "public.moveOut.visit.equipmentPlaceholder": "Steckdosen, Aufzug für Geräte …",
+
+  "public.moveOut.contact.commentLabel": "Nachricht an uns",
+  "public.moveOut.contact.commentPlaceholder": "Besonderheiten zur Übergabe …",
+
+  "public.moveOut.summary.eyebrow": "Zusammenfassung",
+  "public.moveOut.summary.title": "Bereit zur Buchung",
+  "public.moveOut.summary.subtitle": "Prüfen Sie Paket, Größe und Termin — dann absenden.",
+  "public.moveOut.summary.package": "Paket",
+  "public.moveOut.summary.size": "Wohnfläche",
+  "public.moveOut.summary.extras": "Details & Extras",
+  "public.moveOut.summary.visit": "Hinweise",
+  "public.moveOut.summary.address": "Adresse",
+  "public.moveOut.summary.schedule": "Termin",
+  "public.moveOut.summary.contact": "Kontakt",
+  "public.moveOut.summary.price": "Geschätzter Preis",
+  "public.moveOut.summary.none": "Keine",
+  "public.moveOut.summary.notIncludedTitle": "Nicht enthalten",
+  "public.moveOut.summary.notIncludedBody":
+    "Schimmel, Renovierungsstaub, Farb-/Zementreste — siehe Paketdetails.",
+
+  "public.moveOut.sidebar.title": "Ihre Umzugsreinigung",
+  "public.moveOut.sidebar.live": "Live-Schätzung",
+  "public.moveOut.bookMoveOut": "Umzugsreinigung buchen",
+  "public.moveOut.submitError": "Buchung konnte nicht erstellt werden. Bitte erneut versuchen.",
+
+  "public.moveOut.success.title": "Vielen Dank!",
+  "public.moveOut.success.subtitle": "Ihre Buchung wartet auf Bestätigung.",
+  "public.moveOut.success.orderRef": "Bestellreferenz",
+
+  "public.moveOut.error.size": "Mindestens 30 m² eingeben",
+} as const;

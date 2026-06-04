@@ -18,6 +18,8 @@ type PublicBookingBody = {
   city: string;
   estimatedPrice: number;
   customerComment?: string;
+  homeResetUpgrade?: string;
+  bookingProduct?: string;
 };
 
 function buildFallbackEmail(input: PublicBookingBody): string {
@@ -58,6 +60,8 @@ export async function POST(request: Request) {
     estimatedPrice: body.estimatedPrice,
     serviceDetails: body.serviceDetails,
     customerComment: body.customerComment,
+    homeResetUpgrade: body.homeResetUpgrade,
+    bookingProduct: body.bookingProduct,
   });
 
   if (fieldErrors && Object.keys(fieldErrors).length > 0) {

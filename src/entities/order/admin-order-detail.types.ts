@@ -44,6 +44,9 @@ export type AdminOrderDetail = {
   service: {
     type: string;
     typeLabel: string;
+    bookingProduct: string | null;
+    productKey: string;
+    productLabel: string;
     estimatedPrice: number;
     finalPrice: number | null;
     currency: string;

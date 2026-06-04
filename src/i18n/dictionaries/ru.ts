@@ -68,6 +68,7 @@ export const ru = {
   "orders.orderControlCenter": "Центр управления заказом",
   "orders.cleanerAssignment": "Назначение клинера",
   "orders.clientComment": "Комментарий клиента",
+  "orders.product": "Продукт",
   "orders.serviceType": "Тип услуги",
   "orders.estimatedPrice": "Оценочная стоимость",
   "orders.client": "Клиент",
@@ -297,6 +298,10 @@ export const ru = {
   "fileCategory.damage_photo": "Фото повреждений",
   "fileCategory.document": "Документ",
   "fileCategory.other": "Другое",
+
+  "bookingProduct.home_care": "Home Care",
+  "bookingProduct.home_reset": "Home Reset",
+  "bookingProduct.move_out": "Move Out Cleaning",
 
   "serviceType.regular_cleaning": "Регулярная уборка",
   "serviceType.move_in_out": "Переезд (въезд/выезд)",

@@ -27,6 +27,8 @@ import {
   mapCreateServiceDetailsToDbRow,
 } from "@/lib/pricing/map-create-service-details-to-db";
 import { supportsAutoPricing } from "@/lib/pricing/pricing.constants";
+import { getHomeResetUpgradeSurchargeEur } from "@/lib/orders/home-reset-upgrade";
+import { resolveBookingProductForPersist } from "@/lib/orders/booking-product-label";
 import { upsertProfileForAuthUser } from "@/server/mutations/profiles/upsertProfileForAuthUser";
 import { getAdminOrderById } from "@/server/queries/orders/getAdminOrderById";
 import { randomBytes } from "crypto";
@@ -379,6 +381,8 @@ export async function createAdminOrder(
     useManualPrice?: unknown;
     serviceDetails?: unknown;
     customerComment?: unknown;
+    homeResetUpgrade?: unknown;
+    bookingProduct?: unknown;
   }
 ): Promise<{
   order: Awaited<ReturnType<typeof getAdminOrderById>>["order"];
@@ -404,6 +408,15 @@ export async function createAdminOrder(
   const floor = toOptionalString(input.floor);
   const doorbellName = toOptionalString(input.doorbellName);
   const customerComment = toOptionalString(input.customerComment);
+  const bookingProduct = toOptionalString(input.bookingProduct);
+  const homeResetUpgrade = toOptionalString(input.homeResetUpgrade);
+  const persistedBookingProduct =
+    bookingProduct ??
+    resolveBookingProductForPersist({
+      serviceType,
+      customerComment,
+      homeResetUpgrade,
+    });
   const useManualPrice = Boolean(input.useManualPrice);
   const manualEstimatedPrice = parseMoney(input.estimatedPrice);
   const finalPrice = parseMoney(input.finalPrice);
@@ -470,6 +483,27 @@ export async function createAdminOrder(
       }
     } else {
       estimatedPrice = pricingResult.estimatedPrice;
+    }
+
+    const upgradeSurcharge = getHomeResetUpgradeSurchargeEur(homeResetUpgrade);
+    if (upgradeSurcharge > 0 && estimatedPrice != null && priceBreakdown) {
+      estimatedPrice = parseMoney(estimatedPrice + upgradeSurcharge)!;
+      priceBreakdown = {
+        ...priceBreakdown,
+        extrasAmount: parseMoney(priceBreakdown.extrasAmount + upgradeSurcharge)!,
+        subtotalBeforeMinimum: parseMoney(
+          priceBreakdown.subtotalBeforeMinimum + upgradeSurcharge
+        )!,
+        autoPrice: estimatedPrice,
+        lines: [
+          ...priceBreakdown.lines,
+          {
+            key: "home_reset_upgrade",
+            label: `Home Reset upgrade (${homeResetUpgrade})`,
+            amount: upgradeSurcharge,
+          },
+        ],
+      };
     }
   } else {
     if (manualEstimatedPrice === null) {
@@ -545,6 +579,7 @@ export async function createAdminOrder(
       price_breakdown: priceBreakdown,
       estimated_duration_minutes: estimatedDurationMinutes,
       created_by: createdBy ?? clientId,
+      booking_product: persistedBookingProduct,
     })
     .select("id, service_type")
     .single();

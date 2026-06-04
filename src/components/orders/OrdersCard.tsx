@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Order } from "@/entities/order/order.types";
 import { useT } from "@/i18n/useT";
 import { ORDER_SERVICE_TYPES } from "@/lib/constants/orders";
+import { BOOKING_PRODUCT_HOME_CARE, BOOKING_PRODUCT_HOME_RESET } from "@/lib/orders/booking-product-label";
 import { Calendar, Clock, MapPin, Pencil } from "lucide-react";
 import type { ActiveCleaner } from "@/entities/cleaner/active-cleaner.types";
 import type { AdminCleanersApiResponse } from "@/features/orders/types/admin-cleaners-api.types";
@@ -25,6 +26,10 @@ function formatMoney(v: number) {
 function serviceLabel(serviceType: string): string {
   const match = ORDER_SERVICE_TYPES.find((item) => item.value === serviceType);
   return match?.label ?? serviceType;
+}
+
+function productBadgeKey(order: Order): string {
+  return order.productKey ?? order.bookingProduct ?? order.serviceType;
 }
 
 const pillBase =
@@ -95,6 +100,9 @@ function initials(name: string): string {
 function serviceBadgeStyle(serviceType: string): string {
   const key = (serviceType ?? "").trim();
   const map: Record<string, string> = {
+    home_care: "bg-teal-50 text-teal-800 ring-teal-200",
+    home_reset: "bg-violet-50 text-violet-800 ring-violet-200",
+    move_out: "bg-indigo-50 text-indigo-700 ring-indigo-200",
     regular_cleaning: "bg-sky-50 text-sky-700 ring-sky-200",
     move_in_out: "bg-indigo-50 text-indigo-700 ring-indigo-200",
     airbnb_turnover: "bg-violet-50 text-violet-700 ring-violet-200",
@@ -112,7 +120,20 @@ type OrderCardProps = {
 };
 
 export default function OrderCard({ order, onChanged }: OrderCardProps) {
-  const { t, orderStatusLabel, paymentLabel } = useT();
+  const { t, orderStatusLabel, paymentLabel, bookingProductLabel } = useT();
+  const primaryProductLabel =
+    order.productLabel ??
+    bookingProductLabel({
+      bookingProduct: order.bookingProduct,
+      serviceType: order.serviceType,
+    });
+  const showServiceTypeSecondary =
+    Boolean(order.serviceType) &&
+    order.serviceType !== order.productKey &&
+    (order.bookingProduct === BOOKING_PRODUCT_HOME_CARE ||
+      order.bookingProduct === BOOKING_PRODUCT_HOME_RESET ||
+      order.productKey === BOOKING_PRODUCT_HOME_CARE ||
+      order.productKey === BOOKING_PRODUCT_HOME_RESET);
 
   const detailHref = order.routeId
     ? `/app/admin/orders/${order.routeId}`
@@ -370,10 +391,15 @@ export default function OrderCard({ order, onChanged }: OrderCardProps) {
               #{order.displayId}
             </span>
             <span
-              className={`${pillBase} ${serviceBadgeStyle(order.serviceType)}`}
+              className={`${pillBase} ${serviceBadgeStyle(productBadgeKey(order))}`}
             >
-              {serviceLabel(order.serviceType)}
+              {primaryProductLabel}
             </span>
+            {showServiceTypeSecondary ? (
+              <span className="text-[10px] font-medium text-slate-400">
+                {serviceLabel(order.serviceType)}
+              </span>
+            ) : null}
           </div>
 
           <h3 className="mt-0.5 truncate text-base font-semibold leading-snug text-slate-900">

@@ -66,6 +66,7 @@ export const en = {
   "orders.orderControlCenter": "Order control center",
   "orders.cleanerAssignment": "Cleaner assignment",
   "orders.clientComment": "Client comment",
+  "orders.product": "Product",
   "orders.serviceType": "Service type",
   "orders.estimatedPrice": "Estimated price",
   "orders.client": "Client",
@@ -295,6 +296,10 @@ export const en = {
   "fileCategory.damage_photo": "Damage photo",
   "fileCategory.document": "Document",
   "fileCategory.other": "Other",
+
+  "bookingProduct.home_care": "Home Care",
+  "bookingProduct.home_reset": "Home Reset",
+  "bookingProduct.move_out": "Move Out Cleaning",
 
   "serviceType.regular_cleaning": "Regular cleaning",
   "serviceType.move_in_out": "Move in/out",

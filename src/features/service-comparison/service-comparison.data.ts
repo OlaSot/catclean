@@ -29,7 +29,7 @@ export const SERVICE_PROFILES: Record<ServiceId, ServiceProfile> = {
         title: "Bathroom",
         visualLabel: "Bathroom deep detail",
         visualAccent: "from-[#f8fcff] via-[#eaf3fb] to-[#dbe9f6]",
-        cta: "Add extra bathroom focus",
+        cta: "Add Bathroom Upgrade",
         items: [
           "Toilet inside & out",
           "Shower, tub & glass descaling",
@@ -43,7 +43,7 @@ export const SERVICE_PROFILES: Record<ServiceId, ServiceProfile> = {
         title: "Living areas & bedrooms",
         visualLabel: "Whole-home refresh",
         visualAccent: "from-[#f6fbff] via-[#e7f1fa] to-[#d8e7f4]",
-        cta: "Add pet hair intensive",
+        cta: "Add Pet Home Upgrade",
         items: [
           "Dusting all reachable surfaces & decor",
           "Vacuum carpets, rugs & upholstery (surface)",
@@ -172,10 +172,10 @@ export const SERVICE_PROFILES: Record<ServiceId, ServiceProfile> = {
   },
   regular_cleaning: {
     id: "regular_cleaning",
-    title: "Regular Cleaning",
-    tagline: "Weekly or bi-weekly care",
+    title: "Home Care",
+    tagline: "Keep your home effortlessly clean",
     shortDescription:
-      "Consistent upkeep for busy homes — our core checklist keeps kitchens, bathrooms and living spaces fresh between deeper visits.",
+      "Maintenance cleaning for already-clean homes — faster to book, recurring-friendly, and designed for weekly or monthly upkeep.",
     cleaningAreas: [
       {
         key: "kitchen",

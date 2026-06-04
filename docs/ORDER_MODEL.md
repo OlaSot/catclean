@@ -81,7 +81,8 @@
 
 | Поле | Тип | Обязательное | Описание |
 |------|-----|--------------|----------|
-| `service_type` | enum / text | да | Одно из 7 значений § «Сводка» |
+| `service_type` | enum / text | да | Одно из 7 значений § «Сводка» (billing / pricing) |
+| `booking_product` | text | нет | Продукт бронирования для UI: `home_care`, `home_reset`, `move_out` (см. ниже) |
 | `scheduled_date` | date | да | Дата начала уборки |
 | `scheduled_time` | time | да | Время начала (`scheduled_start` для §7 ORDER_RULES) |
 | `estimated_duration_hours` | numeric | нет | Плановая длительность (часы; целевое) |
@@ -124,7 +125,22 @@
 | `created_at` | timestamptz | |
 | `updated_at` | timestamptz | |
 
-**Сейчас используется в CRM:** `id`, `order_number`, `client_id`, `address_id`, `created_by`, `assigned_cleaner_id`, `status`, `scheduled_date`, `scheduled_time`, `service_type`, `currency`, `payment_status`, `estimated_price`, `created_at`, `updated_at`.
+**Сейчас используется в CRM:** `id`, `order_number`, `client_id`, `address_id`, `created_by`, `assigned_cleaner_id`, `status`, `scheduled_date`, `scheduled_time`, `service_type`, `booking_product`, `currency`, `payment_status`, `estimated_price`, `created_at`, `updated_at`.
+
+#### `booking_product` vs `service_type`
+
+| `booking_product` | `service_type` (типично) | UI label |
+|-------------------|--------------------------|----------|
+| `home_care` | `regular_cleaning` | Home Care |
+| `home_reset` | `regular_cleaning` | Home Reset |
+| `move_out` | `move_in_out` | Move Out Cleaning |
+| *(null)* | любой | Fallback: `service_type` label (напр. Regular Cleaning) |
+
+**Fallback без колонки** (старые заказы): комментарий `Home Care booking` / `Home Reset booking` в `addresses.postal_code`, или `homeResetUpgrade` в теле create.
+
+**Home Care detail fields** (`regular_cleaning_details`, migration 015): `cleaning_frequency`, `property_type`, `pet_type`, `windows_inside`.
+
+Код: `src/lib/orders/booking-product-label.ts`, `src/features/orders/lib/format-order-service-summary.ts`.
 
 ---
 

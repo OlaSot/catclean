@@ -1686,6 +1686,35 @@ Database tables:
 
 ---
 
+### POST /api/public/bookings
+
+Purpose:
+- Создать заказ с публичного booking wizard (без staff auth).
+
+Auth:
+- Не требуется (опционально: сессия Supabase, если есть)
+
+Body (основное):
+- `serviceType`: `regular_cleaning` | `move_in_out`
+- `serviceDetails`: объект полей detail table
+- `bookingProduct` *(optional)*: `home_care` | `home_reset` | `move_out` — сохраняется в `orders.booking_product`
+- `homeResetUpgrade` *(optional)*: kitchen/bathroom upgrade key (Home Reset)
+- `customerComment`, адрес, контакт, `scheduledDate`, `scheduledTime`, `estimatedPrice`
+
+**`booking_product` fallback** (если поле не передано):
+- комментарий содержит `Home Care booking` → `home_care`
+- комментарий содержит `Home Reset booking` или есть `homeResetUpgrade` → `home_reset`
+- `serviceType === move_in_out` → `move_out`
+- иначе `null` (CRM показывает label по `service_type`)
+
+Response success:
+- `201`: `{ data: { orderId, status, confirmationPending }, error: null }`
+
+Implementation:
+- `src/app/api/public/bookings/route.ts` → `createAdminOrder`
+
+---
+
 ### GET /api/public/order-confirmations/[token]
 
 Purpose:

@@ -1,5 +1,20 @@
 import type { AdminOrderServiceDetails } from "@/entities/order/admin-order-service-details.types";
 import type { OrderServiceType } from "@/lib/constants/orders";
+import {
+  BOOKING_PRODUCT_HOME_CARE,
+  BOOKING_PRODUCT_HOME_RESET,
+  BOOKING_PRODUCT_MOVE_OUT,
+  formatCleaningFrequencyLabel,
+  formatPetTypeLabel,
+  resolveBookingProductKey,
+} from "@/lib/orders/booking-product-label";
+
+export type FormatOrderServiceSummaryOptions = {
+  bookingProduct?: string | null;
+  serviceType?: string | null;
+  customerComment?: string | null;
+  homeResetUpgrade?: string | null;
+};
 
 function pushPart(parts: string[], value: string | null | undefined) {
   if (value) parts.push(value);
@@ -19,19 +34,100 @@ function flagPart(value: boolean | null | undefined, label: string): string | nu
   return value ? label : null;
 }
 
+function sizePart(size: number | null | undefined): string | null {
+  if (size == null || size <= 0) return null;
+  return `${size}m²`;
+}
+
+function resolveProductKey(
+  details: AdminOrderServiceDetails,
+  options?: FormatOrderServiceSummaryOptions
+): string {
+  return resolveBookingProductKey({
+    bookingProduct: options?.bookingProduct,
+    serviceType: options?.serviceType ?? details.type,
+    customerComment: options?.customerComment,
+    homeResetUpgrade: options?.homeResetUpgrade,
+  });
+}
+
+function formatHomeCareSummary(data: Record<string, unknown>): string | null {
+  const parts: string[] = [];
+  pushPart(parts, sizePart(data.propertySizeM2 as number | null));
+  pushPart(
+    parts,
+    formatCleaningFrequencyLabel(
+      (data.cleaningFrequency as string) ?? (data.cleaning_frequency as string)
+    )
+  );
+  const petLabel = formatPetTypeLabel(
+    (data.petType as string) ?? (data.pet_type as string)
+  );
+  if (petLabel) {
+    pushPart(parts, petLabel);
+  } else {
+    pushPart(parts, flagPart(data.hasPets as boolean, "pets"));
+  }
+  pushPart(parts, flagPart(data.windowsInside as boolean, "windows"));
+  pushPart(parts, flagPart(data.ovenCleaning as boolean, "oven"));
+  pushPart(parts, flagPart(data.fridgeCleaning as boolean, "fridge"));
+  pushPart(parts, flagPart(data.balconyIncluded as boolean, "balcony"));
+  return parts.length > 0 ? parts.join(" · ") : null;
+}
+
+function formatHomeResetSummary(
+  data: Record<string, unknown>,
+  options?: FormatOrderServiceSummaryOptions
+): string | null {
+  const parts: string[] = [];
+  pushPart(parts, sizePart(data.propertySizeM2 as number | null));
+  const upgrade = options?.homeResetUpgrade?.trim();
+  pushPart(parts, upgrade ? `deep reset · ${upgrade}` : "deep reset");
+  pushPart(parts, flagPart(data.ovenCleaning as boolean, "oven"));
+  pushPart(parts, flagPart(data.fridgeCleaning as boolean, "fridge"));
+  pushPart(parts, flagPart(data.balconyIncluded as boolean, "balcony"));
+  pushPart(parts, flagPart(data.windowsInside as boolean, "windows"));
+  return parts.length > 0 ? parts.join(" · ") : null;
+}
+
+function formatMoveOutProductSummary(data: Record<string, unknown>): string | null {
+  const parts: string[] = [];
+  pushPart(parts, sizePart(data.propertySizeM2 as number | null));
+  const pkg = (data.packageType as string)?.trim();
+  pushPart(parts, pkg || "premium");
+  pushPart(parts, flagPart(data.insideCabinets as boolean, "cabinets"));
+  pushPart(parts, flagPart(data.ovenCleaning as boolean, "oven"));
+  pushPart(parts, flagPart(data.fridgeCleaning as boolean, "fridge"));
+  pushPart(parts, flagPart(data.windowsInside as boolean, "windows"));
+  pushPart(parts, flagPart(data.balconyIncluded as boolean, "balcony"));
+  return parts.length > 0 ? parts.join(" · ") : null;
+}
+
 export function formatOrderServiceSummary(
-  details: AdminOrderServiceDetails | null | undefined
+  details: AdminOrderServiceDetails | null | undefined,
+  options?: FormatOrderServiceSummaryOptions
 ): string | null {
   if (!details?.data) return null;
 
   const data = details.data as Record<string, unknown>;
   const type = details.type as OrderServiceType;
+  const productKey = resolveProductKey(details, options);
+
+  if (type === "regular_cleaning" && productKey === BOOKING_PRODUCT_HOME_CARE) {
+    return formatHomeCareSummary(data);
+  }
+  if (type === "regular_cleaning" && productKey === BOOKING_PRODUCT_HOME_RESET) {
+    return formatHomeResetSummary(data, options);
+  }
+  if (type === "move_in_out" && productKey === BOOKING_PRODUCT_MOVE_OUT) {
+    return formatMoveOutProductSummary(data);
+  }
+
   const parts: string[] = [];
 
   switch (type) {
     case "regular_cleaning": {
-      const size = data.propertySizeM2 as number | null;
-      if (size && size > 0) parts.push(`${size} m²`);
+      pushPart(parts, sizePart(data.propertySizeM2 as number | null));
       const intensity = (data.cleaningIntensity as string)?.trim();
       if (intensity && intensity !== "standard") pushPart(parts, intensity);
       pushPart(parts, countPart(data.roomsCount as number, "room"));
@@ -46,8 +142,7 @@ export function formatOrderServiceSummary(
       break;
     }
     case "move_in_out": {
-      const size = data.propertySizeM2 as number | null;
-      if (size && size > 0) parts.push(`${size}m²`);
+      pushPart(parts, sizePart(data.propertySizeM2 as number | null));
       pushPart(parts, (data.packageType as string)?.trim() || null);
       pushPart(parts, flagPart(data.windowsInside as boolean, "windows"));
       pushPart(parts, flagPart(data.ovenCleaning as boolean, "oven"));

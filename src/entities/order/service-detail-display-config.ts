@@ -7,6 +7,8 @@ export const SERVICE_DETAIL_DISPLAY: Record<
 > = {
   regular_cleaning: [
     { key: "propertySizeM2", label: "Property size (m²)", category: "pricing", valueType: "number" },
+    { key: "cleaningFrequency", label: "Cleaning frequency", category: "pricing", valueType: "string" },
+    { key: "propertyType", label: "Property type", category: "general", valueType: "string" },
     { key: "cleaningIntensity", label: "Cleaning intensity", category: "pricing", valueType: "string" },
     { key: "roomsCount", label: "Rooms", category: "cleaner", valueType: "number" },
     { key: "bedroomsCount", label: "Bedrooms", category: "cleaner", valueType: "number" },

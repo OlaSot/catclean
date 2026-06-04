@@ -3,6 +3,11 @@
 import { useI18n } from "@/i18n/I18nProvider";
 import { orderStatusTranslationKey } from "@/i18n/translate";
 import type { TranslationKey } from "@/i18n/i18n.types";
+import {
+  getBookingProductI18nKey,
+  resolveBookingProductKey,
+  type ResolveBookingProductInput,
+} from "@/lib/orders/booking-product-label";
 
 export function useT() {
   const { t, locale, setLocale } = useI18n();
@@ -19,6 +24,16 @@ export function useT() {
   const serviceTypeLabel = (serviceType: string) =>
     t(`serviceType.${serviceType}` as TranslationKey);
 
+  const bookingProductLabel = (input: ResolveBookingProductInput | string, serviceType?: string) => {
+    const resolved =
+      typeof input === "string"
+        ? resolveBookingProductKey({ bookingProduct: input, serviceType })
+        : resolveBookingProductKey(input);
+    const i18nKey = getBookingProductI18nKey(resolved);
+    if (i18nKey) return t(i18nKey);
+    return serviceTypeLabel(serviceType ?? resolved);
+  };
+
   const fileCategoryLabel = (category: string) =>
     t(`fileCategory.${category}` as TranslationKey);
 
@@ -29,6 +44,7 @@ export function useT() {
     orderStatusLabel,
     paymentLabel,
     serviceTypeLabel,
+    bookingProductLabel,
     fileCategoryLabel,
   };
 }

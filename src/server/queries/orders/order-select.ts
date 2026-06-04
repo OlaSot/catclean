@@ -12,6 +12,7 @@ export const ADMIN_ORDER_SELECT = `
   scheduled_date,
   scheduled_time,
   service_type,
+  booking_product,
   currency,
   payment_status,
   estimated_price,

@@ -6,6 +6,7 @@ import type { ServiceDetailDisplayField } from "@/entities/order/admin-order-ser
 import type { OrderServiceType } from "@/lib/constants/orders";
 import { displayValue } from "@/features/orders/lib/format-order-display";
 import { useT } from "@/i18n/useT";
+import { formatCleaningFrequencyLabel } from "@/lib/orders/booking-product-label";
 
 export type ServiceDetailsAudience = "admin" | "cleaner" | "client";
 
@@ -40,11 +41,29 @@ function BoolBadge({ value }: { value: boolean }) {
   );
 }
 
+function formatPropertyType(value: unknown): string | null {
+  const key = String(value ?? "").trim().toLowerCase();
+  if (key === "apartment") return "Apartment";
+  if (key === "house") return "House";
+  return key ? String(value).trim() : null;
+}
+
 function formatFieldValue(
   value: unknown,
-  valueType: ServiceDetailDisplayField["valueType"]
+  valueType: ServiceDetailDisplayField["valueType"],
+  fieldKey?: string
 ): string | null {
   if (value === null || value === undefined) return null;
+
+  if (fieldKey === "cleaningFrequency") {
+    return (
+      formatCleaningFrequencyLabel(String(value)) ??
+      (String(value).trim() || null)
+    );
+  }
+  if (fieldKey === "propertyType") {
+    return formatPropertyType(value);
+  }
 
   if (valueType === "boolean") {
     return typeof value === "boolean" ? (value ? "yes" : "no") : null;
@@ -72,10 +91,12 @@ function FieldRow({
   label,
   value,
   valueType,
+  fieldKey,
 }: {
   label: string;
   value: unknown;
   valueType: ServiceDetailDisplayField["valueType"];
+  fieldKey?: string;
 }) {
   if (valueType === "boolean") {
     if (typeof value !== "boolean") return null;
@@ -89,7 +110,7 @@ function FieldRow({
     );
   }
 
-  const formatted = formatFieldValue(value, valueType);
+  const formatted = formatFieldValue(value, valueType, fieldKey);
   if (formatted === null) return null;
 
   return (
@@ -121,10 +142,11 @@ function DetailSection({
 
 function fieldHasContent(
   value: unknown,
-  valueType: ServiceDetailDisplayField["valueType"]
+  valueType: ServiceDetailDisplayField["valueType"],
+  fieldKey?: string
 ): boolean {
   if (valueType === "boolean") return typeof value === "boolean";
-  return formatFieldValue(value, valueType) !== null;
+  return formatFieldValue(value, valueType, fieldKey) !== null;
 }
 
 function collectFieldRows(
@@ -142,13 +164,14 @@ function collectFieldRows(
     .filter((field) => !allowed || allowed.has(field.category))
     .map((field) => {
       const value = data[field.key];
-      if (!fieldHasContent(value, field.valueType)) return null;
+      if (!fieldHasContent(value, field.valueType, field.key)) return null;
       return (
         <FieldRow
           key={field.key}
           label={t(`serviceDetails.field.${field.key}`) !== `serviceDetails.field.${field.key}` ? t(`serviceDetails.field.${field.key}`) : field.label}
           value={value}
           valueType={field.valueType}
+          fieldKey={field.key}
         />
       );
     })

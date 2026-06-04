@@ -38,6 +38,7 @@ export type SupabaseOrderRow = {
   scheduled_date: string | null;
   scheduled_time: string | null;
   service_type: string | null;
+  booking_product?: string | null;
   currency: string | null;
   payment_status: string | null;
   estimated_price: number | null;

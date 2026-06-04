@@ -132,7 +132,7 @@ function isTerminalStatus(status: AdminOrderDetail["status"]): boolean {
 }
 
 export default function AdminOrderDetailView({ orderId }: AdminOrderDetailViewProps) {
-  const { t, paymentLabel, serviceTypeLabel } = useT();
+  const { t, paymentLabel, serviceTypeLabel, bookingProductLabel } = useT();
   const [loadState, setLoadState] = useState<LoadState>("loading");
   const [order, setOrder] = useState<AdminOrderDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -444,6 +444,15 @@ export default function AdminOrderDetailView({ orderId }: AdminOrderDetailViewPr
     return null;
   })();
 
+  const productLabel = order
+    ? (order.service.productLabel ??
+      bookingProductLabel({
+        bookingProduct: order.service.bookingProduct,
+        serviceType: order.service.type,
+        customerComment: order.service.comment,
+      }))
+    : "";
+
   return (
     <div className="mx-auto w-full max-w-7xl space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
@@ -484,9 +493,12 @@ export default function AdminOrderDetailView({ orderId }: AdminOrderDetailViewPr
                 <h1 className="mt-1 text-3xl font-semibold tracking-tight text-slate-800">
                   #{order.displayId}
                 </h1>
-                <p className="mt-1 text-sm text-slate-600">
-                  {serviceTypeLabel(order.service.type)}
-                </p>
+                <p className="mt-1 text-sm font-medium text-slate-700">{productLabel}</p>
+                {order.service.bookingProduct || order.service.productKey !== order.service.type ? (
+                  <p className="text-xs text-slate-500">
+                    {t("orders.serviceType")}: {serviceTypeLabel(order.service.type)}
+                  </p>
+                ) : null}
               </div>
               <div className="flex flex-wrap gap-2">
                 <StatusPill label={order.statusLabel} status={order.status} />
@@ -712,6 +724,7 @@ export default function AdminOrderDetailView({ orderId }: AdminOrderDetailViewPr
                 <div id="service" className="space-y-4">
                   <div className="rounded-2xl border border-slate-200/80 bg-[#F6F8FB] p-4">
                     <dl className="space-y-3">
+                      <DetailRow label={t("orders.product")} value={productLabel} />
                       <DetailRow label={t("orders.serviceType")} value={serviceTypeLabel(order.service.type)} />
                       <DetailRow
                         label={t("orders.estimatedPrice")}
@@ -726,7 +739,7 @@ export default function AdminOrderDetailView({ orderId }: AdminOrderDetailViewPr
                     </dl>
                   </div>
                   <AdminOrderServiceDetailsCard
-                    serviceLabel={serviceTypeLabel(order.service.type)}
+                    serviceLabel={productLabel}
                     serviceDetails={order.serviceDetails}
                     operationalNotes={order.operationalNotes}
                   />

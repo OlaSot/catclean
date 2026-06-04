@@ -3,7 +3,6 @@
 import type { BookingServicePreset } from "../booking-wizard.types";
 
 const OPTIONS: Array<{ id: BookingServicePreset; title: string; subtitle: string }> = [
-  { id: "home_reset", title: "Home Reset", subtitle: "Deep apartment refresh" },
   { id: "move_out", title: "Move Out Cleaning", subtitle: "Deposit-safe cleaning" },
   { id: "regular_cleaning", title: "Regular Cleaning", subtitle: "Weekly or bi-weekly care" },
 ];
@@ -18,7 +17,7 @@ export function StepService({ value, onChange, error }: Props) {
   return (
     <div className="space-y-4">
       <h2 className="text-3xl font-semibold tracking-tight text-slate-700">What do you need today?</h2>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {OPTIONS.map((item) => {
           const selected = item.id === value;
           return (

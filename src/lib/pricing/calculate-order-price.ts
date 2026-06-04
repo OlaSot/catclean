@@ -41,6 +41,7 @@ export type RegularCleaningPricingInput = {
   fridgeCleaning?: boolean;
   insideCabinets?: boolean;
   balconyIncluded?: boolean;
+  windowsInside?: boolean;
   hasPets?: boolean;
 };
 
@@ -118,6 +119,7 @@ function calculateRegularCleaning(
     fridge_cleaning: Boolean(details.fridgeCleaning),
     inside_cabinets: Boolean(details.insideCabinets),
     balcony: Boolean(details.balconyIncluded),
+    windows_inside: Boolean(details.windowsInside),
     pets: Boolean(details.hasPets),
   });
   const extrasAmount = roundMoney(
@@ -327,6 +329,9 @@ export function tryCalculateOrderPrice(
         insideCabinets: Boolean(raw.insideCabinets ?? raw.inside_cabinets),
         balconyIncluded: Boolean(
           raw.balconyIncluded ?? raw.balcony_included
+        ),
+        windowsInside: Boolean(
+          raw.windowsInside ?? raw.windows_inside
         ),
         hasPets: Boolean(raw.hasPets ?? raw.has_pets),
       },

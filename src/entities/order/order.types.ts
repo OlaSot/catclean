@@ -33,6 +33,12 @@ export type Order = {
   durationHours: number;
 
   serviceType: string;
+  /** Raw `orders.booking_product` when set. */
+  bookingProduct?: string | null;
+  /** Resolved product key (home_care, home_reset, move_out, regular_cleaning, …). */
+  productKey?: string;
+  /** English product label for list cards (i18n in UI via bookingProductLabel). */
+  productLabel?: string;
   /** Compact line for list cards (from service detail table). */
   serviceSummary?: string | null;
   rooms: { label: string; count: number }[];

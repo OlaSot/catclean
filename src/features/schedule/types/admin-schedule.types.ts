@@ -35,6 +35,7 @@ export type AdminScheduleOrder = {
   status: OrderStatus | string;
   statusLabel: string;
   serviceType: string;
+  bookingProduct: string | null;
   serviceTypeLabel: string;
   scheduledDate: string;
   scheduledTime: string;

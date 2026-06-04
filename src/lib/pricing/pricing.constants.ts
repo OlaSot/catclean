@@ -25,6 +25,7 @@ export const PRICING_EXTRAS_EUR = {
   fridge_cleaning: 20,
   inside_cabinets: 30,
   balcony: 20,
+  windows_inside: 35,
   pets: 15,
 } as const;
 

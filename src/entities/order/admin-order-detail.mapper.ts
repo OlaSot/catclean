@@ -1,6 +1,10 @@
 import { formatOrderDisplayId } from "@/features/orders/lib/format-order-display-id";
 import { getOrderStatusLabel } from "@/lib/constants/order-status";
 import { ORDER_SERVICE_TYPES } from "@/lib/constants/orders";
+import {
+  getBookingProductLabelEn,
+  resolveBookingProductKey,
+} from "@/lib/orders/booking-product-label";
 import { canAssignCleanerForOrder } from "@/lib/orders/can-assign-cleaner";
 import { normalizeOrderStatus } from "./order-status.utils";
 import type { ClientOrderStats, SupabaseOrderRow } from "./order.supabase.types";
@@ -135,6 +139,12 @@ export function mapOrderToAdminDetail(
   const commentRaw = address?.postal_code?.trim() || null;
 
   const statusRaw = row.status?.trim() || "new";
+  const bookingProductRaw = row.booking_product?.trim() || null;
+  const productKey = resolveBookingProductKey({
+    bookingProduct: bookingProductRaw,
+    serviceType: row.service_type,
+    customerComment: commentRaw,
+  });
 
   return {
     id: parseOrderId(row.id),
@@ -168,6 +178,9 @@ export function mapOrderToAdminDetail(
     service: {
       type: row.service_type?.trim() || "—",
       typeLabel: serviceTypeLabel(row.service_type),
+      bookingProduct: bookingProductRaw,
+      productKey,
+      productLabel: getBookingProductLabelEn(productKey, row.service_type),
       estimatedPrice: row.estimated_price ?? 0,
       finalPrice:
         typeof row.final_price === "number" && Number.isFinite(row.final_price)

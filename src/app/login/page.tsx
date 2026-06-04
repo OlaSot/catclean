@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { SitePageShell } from "@/components/layout/SitePageShell";
 import { devLog } from "@/lib/dev-log";
 import { PHONE_FORM_EXAMPLE } from "@/lib/phone/profile-phone";
 import { createSupabaseBrowserClient } from "@/lib/supabase/supabaseBrowser";
@@ -59,8 +60,9 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
-      <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+    <SitePageShell backgroundClassName="min-h-screen bg-[#EEF2F7] text-slate-700" contentClassName="py-6 sm:py-8">
+      <div className="mx-auto flex w-full max-w-md flex-col justify-center py-8 sm:py-12">
+      <div className="w-full rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
         <h1 className="mb-5 text-2xl font-semibold text-slate-900">CatClean CRM</h1>
 
         <div className="mb-5 grid grid-cols-2 rounded-xl bg-slate-100 p-1">
@@ -153,6 +155,7 @@ export default function LoginPage() {
           </div>
         )}
       </div>
-    </div>
+      </div>
+    </SitePageShell>
   );
 }

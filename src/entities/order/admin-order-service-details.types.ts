@@ -3,6 +3,8 @@ import type { OrderServiceType } from "@/lib/constants/orders";
 /** Normalized detail payload per service (camelCase keys). */
 export type RegularCleaningServiceDetailsData = {
   propertySizeM2?: number | null;
+  cleaningFrequency?: string | null;
+  propertyType?: string | null;
   cleaningIntensity?: string | null;
   roomsCount?: number | null;
   bedroomsCount?: number | null;

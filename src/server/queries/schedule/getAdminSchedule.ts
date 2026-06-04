@@ -13,7 +13,10 @@ import {
   todayIsoLocal,
 } from "@/features/schedule/lib/schedule-time";
 import { getOrderStatusLabel } from "@/lib/constants/order-status";
-import { ORDER_SERVICE_TYPES } from "@/lib/constants/orders";
+import {
+  getBookingProductLabelEn,
+  resolveBookingProductKey,
+} from "@/lib/orders/booking-product-label";
 import { normalizeOrderStatus } from "@/entities/order/order-status.utils";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { getAdminCleaners } from "@/server/queries/cleaners/getAdminCleaners";
@@ -27,6 +30,7 @@ const SCHEDULE_ORDER_SELECT = `
   scheduled_date,
   scheduled_time,
   service_type,
+  booking_product,
   currency,
   estimated_price,
   final_price,
@@ -64,6 +68,7 @@ type ScheduleOrderRow = {
   scheduled_date: string | null;
   scheduled_time: string | null;
   service_type: string | null;
+  booking_product: string | null;
   currency: string | null;
   estimated_price: number | null;
   final_price: number | null;
@@ -100,12 +105,6 @@ function unwrapRelation<T>(value: T | T[] | null | undefined): T | null {
   return Array.isArray(value) ? (value[0] ?? null) : value;
 }
 
-function serviceLabel(serviceType: string | null | undefined): string {
-  const key = serviceType?.trim() ?? "";
-  const match = ORDER_SERVICE_TYPES.find((item) => item.value === key);
-  return match?.label ?? (key || "Cleaning");
-}
-
 function formatTime(value: string | null | undefined): string {
   if (!value) return "—";
   return value.length >= 5 ? value.slice(0, 5) : value;
@@ -140,7 +139,14 @@ function mapScheduleOrder(row: ScheduleOrderRow): AdminScheduleOrder {
     status,
     statusLabel: getOrderStatusLabel(statusRaw),
     serviceType: row.service_type?.trim() || "—",
-    serviceTypeLabel: serviceLabel(row.service_type),
+    bookingProduct: row.booking_product?.trim() || null,
+    serviceTypeLabel: getBookingProductLabelEn(
+      resolveBookingProductKey({
+        bookingProduct: row.booking_product,
+        serviceType: row.service_type,
+      }),
+      row.service_type
+    ),
     scheduledDate: row.scheduled_date?.slice(0, 10) ?? "",
     scheduledTime: formatTime(row.scheduled_time),
     startMinutes,

@@ -2,6 +2,10 @@ import type { ClientOrderStats, SupabaseOrderRow } from "./order.supabase.types"
 import { formatOrderDisplayId } from "@/features/orders/lib/format-order-display-id";
 import { normalizeOrderStatus } from "./order-status.utils";
 import { formatOrderServiceSummary } from "@/features/orders/lib/format-order-service-summary";
+import {
+  getBookingProductLabelEn,
+  resolveBookingProductKey,
+} from "@/lib/orders/booking-product-label";
 import type { AdminOrderServiceDetails } from "./admin-order-service-details.types";
 import type { Order, OrderPaymentStatus } from "./order.types";
 
@@ -98,6 +102,13 @@ export function mapOrderToCard(
     "Unknown client";
 
   const orderNumber = row.order_number ?? null;
+  const customerComment = address?.postal_code?.trim() || null;
+  const bookingProductRaw = row.booking_product?.trim() || null;
+  const productKey = resolveBookingProductKey({
+    bookingProduct: bookingProductRaw,
+    serviceType: row.service_type,
+    customerComment,
+  });
 
   return {
     id: parseOrderId(row.id),
@@ -113,7 +124,14 @@ export function mapOrderToCard(
     durationHours: 0,
 
     serviceType: row.service_type?.trim() || "Cleaning",
-    serviceSummary: formatOrderServiceSummary(serviceDetails ?? null),
+    bookingProduct: bookingProductRaw,
+    productKey,
+    productLabel: getBookingProductLabelEn(productKey, row.service_type),
+    serviceSummary: formatOrderServiceSummary(serviceDetails ?? null, {
+      bookingProduct: bookingProductRaw,
+      customerComment,
+      serviceType: row.service_type,
+    }),
     rooms: [],
 
     address: {

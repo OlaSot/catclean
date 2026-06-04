@@ -1,0 +1,195 @@
+/* Home Reset wizard — calm premium motion (Apple / Stripe-like) */
+
+@keyframes hr-wizard-step-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hr-wizard-step-exit {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes hr-wizard-image-enter {
+  from {
+    opacity: 0;
+    transform: scale(1.02);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes hr-wizard-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hr-wizard-dialog-backdrop-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes hr-wizard-dialog-panel-enter {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.hr-wizard-step-enter {
+  animation: hr-wizard-step-enter 280ms ease-out both;
+}
+
+.hr-wizard-step-exit {
+  animation: hr-wizard-step-exit 260ms ease-out both;
+}
+
+.hr-wizard-image-enter {
+  animation: hr-wizard-image-enter 350ms ease-out both;
+}
+
+.hr-wizard-card-enter {
+  animation: hr-wizard-card-enter 360ms ease-out both;
+}
+
+.hr-wizard-card-enter:nth-child(1) {
+  animation-delay: 0ms;
+}
+
+.hr-wizard-card-enter:nth-child(2) {
+  animation-delay: 70ms;
+}
+
+.hr-wizard-card-enter:nth-child(3) {
+  animation-delay: 140ms;
+}
+
+.hr-wizard-card-enter:nth-child(4) {
+  animation-delay: 210ms;
+}
+
+.hr-wizard-dialog-backdrop-enter {
+  animation: hr-wizard-dialog-backdrop-enter 220ms ease-out both;
+}
+
+.hr-wizard-dialog-panel-enter {
+  animation: hr-wizard-dialog-panel-enter 300ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 40ms;
+}
+
+.hr-wizard-progress-fill {
+  transition: width 400ms ease-out;
+}
+
+.hr-wizard-card {
+  transition:
+    border-color 180ms ease-out,
+    box-shadow 180ms ease-out,
+    transform 180ms ease-out,
+    background-color 180ms ease-out;
+}
+
+.hr-wizard-card:not(:disabled):hover {
+  transform: translateY(-2px);
+}
+
+.hr-wizard-card.hr-wizard-card--selected {
+  transform: scale(1.02);
+}
+
+.hr-wizard-card.hr-wizard-card--selected:hover {
+  transform: scale(1.02) translateY(-2px);
+}
+
+.hr-wizard-card.hr-wizard-card--locked {
+  cursor: default;
+}
+
+.hr-wizard-card.hr-wizard-card--locked:hover {
+  transform: none;
+}
+
+.hr-wizard-btn-primary {
+  transition:
+    transform 150ms ease-out,
+    box-shadow 150ms ease-out,
+    background-color 150ms ease-out;
+}
+
+.hr-wizard-btn-primary:not(:disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 28px rgba(52, 89, 126, 0.28);
+}
+
+.hr-wizard-btn-primary:not(:disabled):active {
+  transform: scale(0.98);
+  transition-duration: 100ms;
+}
+
+.hr-wizard-btn-secondary {
+  transition:
+    transform 150ms ease-out,
+    border-color 150ms ease-out,
+    color 150ms ease-out,
+    box-shadow 150ms ease-out;
+}
+
+.hr-wizard-btn-secondary:not(:disabled):hover {
+  transform: translateY(-1px);
+}
+
+.hr-wizard-btn-secondary:not(:disabled):active {
+  transform: scale(0.98);
+  transition-duration: 100ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hr-wizard-step-enter,
+  .hr-wizard-step-exit,
+  .hr-wizard-image-enter,
+  .hr-wizard-card-enter,
+  .hr-wizard-dialog-backdrop-enter,
+  .hr-wizard-dialog-panel-enter {
+    animation: none !important;
+  }
+
+  .hr-wizard-progress-fill,
+  .hr-wizard-card,
+  .hr-wizard-btn-primary,
+  .hr-wizard-btn-secondary {
+    transition: none !important;
+  }
+
+  .hr-wizard-card:not(:disabled):hover,
+  .hr-wizard-card.hr-wizard-card--selected:hover {
+    transform: none;
+  }
+}

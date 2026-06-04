@@ -11,6 +11,12 @@ function toOptionalInt(value: unknown): number | null {
   return rounded > 0 ? rounded : null;
 }
 
+function toOptionalString(value: unknown): string | null {
+  if (value === null || value === undefined) return null;
+  const s = String(value).trim();
+  return s ? s : null;
+}
+
 function toBool(value: unknown, defaultValue = false): boolean {
   if (typeof value === "boolean") return value;
   if (value === "true" || value === 1) return true;
@@ -25,13 +31,23 @@ export function mapCreateServiceDetailsToDbRow(
   const d = serviceDetails ?? {};
 
   switch (serviceType) {
-    case "regular_cleaning":
+    case "regular_cleaning": {
+      const petTypeRaw = toOptionalString(d.petType ?? d.pet_type);
+      const petsOption = toOptionalString(d.petsOption ?? d.pets_option);
+      const petType =
+        petTypeRaw ??
+        (petsOption && petsOption !== "no_pets" ? petsOption : null);
+
       return {
         property_size_m2: toOptionalInt(d.propertySizeM2 ?? d.property_size_m2),
         cleaning_intensity:
           d.cleaningIntensity === "deep" || d.cleaning_intensity === "deep"
             ? "deep"
             : "standard",
+        cleaning_frequency: toOptionalString(
+          d.cleaningFrequency ?? d.cleaning_frequency
+        ),
+        property_type: toOptionalString(d.propertyType ?? d.property_type),
         rooms_count: toOptionalInt(d.roomsCount ?? d.rooms_count),
         bathrooms_count: toOptionalInt(
           d.bathroomsCount ?? d.bathrooms_count
@@ -40,8 +56,11 @@ export function mapCreateServiceDetailsToDbRow(
         fridge_cleaning: toBool(d.fridgeCleaning ?? d.fridge_cleaning),
         inside_cabinets: toBool(d.insideCabinets ?? d.inside_cabinets),
         balcony_included: toBool(d.balconyIncluded ?? d.balcony_included),
+        windows_inside: toBool(d.windowsInside ?? d.windows_inside),
         has_pets: toBool(d.hasPets ?? d.has_pets),
+        pet_type: petType,
       };
+    }
     case "move_in_out":
       return {
         property_size_m2: toOptionalInt(d.propertySizeM2 ?? d.property_size_m2),
@@ -49,6 +68,8 @@ export function mapCreateServiceDetailsToDbRow(
           .trim()
           .toLowerCase(),
         empty_apartment: toBool(d.emptyApartment ?? d.empty_apartment),
+        heavy_limescale: toBool(d.heavyLimescale ?? d.heavy_limescale),
+        heavy_dirt: toBool(d.heavyDirt ?? d.heavy_dirt),
         oven_cleaning: toBool(d.ovenCleaning ?? d.oven_cleaning),
         fridge_cleaning: toBool(d.fridgeCleaning ?? d.fridge_cleaning),
         inside_cabinets: toBool(d.insideCabinets ?? d.inside_cabinets),

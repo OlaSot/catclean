@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { usePublicT } from "@/i18n/public/usePublicT";
 import { normalizePhone } from "@/lib/phone/normalize-phone";
 import { HOME_RESET_STEPS, SIMPLE_STEPS, EMPTY_BOOKING_STATE, SIZE_PRESETS } from "./booking-wizard.constants";
 import {
@@ -35,7 +37,10 @@ type BookingWizardProps = {
   initialService?: string;
 };
 
+/** @deprecated Product wizards: `/booking?service=home_care` and `home_reset`. TODO: send `bookingProduct` when this legacy flow books Home Care/Reset. */
 export function BookingWizard({ initialService }: BookingWizardProps) {
+  const { t } = usePublicT();
+  const router = useRouter();
   const [step, setStep] = useState<StepId>("service");
   const [state, setState] = useState(EMPTY_BOOKING_STATE);
   const [errors, setErrors] = useState<ValidationErrors>({});
@@ -51,6 +56,16 @@ export function BookingWizard({ initialService }: BookingWizardProps) {
   const isSummary = currentStep === "summary";
 
   useEffect(() => {
+    if (initialService === "home_reset") {
+      router.replace("/booking?service=home_reset");
+      return;
+    }
+    if (initialService === "regular_cleaning" || initialService === "home_care") {
+      router.replace("/booking?service=home_care");
+    }
+  }, [initialService, router]);
+
+  useEffect(() => {
     if (!initialService) return;
     if (state.service) return;
 
@@ -64,12 +79,20 @@ export function BookingWizard({ initialService }: BookingWizardProps) {
     ]);
     if (!allowed.has(initialService)) return;
 
+    if (
+      initialService === "home_reset" ||
+      initialService === "dry_cleaning" ||
+      initialService === "window_cleaning"
+    ) {
+      return;
+    }
+
     const mapped = initialService as BookingServicePreset;
     setState((prev) => ({
       ...prev,
       service: mapped,
     }));
-    setStep(mapped === "home_reset" ? "propertyType" : "propertySize");
+    setStep("propertySize");
   }, [initialService, state.service]);
 
   function setFieldError(key: string, message: string): ValidationErrors {
@@ -80,38 +103,38 @@ export function BookingWizard({ initialService }: BookingWizardProps) {
     let nextErrors: ValidationErrors = {};
 
     if (currentStep === "service" && !state.service) {
-      nextErrors = setFieldError("service", "Please choose a service");
+      nextErrors = setFieldError("service", t("public.bookingLegacy.chooseService"));
     }
 
     if (currentStep === "propertyType" && state.service === "home_reset" && !state.propertyType) {
-      nextErrors = setFieldError("propertyType", "Please choose property type");
+      nextErrors = setFieldError("propertyType", t("public.validation.selectOption"));
     }
 
     if (currentStep === "propertySize") {
       if (!Number.isFinite(state.propertySizeM2) || state.propertySizeM2 <= 0) {
-        nextErrors = setFieldError("propertySizeM2", "Enter valid size in m²");
+        nextErrors = setFieldError("propertySizeM2", t("public.bookingLegacy.invalidSize"));
       }
     }
 
     if (currentStep === "address") {
-      if (!state.address.street.trim()) nextErrors.street = "Street is required";
-      if (!state.address.houseNumber.trim()) nextErrors.houseNumber = "House number is required";
-      if (!state.address.zip.trim()) nextErrors.zip = "ZIP is required";
-      if (!state.address.city.trim()) nextErrors.city = "City is required";
+      if (!state.address.street.trim()) nextErrors.street = t("public.validation.required");
+      if (!state.address.houseNumber.trim()) nextErrors.houseNumber = t("public.validation.required");
+      if (!state.address.zip.trim()) nextErrors.zip = t("public.validation.required");
+      if (!state.address.city.trim()) nextErrors.city = t("public.validation.required");
     }
 
     if (currentStep === "schedule") {
-      if (!state.schedule.date) nextErrors.date = "Date is required";
-      if (!state.schedule.time) nextErrors.time = "Time is required";
+      if (!state.schedule.date) nextErrors.date = t("public.validation.chooseDate");
+      if (!state.schedule.time) nextErrors.time = t("public.validation.chooseTime");
     }
 
     if (currentStep === "contact") {
-      if (!state.contact.name.trim()) nextErrors.name = "Name is required";
+      if (!state.contact.name.trim()) nextErrors.name = t("public.validation.required");
       const normalized = normalizePhone(state.contact.phone);
-      if (!normalized) nextErrors.phone = "Use valid phone format, e.g. +49 178 1234567";
+      if (!normalized) nextErrors.phone = t("public.validation.invalidPhone");
       const email = state.contact.email.trim();
       if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        nextErrors.email = "Enter a valid email";
+        nextErrors.email = t("public.validation.invalidEmail");
       }
     }
 
@@ -141,7 +164,7 @@ export function BookingWizard({ initialService }: BookingWizardProps) {
 
     if (!serviceType || !serviceDetails || !normalizedPhone || estimate.price == null) {
       setSubmitting(false);
-      setSubmitError("Please complete all required fields.");
+      setSubmitError(t("public.validation.completeFields"));
       return;
     }
 
@@ -177,12 +200,12 @@ export function BookingWizard({ initialService }: BookingWizardProps) {
         error: string | null;
       };
       if (!response.ok || body.error || !body.data) {
-        setSubmitError(body.error ?? "Failed to create booking");
+        setSubmitError(body.error ?? t("public.bookingLegacy.submitFailed"));
         return;
       }
       setSubmitSuccess(body.data);
     } catch {
-      setSubmitError("Failed to create booking");
+      setSubmitError(t("public.bookingLegacy.submitFailed"));
     } finally {
       setSubmitting(false);
     }
@@ -191,12 +214,13 @@ export function BookingWizard({ initialService }: BookingWizardProps) {
   if (submitSuccess) {
     return (
       <div className="space-y-4 rounded-3xl border border-white/70 bg-white/75 p-8 backdrop-blur-md">
-        <h2 className="text-3xl font-semibold text-slate-700">Booking created successfully.</h2>
-        <p className="text-slate-600">Order ID: <span className="font-semibold text-slate-800">{submitSuccess.orderId}</span></p>
-        <p className="text-slate-600">Confirmation pending</p>
+        <h2 className="text-3xl font-semibold text-slate-700">{t("public.bookingLegacy.successTitle")}</h2>
         <p className="text-slate-600">
-          Please confirm your booking using the confirmation link sent by our team.
+          {t("public.bookingLegacy.orderId")}:{" "}
+          <span className="font-semibold text-slate-800">{submitSuccess.orderId}</span>
         </p>
+        <p className="text-slate-600">{t("public.bookingLegacy.confirmPending")}</p>
+        <p className="text-slate-600">{t("public.bookingLegacy.confirmHint")}</p>
       </div>
     );
   }
@@ -205,9 +229,11 @@ export function BookingWizard({ initialService }: BookingWizardProps) {
     <div className="mx-auto w-full max-w-5xl space-y-5">
       <div className="rounded-3xl border border-white/70 bg-white/75 p-4 backdrop-blur-md">
         <div className="mb-2 flex items-center justify-between text-sm text-slate-600">
-          <span>{stepDefs[currentIndex]?.label ?? "Step"}</span>
+          <span>{stepDefs[currentIndex]?.label ?? t("public.bookingLegacy.step")}</span>
           <span>
-            Step {currentIndex + 1} of {stepDefs.length}
+            {t("public.bookingLegacy.stepOf")
+              .replace("{current}", String(currentIndex + 1))
+              .replace("{total}", String(stepDefs.length))}
           </span>
         </div>
         <div className="h-2 w-full rounded-full bg-slate-200/70">
@@ -266,7 +292,7 @@ export function BookingWizard({ initialService }: BookingWizardProps) {
           <StepCondition
             value={state.condition}
             onChange={(condition) => setState((prev) => ({ ...prev, condition }))}
-            deepPriceHint={state.condition === "deep" ? "Deep reset uses higher intensity pricing." : null}
+            deepPriceHint={state.condition === "deep" ? t("public.bookingLegacy.deepHint") : null}
           />
         ) : null}
         {currentStep === "pets" ? (
@@ -353,7 +379,7 @@ export function BookingWizard({ initialService }: BookingWizardProps) {
             disabled={currentIndex === 0 || submitting}
             className="rounded-full border border-slate-300 px-5 py-2.5 font-semibold text-slate-700 transition hover:border-[#34597E] disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Back
+            {t("public.bookingLegacy.back")}
           </button>
           {isSummary ? (
             <button
@@ -362,7 +388,7 @@ export function BookingWizard({ initialService }: BookingWizardProps) {
               disabled={submitting}
               className="rounded-full bg-[#34597E] px-6 py-3 font-semibold text-white transition hover:bg-[#2d4d6f] disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {submitting ? "Creating..." : "Create booking"}
+              {submitting ? t("public.bookingLegacy.creating") : t("public.bookingLegacy.createBooking")}
             </button>
           ) : (
             <button
@@ -370,7 +396,7 @@ export function BookingWizard({ initialService }: BookingWizardProps) {
               onClick={handleNext}
               className="rounded-full bg-[#34597E] px-6 py-3 font-semibold text-white transition hover:bg-[#2d4d6f]"
             >
-              Next →
+              {t("public.bookingLegacy.next")}
             </button>
           )}
         </div>
