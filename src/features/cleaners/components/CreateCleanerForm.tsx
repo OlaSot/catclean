@@ -86,14 +86,14 @@ export default function CreateCleanerForm() {
       const json = (await response.json()) as CreateAdminCleanerApiResponse;
 
       if (!response.ok || json.error || !json.data) {
-        setError(json.error ?? "Failed to create cleaner");
+        setError(json.error ?? "Не удалось создать клинера");
         return;
       }
 
       router.push("/app/admin/cleaners");
       router.refresh();
     } catch {
-      setError("Failed to create cleaner");
+      setError("Не удалось создать клинера");
     } finally {
       setIsSubmitting(false);
     }
@@ -109,10 +109,10 @@ export default function CreateCleanerForm() {
 
       <section className="space-y-5">
         <div>
-          <h2 className="text-lg font-semibold text-slate-800">Account</h2>
+          <h2 className="text-lg font-semibold text-slate-800">Аккаунт</h2>
           <p className="mt-1 text-sm text-slate-500">
-            Creates Supabase Auth user, profile (role cleaner) and
-            cleaner_profiles. profiles.id = auth user id.
+            Создает пользователя Supabase Auth, профиль (роль cleaner) и запись
+            cleaner_profiles. profiles.id = id пользователя auth.
           </p>
         </div>
 
@@ -128,7 +128,7 @@ export default function CreateCleanerForm() {
             />
           </FormField>
 
-          <FormField label="Password" htmlFor="password" hint="Min. 6 characters">
+          <FormField label="Пароль" htmlFor="password" hint="Минимум 6 символов">
             <input
               id="password"
               name="password"
@@ -143,10 +143,10 @@ export default function CreateCleanerForm() {
       </section>
 
       <section className="space-y-5">
-        <h2 className="text-lg font-semibold text-slate-800">Profile</h2>
+        <h2 className="text-lg font-semibold text-slate-800">Профиль</h2>
 
         <div className="grid gap-5 md:grid-cols-2">
-          <FormField label="Full name" htmlFor="fullName">
+          <FormField label="Имя и фамилия" htmlFor="fullName">
             <input
               id="fullName"
               name="fullName"
@@ -157,9 +157,9 @@ export default function CreateCleanerForm() {
           </FormField>
 
           <FormField
-            label="Phone"
+            label="Телефон"
             htmlFor="phone"
-            hint={`${PHONE_FORM_HINT}. Example: ${PHONE_FORM_EXAMPLE}`}
+            hint={`${PHONE_FORM_HINT}. Пример: ${PHONE_FORM_EXAMPLE}`}
           >
             <input
               id="phone"
@@ -171,7 +171,7 @@ export default function CreateCleanerForm() {
             />
           </FormField>
 
-          <FormField label="Status" htmlFor="status">
+          <FormField label="Статус" htmlFor="status">
             <select
               id="status"
               name="status"
@@ -181,12 +181,12 @@ export default function CreateCleanerForm() {
               }
               className={selectClassName}
             >
-              <option value="active">Active</option>
-              <option value="pending">Pending</option>
+              <option value="active">Активен</option>
+              <option value="pending">Ожидает</option>
             </select>
           </FormField>
 
-          <FormField label="Base city" htmlFor="baseCity">
+          <FormField label="Базовый город" htmlFor="baseCity">
             <input
               id="baseCity"
               name="baseCity"
@@ -197,7 +197,7 @@ export default function CreateCleanerForm() {
           </FormField>
 
           <FormField
-            label="Working radius (km)"
+            label="Радиус работы (км)"
             htmlFor="workingRadiusKm"
             hint="0–500"
           >
@@ -218,36 +218,36 @@ export default function CreateCleanerForm() {
 
       <section className="space-y-4">
         <h2 className="text-lg font-semibold text-slate-800">
-          Skills & equipment
+          Навыки и оборудование
         </h2>
         <div className="grid gap-3 sm:grid-cols-2">
           <CheckboxField
             id="petFriendly"
-            label="Pet friendly"
+            label="Можно с питомцами"
             checked={petFriendly}
             onChange={setPetFriendly}
           />
           <CheckboxField
             id="ownsVacuum"
-            label="Owns vacuum"
+            label="Есть пылесос"
             checked={ownsVacuum}
             onChange={setOwnsVacuum}
           />
           <CheckboxField
             id="ownsSteamCleaner"
-            label="Owns steam cleaner"
+            label="Есть пароочиститель"
             checked={ownsSteamCleaner}
             onChange={setOwnsSteamCleaner}
           />
           <CheckboxField
             id="acceptsWindows"
-            label="Accepts windows"
+            label="Мытье окон"
             checked={acceptsWindows}
             onChange={setAcceptsWindows}
           />
           <CheckboxField
             id="acceptsDryCleaning"
-            label="Accepts dry cleaning"
+            label="Химчистка"
             checked={acceptsDryCleaning}
             onChange={setAcceptsDryCleaning}
           />
@@ -260,14 +260,14 @@ export default function CreateCleanerForm() {
           disabled={isSubmitting}
           className="inline-flex items-center justify-center rounded-full bg-[#34597E] px-6 py-2.5 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(52,89,126,0.22)] transition hover:bg-[#2d4d6f] disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {isSubmitting ? "Creating..." : "Create cleaner"}
+          {isSubmitting ? "Создание..." : "Создать клинера"}
         </button>
 
         <Link
           href="/app/admin/cleaners"
           className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-6 py-2.5 text-sm font-semibold text-slate-600 shadow-sm transition hover:border-slate-300"
         >
-          Cancel
+          Отмена
         </Link>
       </div>
     </form>

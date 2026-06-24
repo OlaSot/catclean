@@ -11,14 +11,14 @@ export default function AdminCreateOrderPage() {
             className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-[#34597E]"
           >
             <span aria-hidden>←</span>
-            Back to orders
+            Назад к заказам
           </Link>
 
           <h1 className="mt-4 text-3xl font-semibold tracking-tight text-slate-800">
-            New order
+            Новый заказ
           </h1>
           <p className="mt-2 text-sm text-slate-500">
-            Link an existing client profile, then add address and schedule.
+            Привяжите существующий профиль клиента, затем добавьте адрес и расписание.
           </p>
         </div>
 

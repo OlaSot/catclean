@@ -10,14 +10,14 @@ export default function AdminCreateCleanerPage() {
           className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-[#34597E]"
         >
           <span aria-hidden>←</span>
-          Back to cleaners
+          Назад к клинерам
         </Link>
 
         <h1 className="mt-4 text-3xl font-semibold tracking-tight text-slate-800">
-          New cleaner
+          Новый клинер
         </h1>
         <p className="mt-2 text-sm leading-relaxed text-slate-500">
-          Create auth account, cleaner profile, skills and service area.
+          Создайте аккаунт авторизации, профиль клинера, навыки и зону работы.
         </p>
       </div>
 

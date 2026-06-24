@@ -94,33 +94,33 @@ export default function AdminCleanersFilters({
   return (
     <div className="rounded-3xl border border-slate-200/80 bg-white p-5 shadow-[0_8px_30px_rgba(15,23,42,0.04)] md:p-6">
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm font-medium text-slate-700">Filters</p>
+        <p className="text-sm font-medium text-slate-700">Фильтры</p>
         <button
           type="button"
           onClick={onReset}
           className="text-sm font-semibold text-[#34597E] transition hover:text-[#2d4d6f]"
         >
-          Reset filters
+          Сбросить фильтры
         </button>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <label className="block lg:col-span-2">
           <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-            Search
+            Поиск
           </span>
           <input
             type="search"
             value={filters.search}
             onChange={(e) => patch({ search: e.target.value })}
-            placeholder="Name, email or phone"
+            placeholder="Имя, email или телефон"
             className={`mt-2 ${inputClassName}`}
           />
         </label>
 
         <label className="block">
           <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-            Status
+            Статус
           </span>
           <select
             value={filters.status}
@@ -141,13 +141,13 @@ export default function AdminCleanersFilters({
 
         <label className="block">
           <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-            City
+            Город
           </span>
           <input
             type="text"
             value={filters.city}
             onChange={(e) => patch({ city: e.target.value })}
-            placeholder="e.g. Hannover"
+            placeholder="например, Hannover"
             className={`mt-2 ${inputClassName}`}
           />
         </label>
@@ -155,34 +155,34 @@ export default function AdminCleanersFilters({
 
       <div className="mt-5">
         <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-          Skills & equipment
+          Навыки и оборудование
         </p>
         <p className="mt-1 text-xs text-slate-400">
-          Show cleaners who have the selected skill (toggle on = must have)
+          Показывать клинеров с выбранным навыком (вкл. = обязательно)
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
           <SkillToggle
-            label="Pet friendly"
+            label="Можно с питомцами"
             active={filters.petFriendly}
             onToggle={() => patch({ petFriendly: !filters.petFriendly })}
           />
           <SkillToggle
-            label="Owns vacuum"
+            label="Есть пылесос"
             active={filters.ownsVacuum}
             onToggle={() => patch({ ownsVacuum: !filters.ownsVacuum })}
           />
           <SkillToggle
-            label="Steam cleaner"
+            label="Есть пароочиститель"
             active={filters.ownsSteamCleaner}
             onToggle={() => patch({ ownsSteamCleaner: !filters.ownsSteamCleaner })}
           />
           <SkillToggle
-            label="Windows"
+            label="Окна"
             active={filters.acceptsWindows}
             onToggle={() => patch({ acceptsWindows: !filters.acceptsWindows })}
           />
           <SkillToggle
-            label="Dry cleaning"
+            label="Химчистка"
             active={filters.acceptsDryCleaning}
             onToggle={() =>
               patch({ acceptsDryCleaning: !filters.acceptsDryCleaning })

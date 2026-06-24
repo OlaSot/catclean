@@ -10,14 +10,14 @@ export default function AdminCreateClientPage() {
           className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-[#34597E]"
         >
           <span aria-hidden>←</span>
-          Back to clients
+          Назад к клиентам
         </Link>
 
         <h1 className="mt-4 text-3xl font-semibold tracking-tight text-slate-800">
-          New client
+          Новый клиент
         </h1>
         <p className="mt-2 text-sm leading-relaxed text-slate-500">
-          Create auth account, client profile and contact details.
+          Создайте аккаунт авторизации, профиль клиента и контактные данные.
         </p>
       </div>
 

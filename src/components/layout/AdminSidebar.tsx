@@ -125,7 +125,7 @@ export default function AdminSidebar({ userEmail }: AdminSidebarProps) {
 
       <nav
         className="mt-8 flex flex-1 flex-col gap-1 px-3"
-        aria-label="Admin navigation"
+        aria-label="Навигация админки"
       >
         {ADMIN_NAV_ITEMS.map((item) => {
           const active = isAdminNavActive(pathname, item.href, item.exact);

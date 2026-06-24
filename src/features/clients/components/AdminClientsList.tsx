@@ -40,14 +40,14 @@ export default function AdminClientsList() {
 
       if (!response.ok || json.error) {
         setClients([]);
-        setError(json.error ?? "Failed to load clients");
+        setError(json.error ?? "Не удалось загрузить клиентов");
         return;
       }
 
       setClients(json.data ?? []);
     } catch {
       setClients([]);
-      setError("Failed to load clients");
+      setError("Не удалось загрузить клиентов");
     } finally {
       setLoadState("idle");
     }
@@ -73,18 +73,18 @@ export default function AdminClientsList() {
       <div className="flex flex-wrap items-end justify-between gap-6">
         <div className="max-w-2xl">
           <h1 className="text-3xl font-semibold tracking-tight text-slate-800">
-            Clients
+            Клиенты
           </h1>
           <p className="mt-2 text-sm leading-relaxed text-slate-500">
-            Manage client profiles, contact details, and order history.
+            Управление профилями клиентов, контактами и историей заказов.
           </p>
           {!isLoading && !error ? (
             <p className="mt-3 text-xs font-medium text-slate-400">
               {clients.length === 0
                 ? hasActiveFilters
-                  ? "No clients match filters"
-                  : "No clients yet"
-                : `${clients.length} client${clients.length === 1 ? "" : "s"}`}
+                  ? "Нет клиентов по выбранным фильтрам"
+                  : "Клиентов пока нет"
+                : `${clients.length} клиент(ов)`}
             </p>
           ) : null}
         </div>
@@ -93,7 +93,7 @@ export default function AdminClientsList() {
           href="/app/admin/clients/new"
           className="inline-flex shrink-0 items-center justify-center rounded-full bg-[#34597E] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(52,89,126,0.22)] transition hover:bg-[#2d4d6f]"
         >
-          + Add client
+          + Добавить клиента
         </Link>
       </div>
 
@@ -105,23 +105,23 @@ export default function AdminClientsList() {
 
       {isLoading ? (
         <div className="rounded-3xl border border-slate-200/80 bg-white px-6 py-12 text-center text-sm text-slate-500 shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
-          Loading clients...
+          Загрузка клиентов...
         </div>
       ) : null}
 
       {!isLoading && error ? (
         <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-          Failed to load clients: {error}
+          Не удалось загрузить клиентов: {error}
         </div>
       ) : null}
 
       {!isLoading && !error && clients.length === 0 ? (
         <div className="rounded-3xl border border-slate-200/80 bg-white px-6 py-14 text-center shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
-          <p className="text-base font-medium text-slate-700">No clients found</p>
+          <p className="text-base font-medium text-slate-700">Клиенты не найдены</p>
           <p className="mt-2 text-sm text-slate-500">
             {hasActiveFilters
-              ? "Try adjusting filters or reset them to see all clients."
-              : "Create a client or add a profile with role client in Supabase."}
+              ? "Попробуйте изменить фильтры или сбросьте их, чтобы увидеть всех клиентов."
+              : "Создайте клиента или добавьте профиль с ролью client в Supabase."}
           </p>
         </div>
       ) : null}

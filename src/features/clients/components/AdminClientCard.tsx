@@ -49,7 +49,7 @@ export default function AdminClientCard({ client }: AdminClientCardProps) {
                 </span>
               ) : null}
               <span className="inline-flex items-center rounded-full bg-[#EEF4FA] px-3 py-1 text-xs font-semibold text-[#34597E] ring-1 ring-[#C5D9EB]">
-                {client.ordersCount} order{client.ordersCount === 1 ? "" : "s"}
+                {client.ordersCount} заказ(ов)
               </span>
             </div>
           </div>
@@ -60,7 +60,7 @@ export default function AdminClientCard({ client }: AdminClientCardProps) {
         {client.companyName ? (
           <div>
             <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-              Company
+              Компания
             </dt>
             <dd className="mt-1 text-sm font-medium text-slate-800">
               {displayValue(client.companyName)}
@@ -69,7 +69,7 @@ export default function AdminClientCard({ client }: AdminClientCardProps) {
         ) : null}
         <div className={client.companyName ? "" : "sm:col-span-2"}>
           <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-            Last order
+            Последний заказ
           </dt>
           <dd className="mt-1 text-sm font-medium text-slate-800">
             {client.lastOrderDate
@@ -84,7 +84,7 @@ export default function AdminClientCard({ client }: AdminClientCardProps) {
           href={`/app/admin/clients/${client.id}`}
           className="inline-flex items-center justify-center rounded-full bg-[#34597E] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#2d4d6f]"
         >
-          View details
+          Подробнее
         </Link>
       </div>
     </article>

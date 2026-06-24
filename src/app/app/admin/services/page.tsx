@@ -3,8 +3,8 @@ import AdminPlaceholder from "@/components/layout/AdminPlaceholder";
 export default function AdminServicesPage() {
   return (
     <AdminPlaceholder
-      title="Services"
-      description="Configure cleaning packages, pricing, and service details."
+      title="Услуги"
+      description="Настройка пакетов уборки, цен и параметров услуг."
     />
   );
 }

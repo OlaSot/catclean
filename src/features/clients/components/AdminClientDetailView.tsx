@@ -106,14 +106,14 @@ export default function AdminClientDetailView({
 
       if (!response.ok || json.error) {
         setClient(null);
-        setError(json.error ?? "Failed to load client");
+        setError(json.error ?? "Не удалось загрузить клиента");
         return;
       }
 
       setClient(json.data);
     } catch {
       setClient(null);
-      setError("Failed to load client");
+      setError("Не удалось загрузить клиента");
     } finally {
       setLoadState("idle");
     }
@@ -241,13 +241,13 @@ export default function AdminClientDetailView({
           href="/app/admin/clients"
           className="text-sm font-semibold text-[#34597E] transition hover:text-[#2d4d6f]"
         >
-          ← Back to clients
+          ← Назад к клиентам
         </Link>
       </div>
 
       {isLoading ? (
         <div className="rounded-3xl border border-slate-200/80 bg-white px-6 py-12 text-center text-sm text-slate-500 shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
-          Loading client...
+          Загрузка клиента...
         </div>
       ) : null}
 
@@ -259,7 +259,7 @@ export default function AdminClientDetailView({
 
       {!isLoading && !error && !client ? (
         <div className="rounded-3xl border border-slate-200/80 bg-white px-6 py-14 text-center shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
-          <p className="text-base font-medium text-slate-700">Client not found</p>
+          <p className="text-base font-medium text-slate-700">Клиент не найден</p>
         </div>
       ) : null}
 
@@ -289,7 +289,7 @@ export default function AdminClientDetailView({
           </div>
 
           <div className="grid gap-6 lg:grid-cols-2">
-            <DetailCard title="Contact">
+            <DetailCard title="Контакты">
               <dl className="space-y-4">
                 <div>
                   <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
@@ -301,7 +301,7 @@ export default function AdminClientDetailView({
                 </div>
                 <div>
                   <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                    Phone
+                    Телефон
                   </dt>
                   <dd className="mt-1 text-sm font-medium text-slate-800">
                     {client.phone}
@@ -310,7 +310,7 @@ export default function AdminClientDetailView({
                 {client.companyName ? (
                   <div>
                     <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                      Company
+                      Компания
                     </dt>
                     <dd className="mt-1 text-sm font-medium text-slate-800">
                       {displayValue(client.companyName)}
@@ -353,14 +353,14 @@ export default function AdminClientDetailView({
                         setInviteState({
                           loading: false,
                           message: null,
-                          error: json.error ?? "Failed to send recovery",
+                          error: json.error ?? "Не удалось отправить восстановление",
                         });
                         return;
                       }
 
                       setInviteState({
                         loading: false,
-                        message: "Password recovery email was sent.",
+                        message: "Письмо для восстановления пароля отправлено.",
                         error: null,
                       });
                     } catch (e) {
@@ -370,24 +370,24 @@ export default function AdminClientDetailView({
                         error:
                           e instanceof Error
                             ? e.message
-                            : "Failed to send recovery",
+                            : "Не удалось отправить восстановление",
                       });
                     }
                   }}
                   className="inline-flex w-full items-center justify-center rounded-full bg-[#34597E] px-6 py-2.5 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(52,89,126,0.22)] transition hover:bg-[#2d4d6f] disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {inviteState.loading
-                    ? "Sending..."
-                    : "Send password recovery"}
+                    ? "Отправка..."
+                    : "Отправить восстановление пароля"}
                 </button>
               </div>
             </DetailCard>
 
-            <DetailCard title="Orders">
+            <DetailCard title="Заказы">
               <dl className="space-y-4">
                 <div>
                   <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                    Total orders
+                    Всего заказов
                   </dt>
                   <dd className="mt-1 text-sm font-medium text-slate-800">
                     {client.ordersCount}
@@ -395,7 +395,7 @@ export default function AdminClientDetailView({
                 </div>
                 <div>
                   <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                    Last order
+                    Последний заказ
                   </dt>
                   <dd className="mt-1 text-sm font-medium text-slate-800">
                     {client.lastOrderDate
@@ -407,17 +407,17 @@ export default function AdminClientDetailView({
             </DetailCard>
           </div>
 
-          <DetailCard title="Internal note">
+          <DetailCard title="Внутренняя заметка">
             <p className="whitespace-pre-wrap text-sm leading-relaxed text-slate-700">
               {client.internalNote?.trim()
                 ? client.internalNote
-                : "No internal note yet."}
+                : "Пока нет внутренней заметки."}
             </p>
           </DetailCard>
 
-          <DetailCard title="Client orders">
+          <DetailCard title="Заказы клиента">
             {clientOrders.length === 0 ? (
-              <p className="text-sm text-slate-500">No orders yet.</p>
+              <p className="text-sm text-slate-500">Заказов пока нет.</p>
             ) : (
               <ul className="space-y-3">
                 {clientOrders.map((order) => (
@@ -434,10 +434,10 @@ export default function AdminClientDetailView({
                       </div>
                       <div className="mt-1 grid gap-1 text-xs text-slate-600 sm:grid-cols-2">
                         <p>
-                          Status: <span className="font-medium text-slate-700">{order.statusLabel}</span>
+                          Статус: <span className="font-medium text-slate-700">{order.statusLabel}</span>
                         </p>
                         <p>
-                          Payment:{" "}
+                          Оплата:{" "}
                           <span className="font-medium text-slate-700">
                             {order.paymentStatus === "paid" ||
                             order.paymentStatus === "unpaid" ||
@@ -447,17 +447,17 @@ export default function AdminClientDetailView({
                           </span>
                         </p>
                         <p>
-                          Service:{" "}
+                          Услуга:{" "}
                           <span className="font-medium text-slate-700">
                             {order.serviceType ? serviceTypeLabel(order.serviceType) : "—"}
                           </span>
                         </p>
                         <p>
-                          Cleaner:{" "}
-                          <span className="font-medium text-slate-700">{order.cleanerName ?? "Not assigned"}</span>
+                          Клинер:{" "}
+                          <span className="font-medium text-slate-700">{order.cleanerName ?? "Не назначен"}</span>
                         </p>
                         <p className="sm:col-span-2">
-                          Scheduled:{" "}
+                          Запланировано:{" "}
                           <span className="font-medium text-slate-700">
                             {order.scheduledDate
                               ? `${formatOrderDate(order.scheduledDate)}${order.scheduledTime ? ` · ${order.scheduledTime}` : ""}`
@@ -472,7 +472,7 @@ export default function AdminClientDetailView({
             )}
             <div className="mt-4 flex items-center justify-between text-xs text-slate-500">
               <span>
-                Page {ordersPagination.page} / {ordersPagination.totalPages} · {ordersPagination.total} orders
+                Страница {ordersPagination.page} / {ordersPagination.totalPages} · {ordersPagination.total} заказ(ов)
               </span>
               <div className="flex items-center gap-2">
                 <button
@@ -481,7 +481,7 @@ export default function AdminClientDetailView({
                   onClick={() => setOrdersPage((p) => Math.max(1, p - 1))}
                   className="rounded-full border border-slate-200 px-3 py-1 font-semibold text-slate-700 disabled:opacity-50"
                 >
-                  Prev
+                  Назад
                 </button>
                 <button
                   type="button"
@@ -489,7 +489,7 @@ export default function AdminClientDetailView({
                   onClick={() => setOrdersPage((p) => p + 1)}
                   className="rounded-full border border-slate-200 px-3 py-1 font-semibold text-slate-700 disabled:opacity-50"
                 >
-                  Next
+                  Вперед
                 </button>
               </div>
             </div>
@@ -538,7 +538,7 @@ export default function AdminClientDetailView({
                         <span className="font-semibold">{item.cleanerName}</span>
                         {item.isPrimary ? (
                           <span className="ml-2 rounded-full bg-indigo-100 px-2 py-0.5 text-xs font-semibold text-indigo-700 ring-1 ring-indigo-200">
-                            primary
+                            основной
                           </span>
                         ) : null}
                       </div>
@@ -557,7 +557,7 @@ export default function AdminClientDetailView({
                             }}
                             className="rounded-full border border-[#C5D9EB] bg-[#EEF4FA] px-3 py-1 text-xs font-semibold text-[#34597E]"
                           >
-                            mark primary
+                            сделать основным
                           </button>
                         ) : null}
                         <button
@@ -571,7 +571,7 @@ export default function AdminClientDetailView({
                           }}
                           className="rounded-full border border-rose-200 bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700"
                         >
-                          remove
+                          удалить
                         </button>
                       </div>
                     </div>

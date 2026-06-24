@@ -96,19 +96,19 @@ export default function AdminCleanerCard({
   const [uploadSuccess, setUploadSuccess] = useState(false);
 
   const skills: { label: string; enabled: boolean }[] = [
-    { label: "Pet friendly", enabled: cleaner.petFriendly },
-    { label: "Owns vacuum", enabled: cleaner.ownsVacuum },
-    { label: "Steam cleaner", enabled: cleaner.ownsSteamCleaner },
+    { label: "Можно с питомцами", enabled: cleaner.petFriendly },
+    { label: "Есть пылесос", enabled: cleaner.ownsVacuum },
+    { label: "Есть пароочиститель", enabled: cleaner.ownsSteamCleaner },
     { label: "Windows", enabled: cleaner.acceptsWindows },
-    { label: "Dry cleaning", enabled: cleaner.acceptsDryCleaning },
+    { label: "Химчистка", enabled: cleaner.acceptsDryCleaning },
   ];
 
   function validateFileClient(file: File): string | null {
     if (!ACCEPTED_AVATAR_TYPES.split(",").includes(file.type)) {
-      return "Only JPEG, PNG and WebP images are allowed";
+      return "Разрешены только изображения JPEG, PNG и WebP";
     }
     if (file.size > MAX_AVATAR_BYTES) {
-      return "Image must be 2MB or smaller";
+      return "Размер изображения должен быть не более 2MB";
     }
     return null;
   }
@@ -142,14 +142,14 @@ export default function AdminCleanerCard({
       const json = (await response.json()) as UploadCleanerAvatarApiResponse;
 
       if (!response.ok || json.error || !json.data) {
-        setUploadError(json.error ?? "Failed to upload avatar");
+        setUploadError(json.error ?? "Не удалось загрузить аватар");
         return;
       }
 
       onAvatarUpdated(json.data);
       setUploadSuccess(true);
     } catch {
-      setUploadError("Failed to upload avatar");
+      setUploadError("Не удалось загрузить аватар");
     } finally {
       setIsUploading(false);
     }
@@ -195,9 +195,9 @@ export default function AdminCleanerCard({
               disabled={isUploading}
               className="inline-flex items-center justify-center rounded-full border border-[#C5D9EB] bg-[#EEF4FA] px-4 py-2 text-xs font-semibold text-[#34597E] transition hover:bg-[#E5EDF5] disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {isUploading ? "Uploading..." : "Upload avatar"}
+              {isUploading ? "Загрузка..." : "Загрузить аватар"}
             </button>
-            <p className="mt-2 text-xs text-slate-400">JPEG, PNG or WebP · max 2MB</p>
+            <p className="mt-2 text-xs text-slate-400">JPEG, PNG или WebP · максимум 2MB</p>
           </div>
         </div>
       </div>
@@ -210,14 +210,14 @@ export default function AdminCleanerCard({
 
       {uploadSuccess ? (
         <p className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-          Avatar updated successfully.
+          Аватар успешно обновлен.
         </p>
       ) : null}
 
       <dl className="mt-6 grid gap-4 sm:grid-cols-2">
         <div>
           <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-            Base city
+            Базовый город
           </dt>
           <dd className="mt-1 text-sm font-medium text-slate-800">
             {displayValue(cleaner.baseCity)}
@@ -225,7 +225,7 @@ export default function AdminCleanerCard({
         </div>
         <div>
           <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-            Rating
+            Рейтинг
           </dt>
           <dd className="mt-1 text-sm font-medium text-slate-800">
             {cleaner.rating != null ? (
@@ -242,7 +242,7 @@ export default function AdminCleanerCard({
 
       <div className="mt-6">
         <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-          Skills & equipment
+          Навыки и оборудование
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
           {skills.map((skill) => (

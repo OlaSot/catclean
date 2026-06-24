@@ -299,9 +299,9 @@ export const ru = {
   "fileCategory.document": "Документ",
   "fileCategory.other": "Другое",
 
-  "bookingProduct.home_care": "Home Care",
-  "bookingProduct.home_reset": "Home Reset",
-  "bookingProduct.move_out": "Move Out Cleaning",
+  "bookingProduct.home_care": "Поддерживающая уборка",
+  "bookingProduct.home_reset": "Генеральная уборка",
+  "bookingProduct.move_out": "Уборка при переезде",
 
   "serviceType.regular_cleaning": "Регулярная уборка",
   "serviceType.move_in_out": "Переезд (въезд/выезд)",

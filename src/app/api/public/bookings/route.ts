@@ -78,7 +78,7 @@ export async function POST(request: Request) {
   return NextResponse.json(
     {
       data: {
-        orderId: String(order.id),
+        orderId: order.displayId,
         status: order.status,
         confirmationPending: order.status === "awaiting_confirmation",
       },

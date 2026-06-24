@@ -162,7 +162,7 @@ export default function AdminOrdersFilters({
 
   const paymentOptions = useMemo(
     () => [
-      { value: "all", label: "All payments" },
+      { value: "all", label: "Все оплаты" },
       { value: "unpaid", label: paymentLabel("unpaid") },
       { value: "paid", label: paymentLabel("paid") },
       { value: "card_hold", label: paymentLabel("card_hold") },
@@ -221,7 +221,7 @@ export default function AdminOrdersFilters({
             type="search"
             value={filters.search}
             onChange={(e) => onChange({ ...filters, search: e.target.value })}
-            placeholder="Client, order #, phone, address…"
+            placeholder="Клиент, заказ #, телефон, адрес…"
             className={fieldClassName}
           />
         </label>
@@ -263,7 +263,7 @@ export default function AdminOrdersFilters({
             type="text"
             value={filters.city}
             onChange={(e) => onChange({ ...filters, city: e.target.value })}
-            placeholder="e.g. Hannover"
+            placeholder="например, Hannover"
             className={fieldClassName}
           />
         </label>

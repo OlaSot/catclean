@@ -40,14 +40,14 @@ export default function AdminCleanersList() {
 
       if (!response.ok || json.error) {
         setCleaners([]);
-        setError(json.error ?? "Failed to load cleaners");
+        setError(json.error ?? "Не удалось загрузить клинеров");
         return;
       }
 
       setCleaners(json.data ?? []);
     } catch {
       setCleaners([]);
-      setError("Failed to load cleaners");
+      setError("Не удалось загрузить клинеров");
     } finally {
       setLoadState("idle");
     }
@@ -80,18 +80,18 @@ export default function AdminCleanersList() {
       <div className="flex flex-wrap items-end justify-between gap-6">
         <div className="max-w-2xl">
           <h1 className="text-3xl font-semibold tracking-tight text-slate-800">
-            Cleaners
+            Клинеры
           </h1>
           <p className="mt-2 text-sm leading-relaxed text-slate-500">
-            Manage cleaner profiles, skills and availability.
+            Управление профилями клинеров, навыками и доступностью.
           </p>
           {!isLoading && !error ? (
             <p className="mt-3 text-xs font-medium text-slate-400">
               {cleaners.length === 0
                 ? hasActiveFilters
-                  ? "No cleaners match filters"
-                  : "No cleaners yet"
-                : `${cleaners.length} cleaner${cleaners.length === 1 ? "" : "s"}`}
+                  ? "Нет клинеров по выбранным фильтрам"
+                  : "Клинеров пока нет"
+                : `${cleaners.length} клинер(ов)`}
             </p>
           ) : null}
         </div>
@@ -100,7 +100,7 @@ export default function AdminCleanersList() {
           href="/app/admin/cleaners/new"
           className="inline-flex shrink-0 items-center justify-center rounded-full bg-[#34597E] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(52,89,126,0.22)] transition hover:bg-[#2d4d6f]"
         >
-          + Add cleaner
+          + Добавить клинера
         </Link>
       </div>
 
@@ -112,23 +112,23 @@ export default function AdminCleanersList() {
 
       {isLoading ? (
         <div className="rounded-3xl border border-slate-200/80 bg-white px-6 py-12 text-center text-sm text-slate-500 shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
-          Loading cleaners...
+          Загрузка клинеров...
         </div>
       ) : null}
 
       {!isLoading && error ? (
         <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-          Failed to load cleaners: {error}
+          Не удалось загрузить клинеров: {error}
         </div>
       ) : null}
 
       {!isLoading && !error && cleaners.length === 0 ? (
         <div className="rounded-3xl border border-slate-200/80 bg-white px-6 py-14 text-center shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
-          <p className="text-base font-medium text-slate-700">No cleaners found</p>
+          <p className="text-base font-medium text-slate-700">Клинеры не найдены</p>
           <p className="mt-2 text-sm text-slate-500">
             {hasActiveFilters
-              ? "Try adjusting filters or reset them to see all cleaners."
-              : "Create a cleaner with role cleaner and a cleaner_profiles row."}
+              ? "Попробуйте изменить фильтры или сбросьте их, чтобы увидеть всех клинеров."
+              : "Создайте клинера с ролью cleaner и записью в cleaner_profiles."}
           </p>
         </div>
       ) : null}

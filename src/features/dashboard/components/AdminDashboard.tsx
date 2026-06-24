@@ -130,14 +130,14 @@ export default function AdminDashboard() {
 
       if (!response.ok || json.error || !json.data) {
         setData(null);
-        setError(json.error ?? "Failed to load dashboard");
+        setError(json.error ?? "Не удалось загрузить дашборд");
         return;
       }
 
       setData(json.data);
     } catch {
       setData(null);
-      setError("Failed to load dashboard");
+      setError("Не удалось загрузить дашборд");
     } finally {
       setLoadState("idle");
     }
@@ -160,7 +160,7 @@ export default function AdminDashboard() {
         if (cancelled) return;
         if (!response.ok || json.error || !json.data) {
           setDayOrders([]);
-          setDayOrdersError(json.error ?? "Failed to load day orders");
+          setDayOrdersError(json.error ?? "Не удалось загрузить заказы на день");
           return;
         }
 
@@ -175,7 +175,7 @@ export default function AdminDashboard() {
       } catch {
         if (!cancelled) {
           setDayOrders([]);
-          setDayOrdersError("Failed to load day orders");
+          setDayOrdersError("Не удалось загрузить заказы на день");
         }
       } finally {
         if (!cancelled) setDayOrdersLoading(false);
@@ -194,23 +194,23 @@ export default function AdminDashboard() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-3xl font-semibold tracking-tight text-slate-800">
-            Dashboard
+            Дашборд
           </h1>
           <p className="mt-1.5 text-sm text-slate-500">
-            Daily operations overview for orders and team activity.
+            Ежедневный операционный обзор заказов и активности команды.
           </p>
         </div>
         <Link
           href="/app/admin/orders/new"
           className="inline-flex shrink-0 items-center justify-center rounded-full bg-[#34597E] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(52,89,126,0.22)] transition hover:bg-[#2d4d6f]"
         >
-          + New order
+          + Новый заказ
         </Link>
       </div>
 
       {isLoading ? (
         <div className="rounded-3xl border border-slate-200/80 bg-white px-6 py-12 text-center text-sm text-slate-500">
-          Loading dashboard…
+          Загрузка дашборда…
         </div>
       ) : null}
 
@@ -224,48 +224,48 @@ export default function AdminDashboard() {
         <>
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
             <KpiCard
-              label="Total orders"
+              label="Всего заказов"
               value={String(data.kpis.totalOrders)}
               icon={<ClipboardList className="h-5 w-5" />}
             />
             <KpiCard
-              label="Today"
+              label="Сегодня"
               value={String(data.kpis.todayOrders)}
-              sub="Scheduled today"
+              sub="Запланировано на сегодня"
               icon={<CalendarClock className="h-5 w-5" />}
             />
             <KpiCard
-              label="Searching cleaner"
+              label="Ищем клинера"
               value={String(data.kpis.searchingCleaner)}
               icon={<Search className="h-5 w-5" />}
             />
             <KpiCard
-              label="In progress"
+              label="В работе"
               value={String(data.kpis.inProgress)}
               icon={<Sparkles className="h-5 w-5" />}
             />
             <KpiCard
-              label="Completed this week"
+              label="Завершено за неделю"
               value={String(data.kpis.completedThisWeek)}
               icon={<CheckCircle2 className="h-5 w-5" />}
             />
             <KpiCard
-              label="Revenue this week"
+              label="Выручка за неделю"
               value={formatMoney(data.kpis.revenueThisWeek, data.kpis.currency)}
-              sub="Completed bookings"
+              sub="Завершенные бронирования"
               icon={<Euro className="h-5 w-5" />}
             />
           </div>
 
           <div className="grid gap-4 lg:grid-cols-2">
             <SectionCard
-              title="Orders needing attention"
+              title="Заказы, требующие внимания"
               icon={<AlertCircle className="h-4 w-4" />}
               actionHref="/app/admin/orders?assigned=unassigned"
-              actionLabel="View orders"
+              actionLabel="Открыть заказы"
             >
               {data.attentionOrders.length === 0 ? (
-                <p className="text-sm text-slate-500">Nothing urgent right now.</p>
+                <p className="text-sm text-slate-500">Сейчас срочных заказов нет.</p>
               ) : (
                 <ul className="space-y-2">
                   {data.attentionOrders.map((order) => (
@@ -291,14 +291,14 @@ export default function AdminDashboard() {
             </SectionCard>
 
             <SectionCard
-              title="Day schedule"
+              title="Расписание на день"
               icon={<CalendarClock className="h-4 w-4" />}
               actionHref={`/app/admin/schedule?date=${scheduleDate}`}
-              actionLabel="Open day in schedule"
+              actionLabel="Открыть день в расписании"
             >
               <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
                 <label className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  Date
+                  Дата
                   <input
                     type="date"
                     value={scheduleDate}
@@ -310,16 +310,16 @@ export default function AdminDashboard() {
                   href={`/app/admin/orders?date_from=${scheduleDate}&date_to=${scheduleDate}`}
                   className="text-xs font-semibold text-[#34597E] transition hover:text-[#2d4d6f]"
                 >
-                  Open day in orders
+                  Открыть день в заказах
                 </Link>
               </div>
 
               {dayOrdersLoading ? (
-                <p className="text-sm text-slate-500">Loading orders for selected day...</p>
+                <p className="text-sm text-slate-500">Загрузка заказов на выбранный день...</p>
               ) : dayOrdersError ? (
                 <p className="text-sm text-rose-700">{dayOrdersError}</p>
               ) : dayOrders.length === 0 ? (
-                <p className="text-sm text-slate-500">No orders scheduled for this day.</p>
+                <p className="text-sm text-slate-500">На этот день заказы не запланированы.</p>
               ) : (
                 <ul className="space-y-2">
                   {dayOrders.map((order) => (
@@ -349,11 +349,11 @@ export default function AdminDashboard() {
           </div>
 
           <SectionCard
-            title="Recent activity"
+            title="Недавняя активность"
             icon={<History className="h-4 w-4" />}
           >
             {data.recentActivity.length === 0 ? (
-              <p className="text-sm text-slate-500">No recent status changes.</p>
+              <p className="text-sm text-slate-500">Недавних смен статуса нет.</p>
             ) : (
               <ul className="space-y-2">
                 {data.recentActivity.map((item) => (
@@ -366,7 +366,7 @@ export default function AdminDashboard() {
                         href={`/app/admin/orders/${item.orderId}`}
                         className="text-sm font-semibold text-[#34597E] hover:underline"
                       >
-                        Order #{item.orderDisplayId}
+                        Заказ #{item.orderDisplayId}
                       </Link>
                       <span className="text-xs text-slate-400">
                         {formatDateTime(item.createdAt)}
@@ -375,7 +375,7 @@ export default function AdminDashboard() {
                     <p className="mt-1 text-xs text-slate-600">
                       {item.isNote ? (
                         <span>
-                          <span className="font-medium text-slate-700">Note</span>
+                          <span className="font-medium text-slate-700">Заметка</span>
                           {" · "}
                           {item.newStatusLabel}
                         </span>

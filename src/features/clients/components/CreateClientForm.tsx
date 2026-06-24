@@ -47,14 +47,14 @@ export default function CreateClientForm() {
       const json = (await response.json()) as CreateAdminClientApiResponse;
 
       if (!response.ok || json.error || !json.data) {
-        setError(json.error ?? "Failed to create client");
+        setError(json.error ?? "Не удалось создать клиента");
         return;
       }
 
       router.push("/app/admin/clients");
       router.refresh();
     } catch {
-      setError("Failed to create client");
+      setError("Не удалось создать клиента");
     } finally {
       setIsSubmitting(false);
     }
@@ -70,9 +70,9 @@ export default function CreateClientForm() {
 
       <section className="space-y-5">
         <div>
-          <h2 className="text-lg font-semibold text-slate-800">Account</h2>
+          <h2 className="text-lg font-semibold text-slate-800">Аккаунт</h2>
           <p className="mt-1 text-sm text-slate-500">
-            Creates Supabase Auth user, profile (role client) and client_profiles.
+            Создает пользователя Supabase Auth, профиль (роль client) и запись в client_profiles.
           </p>
         </div>
 
@@ -89,9 +89,9 @@ export default function CreateClientForm() {
           </FormField>
 
           <FormField
-            label="Password"
+            label="Пароль"
             htmlFor="password"
-            hint="Minimum 6 characters"
+            hint="Минимум 6 символов"
           >
             <input
               id="password"
@@ -107,10 +107,10 @@ export default function CreateClientForm() {
       </section>
 
       <section className="space-y-5">
-        <h2 className="text-lg font-semibold text-slate-800">Profile</h2>
+        <h2 className="text-lg font-semibold text-slate-800">Профиль</h2>
 
         <div className="grid gap-5 md:grid-cols-2">
-          <FormField label="Full name" htmlFor="fullName">
+          <FormField label="Имя и фамилия" htmlFor="fullName">
             <input
               id="fullName"
               name="fullName"
@@ -121,9 +121,9 @@ export default function CreateClientForm() {
           </FormField>
 
           <FormField
-            label="Phone"
+            label="Телефон"
             htmlFor="phone"
-            hint={`${PHONE_FORM_HINT}. Example: ${PHONE_FORM_EXAMPLE}`}
+            hint={`${PHONE_FORM_HINT}. Пример: ${PHONE_FORM_EXAMPLE}`}
           >
             <input
               id="phone"
@@ -135,7 +135,7 @@ export default function CreateClientForm() {
             />
           </FormField>
 
-          <FormField label="Client type" htmlFor="clientType">
+          <FormField label="Тип клиента" htmlFor="clientType">
             <select
               id="clientType"
               name="clientType"
@@ -145,15 +145,15 @@ export default function CreateClientForm() {
               }
               className={selectClassName}
             >
-              <option value="private">Private</option>
-              <option value="business">Business</option>
+              <option value="private">Частный</option>
+              <option value="business">Бизнес</option>
             </select>
           </FormField>
 
           <FormField
-            label="Company name"
+            label="Название компании"
             htmlFor="companyName"
-            hint="Optional"
+            hint="Необязательно"
           >
             <input
               id="companyName"
@@ -171,14 +171,14 @@ export default function CreateClientForm() {
           disabled={isSubmitting}
           className="inline-flex items-center justify-center rounded-full bg-[#34597E] px-6 py-2.5 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(52,89,126,0.22)] transition hover:bg-[#2d4d6f] disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {isSubmitting ? "Creating..." : "Create client"}
+          {isSubmitting ? "Создание..." : "Создать клиента"}
         </button>
 
         <Link
           href="/app/admin/clients"
           className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-6 py-2.5 text-sm font-semibold text-slate-600 shadow-sm transition hover:border-slate-300"
         >
-          Cancel
+          Отмена
         </Link>
       </div>
     </form>
