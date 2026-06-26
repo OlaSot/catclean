@@ -1,13 +1,8 @@
-import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { SitePageShell } from "@/components/layout/SitePageShell";
 import { BookingConfirmPreviewView } from "@/components/booking/checkout/BookingConfirmPreviewView";
 
 export default function BookingConfirmPreviewPage() {
-  if (process.env.NODE_ENV === "production") {
-    notFound();
-  }
-
   return (
     <SitePageShell
       backgroundClassName="min-h-screen bg-white text-slate-700"

@@ -126,6 +126,89 @@ function getPageIndexForService(id: HomeServiceId, pages: HomeService[][]): numb
   return index >= 0 ? index : 0;
 }
 
+type ServiceCardProps = {
+  service: HomeService;
+  isSelected: boolean;
+  onSelect: (id: HomeServiceId) => void;
+  layout: "strip" | "grid";
+};
+
+function ServiceCard({ service, isSelected, onSelect, layout }: ServiceCardProps) {
+  const { t } = usePublicT();
+  const isFeatured = service.featured === true;
+
+  const cardClass = (() => {
+    if (isFeatured && isSelected) {
+      return "border-[#2d4d6f] bg-[#34597E] text-white shadow-[0_12px_36px_rgba(52,89,126,0.38)]";
+    }
+    if (isFeatured) {
+      return "border-[#34597E]/35 bg-white/98 text-slate-800 shadow-[0_8px_22px_rgba(52,89,126,0.14)] hover:border-[#34597E]/55 hover:shadow-[0_12px_28px_rgba(52,89,126,0.18)]";
+    }
+    if (isSelected) {
+      return "border-[#34597E] bg-[#f9fcff] shadow-[0_10px_24px_rgba(52,89,126,0.16)] ring-2 ring-[#34597E]/25";
+    }
+    return "border-slate-200/80 bg-white/94 shadow-[0_6px_16px_rgba(15,23,42,0.05)] hover:border-[#a9c2d9] hover:bg-[#f9fcff] hover:shadow-[0_10px_24px_rgba(52,89,126,0.12)]";
+  })();
+
+  const sizeClass =
+    layout === "strip"
+      ? "min-h-[7.75rem] w-[min(72vw,17.5rem)] snap-center shrink-0 rounded-xl px-3 py-2.5 min-[420px]:min-h-[8.25rem] min-[420px]:rounded-2xl min-[420px]:px-3.5 min-[420px]:py-3"
+      : "min-h-[clamp(8.5rem,28vw,10.5rem)] w-full min-w-0 rounded-xl px-3 py-2.5 min-[420px]:rounded-2xl min-[420px]:px-4 min-[420px]:py-3 sm:rounded-2xl sm:px-4 sm:py-3.5 md:min-h-[9.5rem] md:rounded-2xl md:px-4 md:py-3.5 lg:min-h-[10.5rem] lg:px-5 xl:min-h-[8.75rem] xl:rounded-xl xl:px-3 xl:py-2.5 2xl:min-h-[14.75rem] 2xl:rounded-3xl 2xl:px-8 2xl:py-5";
+
+  return (
+    <div className={layout === "strip" ? "shrink-0" : "min-w-0 py-0.5 sm:py-1 xl:py-0.5"}>
+      <button
+        type="button"
+        onClick={() => onSelect(service.id)}
+        aria-pressed={isSelected}
+        className={`group relative flex cursor-pointer flex-col items-center justify-center border text-center transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${sizeClass} ${cardClass}`}
+      >
+        {isSelected ? (
+          <span
+            className={`absolute top-2 right-2 inline-flex h-5 w-5 items-center justify-center rounded-full sm:top-2.5 sm:right-2.5 sm:h-6 sm:w-6 xl:top-2 xl:right-2 xl:h-5 xl:w-5 2xl:top-3 2xl:right-3 2xl:h-7 2xl:w-7 ${
+              isFeatured && isSelected ? "bg-white text-[#34597E]" : "bg-[#34597E] text-white"
+            }`}
+            aria-hidden
+          >
+            <Check className="h-3 w-3 sm:h-3.5 sm:w-3.5 2xl:h-4 2xl:w-4" strokeWidth={3} />
+          </span>
+        ) : null}
+
+        {isFeatured ? (
+          <span
+            className={`${HOME_SIGNATURE_BADGE_CLASS} ${
+              isSelected
+                ? "border-white/25 bg-white/15 text-white"
+                : "border-[#34597E]/20 bg-[#34597E]/8 text-[#34597E]"
+            }`}
+          >
+            <Sparkles className="h-2 w-2 shrink-0 sm:h-2.5 sm:w-2.5 xl:h-2 xl:w-2 2xl:h-3 2xl:w-3" strokeWidth={2} aria-hidden />
+            <span className="text-balance">{t("public.home.badge.signature")}</span>
+          </span>
+        ) : null}
+
+        <service.icon
+          className={`mx-auto h-7 w-7 transition-all duration-300 group-hover:scale-[1.04] min-[420px]:h-8 min-[420px]:w-8 sm:h-9 sm:w-9 md:h-9 md:w-9 lg:h-10 lg:w-10 xl:h-7 xl:w-7 2xl:h-12 2xl:w-12 ${
+            isFeatured && isSelected ? "text-white/95" : "text-[#5B8DB8] group-hover:text-[#3f6f98]"
+          }`}
+        />
+        <h3
+          className={`${HOME_SERVICE_CARD_TITLE_CLASS} ${isFeatured && isSelected ? "text-white" : "text-slate-700"}`}
+        >
+          {t(service.titleKey)}
+        </h3>
+        <p
+          className={`${HOME_SERVICE_CARD_SUBTITLE_CLASS} ${
+            isFeatured && isSelected ? "text-white/85" : "text-slate-500"
+          }`}
+        >
+          {t(service.subtitleKey)}
+        </p>
+      </button>
+    </div>
+  );
+}
+
 type Props = {
   selectedId: HomeServiceId;
   onSelect: (id: HomeServiceId) => void;
@@ -172,6 +255,24 @@ export function ServiceCarousel({ selectedId, onSelect }: Props) {
 
   const trackOffsetPercent = page * slideWidthPercent;
 
+  if (compact) {
+    return (
+      <div className="relative mt-1.5 min-w-0 sm:mt-2">
+        <div className="-mx-0.5 flex gap-2.5 overflow-x-auto overscroll-x-contain px-0.5 py-1 [scrollbar-width:none] snap-x snap-mandatory [&::-webkit-scrollbar]:hidden">
+          {SERVICES.map((service) => (
+            <ServiceCard
+              key={service.id}
+              service={service}
+              isSelected={selectedId === service.id}
+              onSelect={onSelect}
+              layout="strip"
+            />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative mt-2 min-w-0 sm:mt-2.5 md:mt-3 lg:mt-4 xl:mt-2 2xl:mt-5">
       <div
@@ -193,82 +294,15 @@ export function ServiceCarousel({ selectedId, onSelect }: Props) {
               style={{ width: `${slideWidthPercent}%` }}
             >
               <div className="grid min-w-0 grid-cols-1 gap-2 min-[420px]:gap-2.5 sm:gap-3 md:grid-cols-3 md:gap-2.5 lg:gap-3 xl:gap-2 2xl:gap-4">
-                {pageServices.map((service) => {
-                  const isSelected = selectedId === service.id;
-                  const isFeatured = service.featured === true;
-
-                  const cardClass = (() => {
-                    if (isFeatured && isSelected) {
-                      return "border-[#2d4d6f] bg-[#34597E] text-white shadow-[0_12px_36px_rgba(52,89,126,0.38)]";
-                    }
-                    if (isFeatured) {
-                      return "border-[#34597E]/35 bg-white/98 text-slate-800 shadow-[0_8px_22px_rgba(52,89,126,0.14)] hover:border-[#34597E]/55 hover:shadow-[0_12px_28px_rgba(52,89,126,0.18)]";
-                    }
-                    if (isSelected) {
-                      return "border-[#34597E] bg-[#f9fcff] shadow-[0_10px_24px_rgba(52,89,126,0.16)] ring-2 ring-[#34597E]/25";
-                    }
-                    return "border-slate-200/80 bg-white/94 shadow-[0_6px_16px_rgba(15,23,42,0.05)] hover:border-[#a9c2d9] hover:bg-[#f9fcff] hover:shadow-[0_10px_24px_rgba(52,89,126,0.12)]";
-                  })();
-
-                  return (
-                    <div key={service.id} className="min-w-0 py-0.5 sm:py-1 xl:py-0.5">
-                      <button
-                        type="button"
-                        onClick={() => onSelect(service.id)}
-                        aria-pressed={isSelected}
-                        className={`group relative flex min-h-[clamp(8.5rem,28vw,10.5rem)] w-full min-w-0 cursor-pointer flex-col items-center justify-center rounded-xl border px-3 py-2.5 text-center transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] min-[420px]:rounded-2xl min-[420px]:px-4 min-[420px]:py-3 sm:rounded-2xl sm:px-4 sm:py-3.5 md:min-h-[9.5rem] md:rounded-2xl md:px-4 md:py-3.5 lg:min-h-[10.5rem] lg:px-5 xl:min-h-[8.75rem] xl:rounded-xl xl:px-3 xl:py-2.5 2xl:min-h-[14.75rem] 2xl:rounded-3xl 2xl:px-8 2xl:py-5 ${cardClass}`}
-                      >
-                        {isSelected ? (
-                          <span
-                            className={`absolute top-2 right-2 inline-flex h-5 w-5 items-center justify-center rounded-full sm:top-2.5 sm:right-2.5 sm:h-6 sm:w-6 xl:top-2 xl:right-2 xl:h-5 xl:w-5 2xl:top-3 2xl:right-3 2xl:h-7 2xl:w-7 ${
-                              isFeatured && isSelected
-                                ? "bg-white text-[#34597E]"
-                                : "bg-[#34597E] text-white"
-                            }`}
-                            aria-hidden
-                          >
-                            <Check className="h-3 w-3 sm:h-3.5 sm:w-3.5 2xl:h-4 2xl:w-4" strokeWidth={3} />
-                          </span>
-                        ) : null}
-
-                        {isFeatured ? (
-                          <span
-                            className={`${HOME_SIGNATURE_BADGE_CLASS} ${
-                              isSelected
-                                ? "border-white/25 bg-white/15 text-white"
-                                : "border-[#34597E]/20 bg-[#34597E]/8 text-[#34597E]"
-                            }`}
-                          >
-                            <Sparkles className="h-2 w-2 shrink-0 sm:h-2.5 sm:w-2.5 xl:h-2 xl:w-2 2xl:h-3 2xl:w-3" strokeWidth={2} aria-hidden />
-                            <span className="text-balance">{t("public.home.badge.signature")}</span>
-                          </span>
-                        ) : null}
-
-                        <service.icon
-                          className={`mx-auto h-7 w-7 transition-all duration-300 group-hover:scale-[1.04] min-[420px]:h-8 min-[420px]:w-8 sm:h-9 sm:w-9 md:h-9 md:w-9 lg:h-10 lg:w-10 xl:h-7 xl:w-7 2xl:h-12 2xl:w-12 ${
-                            isFeatured && isSelected
-                              ? "text-white/95"
-                              : "text-[#5B8DB8] group-hover:text-[#3f6f98]"
-                          }`}
-                        />
-                        <h3
-                          className={`${HOME_SERVICE_CARD_TITLE_CLASS} ${
-                            isFeatured && isSelected ? "text-white" : "text-slate-700"
-                          }`}
-                        >
-                          {t(service.titleKey)}
-                        </h3>
-                        <p
-                          className={`${HOME_SERVICE_CARD_SUBTITLE_CLASS} ${
-                            isFeatured && isSelected ? "text-white/85" : "text-slate-500"
-                          }`}
-                        >
-                          {t(service.subtitleKey)}
-                        </p>
-                      </button>
-                    </div>
-                  );
-                })}
+                {pageServices.map((service) => (
+                  <ServiceCard
+                    key={service.id}
+                    service={service}
+                    isSelected={selectedId === service.id}
+                    onSelect={onSelect}
+                    layout="grid"
+                  />
+                ))}
               </div>
             </div>
           ))}

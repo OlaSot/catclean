@@ -27,4 +27,4 @@ export const HOME_SIGNATURE_BADGE_CLASS =
   "mb-1 inline-flex max-w-full items-center gap-1 rounded-full border px-2 py-0.5 text-[0.625rem] font-semibold tracking-wide sm:mb-1.5 sm:gap-1.5 sm:px-2.5 sm:py-0.5 sm:text-[0.6875rem] xl:mb-1 xl:px-2 xl:py-0.5 xl:text-[0.625rem] 2xl:mb-2 2xl:px-3 2xl:py-1 2xl:text-xs";
 
 export const HOME_BOOKING_PANEL_CLASS =
-  "w-full min-w-0 rounded-2xl border border-white/80 bg-[linear-gradient(225deg,rgba(255,255,255,0.98)_8%,rgba(255,255,255,0.42)_46%,rgba(255,255,255,0.08)_66%,rgba(255,255,255,0)_82%)] p-3 shadow-[0_12px_36px_rgba(15,23,42,0.10)] backdrop-blur-md sm:rounded-3xl sm:p-4 md:p-4 lg:p-5 xl:p-3.5 xl:shadow-[0_10px_28px_rgba(15,23,42,0.08)] 2xl:p-7 2xl:shadow-[0_16px_45px_rgba(15,23,42,0.10)]";
+  "w-full min-w-0 rounded-2xl border border-white/80 bg-[linear-gradient(225deg,rgba(255,255,255,0.98)_8%,rgba(255,255,255,0.42)_46%,rgba(255,255,255,0.08)_66%,rgba(255,255,255,0)_82%)] p-2.5 shadow-[0_12px_36px_rgba(15,23,42,0.10)] backdrop-blur-md sm:rounded-3xl sm:p-4 md:p-4 lg:p-5 xl:p-3.5 xl:shadow-[0_10px_28px_rgba(15,23,42,0.08)] 2xl:p-7 2xl:shadow-[0_16px_45px_rgba(15,23,42,0.10)]";

@@ -32,7 +32,10 @@ export function PublicLanguageSwitcher() {
                 : "text-slate-600 hover:bg-[#EEF4FA] hover:text-[#34597E]"
             }`}
           >
-            <span aria-hidden>{option.flag}</span>
+            <span className="md:hidden">{option.value}</span>
+            <span aria-hidden className="hidden md:inline">
+              {option.flag}
+            </span>
             <span className="hidden min-[480px]:inline">{t(option.labelKey)}</span>
           </button>
         );
