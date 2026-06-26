@@ -427,7 +427,7 @@ export function ServiceCarousel({ selectedId, onSelect }: Props) {
 export function getHomeServiceBookingHref(id: HomeServiceId): string {
   if (id === "dry_cleaning") return "/booking?service=upholstery";
   if (id === "regular_cleaning") return "/booking?service=home_care";
-  if (id === "office_cleaning") return "/booking";
+  if (id === "office_cleaning") return "/booking?service=office_cleaning";
   return `/booking?service=${id}`;
 }
 

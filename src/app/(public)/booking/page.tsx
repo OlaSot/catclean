@@ -81,6 +81,14 @@ export default async function BookingPage({ searchParams }: BookingPageProps) {
     );
   }
 
+  if (params?.service?.trim().toLowerCase() === "office_cleaning") {
+    return (
+      <SitePageShell contentClassName="py-6 sm:py-8">
+        <BookingWizard initialService="office_cleaning" />
+      </SitePageShell>
+    );
+  }
+
   if (service === "legacy") {
     return (
       <SitePageShell contentClassName="py-6 sm:py-8">

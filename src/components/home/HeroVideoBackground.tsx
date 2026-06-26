@@ -91,7 +91,7 @@ export function HeroVideoBackground({ src, poster }: HeroVideoBackgroundProps) {
         loop
         playsInline
         preload="auto"
-        poster={poster}
+        {...(poster ? { poster } : {})}
       />
 
       {/* Mobile: light overlay + fade into content area below */}

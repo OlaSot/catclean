@@ -16,7 +16,7 @@ import {
 export function HomePageContent() {
   const { t } = usePublicT();
   const heroVideo = "/videos/catclean-hero.mp4";
-  const heroFallbackImage = "/images/catclean-hero-placeholder.jpg";
+  const heroFallbackImage = "";
 
   return (
     <main className="min-h-screen overflow-x-hidden bg-[#EEF2F7] text-slate-700 lg:bg-transparent">
@@ -26,9 +26,9 @@ export function HomePageContent() {
 
           {/* Mobile: header floats over the video so the cat area stays unobstructed below */}
           <div
-            className={`absolute inset-x-0 top-0 z-20 bg-linear-to-b from-white/70 via-white/30 to-transparent pb-6 lg:hidden ${SITE_CONTAINER_CLASS}`}
+            className={`pointer-events-none absolute inset-x-0 top-0 z-20 bg-linear-to-b from-white/70 via-white/30 to-transparent pb-6 lg:hidden ${SITE_CONTAINER_CLASS}`}
           >
-            <SiteHeader className="motion-reveal motion-delay-80" />
+            <SiteHeader className="pointer-events-auto motion-reveal motion-delay-80" />
           </div>
         </div>
 
