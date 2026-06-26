@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
 import AdminShell from "@/components/layout/AdminShell";
+
+export const dynamic = "force-dynamic";
 import { devLog } from "@/lib/dev-log";
 import { isStaffApiRole } from "@/lib/permissions/staff-api";
 import { createSupabaseServerClient } from "@/lib/supabase/supabaseServer";
