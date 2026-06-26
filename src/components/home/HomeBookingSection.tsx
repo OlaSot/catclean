@@ -9,6 +9,7 @@ import {
   type HomeServiceId,
 } from "./ServiceCarousel";
 import { usePublicT } from "@/i18n/public/usePublicT";
+import { HOME_CTA_PRIMARY_CLASS, HOME_CTA_SECONDARY_CLASS } from "./home-styles";
 
 export function HomeBookingSection() {
   const { t } = usePublicT();
@@ -17,21 +18,15 @@ export function HomeBookingSection() {
 
   return (
     <>
-      <div id="services">
+      <div id="services" className="min-w-0">
         <ServiceCarousel selectedId={selectedId} onSelect={setSelectedId} />
       </div>
 
-      <div className="mt-5 flex flex-col items-center">
-        <Link
-          href={getHomeServiceBookingHref(selectedId)}
-          className="motion-cta-glow motion-hover-lift inline-flex w-full items-center justify-center rounded-full bg-[#34597E] px-7 py-3 text-xl font-medium text-white shadow-[0_10px_24px_rgba(52,89,126,0.32)] transition hover:bg-[#2d4d6f] sm:w-auto sm:text-2xl"
-        >
-          {ctaLabel}
+      <div className="mt-3 flex min-w-0 flex-col items-stretch px-0.5 sm:mt-4 sm:items-center sm:px-0 md:mt-5 xl:mt-3 2xl:mt-6">
+        <Link href={getHomeServiceBookingHref(selectedId)} className={HOME_CTA_PRIMARY_CLASS}>
+          <span className="text-balance">{ctaLabel}</span>
         </Link>
-        <Link
-          href="/booking"
-          className="mt-3 text-base font-medium text-slate-500 transition hover:text-[#34597E] sm:text-lg"
-        >
+        <Link href="/booking" className={HOME_CTA_SECONDARY_CLASS}>
           {t("public.home.booking.orCalculate")}
         </Link>
       </div>

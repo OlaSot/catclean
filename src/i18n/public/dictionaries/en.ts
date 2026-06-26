@@ -13,6 +13,9 @@ export const en: Record<keyof typeof de, string> = {
   "public.nav.whatWeClean": "What we clean",
   "public.nav.about": "About us",
   "public.nav.contact": "Contact",
+  "public.nav.menu": "Menu",
+  "public.nav.openMenu": "Open menu",
+  "public.nav.closeMenu": "Close menu",
   "public.header.bookCleaning": "Book cleaning",
   "public.lang.de": "Deutsch",
   "public.lang.en": "English",
@@ -62,6 +65,9 @@ export const en: Record<keyof typeof de, string> = {
   "public.home.cta.homeReset": "Start your Home Reset →",
   "public.home.cta.book": "Continue →",
   "public.home.badge.signature": "Signature Service",
+  "public.home.carousel.prev": "Previous services",
+  "public.home.carousel.next": "Next services",
+  "public.home.carousel.page": "Services page",
 
   "public.compare.title": "Which cleaning is right for you?",
   "public.compare.subtitle":
@@ -129,6 +135,27 @@ export const en: Record<keyof typeof de, string> = {
   "public.booking.homeCare": "Home Care",
   "public.booking.homeReset": "Home Reset",
   "public.booking.moveOut": "Move Out Cleaning",
+
+  "public.booking.selection.eyebrow": "Book your cleaning",
+  "public.booking.selection.title": "What would you like to book?",
+  "public.booking.selection.subtitle":
+    "Choose your service — each flow is tailored to your home.",
+  "public.booking.selection.startCta": "Start booking",
+  "public.booking.service.homeCare.title": "Home Care",
+  "public.booking.service.homeCare.subtitle":
+    "Regular upkeep for a consistently fresh home",
+  "public.booking.service.homeReset.title": "Home Reset",
+  "public.booking.service.homeReset.subtitle":
+    "A deeper refresh when your home needs a full reset",
+  "public.booking.service.moveOut.title": "Move Out Cleaning",
+  "public.booking.service.moveOut.subtitle":
+    "Handover-ready cleaning for your next chapter",
+  "public.booking.service.window.title": "Window Cleaning",
+  "public.booking.service.window.subtitle":
+    "Crystal-clear views, inside and out",
+  "public.booking.service.upholstery.title": "Upholstery Cleaning",
+  "public.booking.service.upholstery.subtitle":
+    "Sofas, mattresses, and fabrics refreshed",
 
   "public.homeCare.step.frequency": "Frequency",
   "public.homeCare.step.home": "Your home",
@@ -302,6 +329,10 @@ export const en: Record<keyof typeof de, string> = {
   "public.trust.insured.desc": "Trusted professionals at your door",
   "public.trust.satisfaction.title": "Satisfaction first",
   "public.trust.satisfaction.desc": "We care until your home feels right",
+  "public.trust.experienced.title": "Experienced cleaners",
+  "public.trust.experienced.desc": "Trained & background checked",
+  "public.trust.support.title": "Support 7 days a week",
+  "public.trust.support.desc": "We're here for you",
 
   "public.serviceType.regular_cleaning": "Regular cleaning",
   "public.serviceType.move_in_out": "Move in / out cleaning",

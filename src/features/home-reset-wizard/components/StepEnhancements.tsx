@@ -9,7 +9,6 @@ import { getAvailableEnhancementOptions } from "../home-reset-wizard.utils";
 import type {
   HomeResetEnhancements,
   HomeResetEnhancement,
-  HomeResetUpgrade,
 } from "../home-reset-wizard.types";
 
 const ENHANCEMENT_ICONS = {
@@ -28,17 +27,17 @@ function EnhancementIcon({ id }: { id: HomeResetEnhancement }) {
 }
 
 type Props = {
-  upgrade: HomeResetUpgrade;
+  kitchenDeepResetSelected: boolean;
   value: HomeResetEnhancements;
   onChange: (next: HomeResetEnhancements) => void;
   error?: string;
 };
 
-export function StepEnhancements({ upgrade, value, onChange, error }: Props) {
+export function StepEnhancements({ kitchenDeepResetSelected, value, onChange, error }: Props) {
   const { t } = usePublicT();
   const localized = getEnhancementOptions(t);
   const availableIds = new Set(
-    getAvailableEnhancementOptions(upgrade).map((item) => item.id)
+    getAvailableEnhancementOptions(kitchenDeepResetSelected).map((item) => item.id)
   );
   const options = localized.filter((item) => availableIds.has(item.id));
 
@@ -52,7 +51,7 @@ export function StepEnhancements({ upgrade, value, onChange, error }: Props) {
         eyebrow={t("public.homeReset.enhancements.eyebrow")}
         title={t("public.homeReset.enhancements.title")}
         subtitle={
-          upgrade === "kitchen_upgrade"
+          kitchenDeepResetSelected
             ? t("public.homeReset.enhancements.subtitleKitchen")
             : t("public.homeReset.enhancements.subtitle")
         }

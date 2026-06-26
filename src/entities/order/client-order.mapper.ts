@@ -160,6 +160,8 @@ export function mapOrderToClientOrder(row: SupabaseOrderRow): ClientOrder {
           phone: cleaner?.phone?.trim() || "—",
         }
       : null,
+    serviceType: row.service_type?.trim() || "—",
+    serviceTypeLabel: serviceTypeLabel(row.service_type),
   };
 }
 

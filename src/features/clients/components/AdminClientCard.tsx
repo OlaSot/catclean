@@ -6,26 +6,17 @@ import {
   displayValue,
   formatOrderDate,
 } from "@/features/orders/lib/format-order-display";
+import { badgeClass } from "@/lib/design-system/badge-variants";
+import { clientTypeBadgeClass } from "@/lib/design-system/client-type-badge";
+import { CARD_CLASS } from "@/components/ui/Card";
 
 type AdminClientCardProps = {
   client: AdminClient;
 };
 
-function clientTypeBadgeClass(clientType: string | null): string {
-  const base =
-    "inline-flex shrink-0 items-center rounded-full px-3 py-1 text-xs font-semibold ring-1 capitalize";
-  if (clientType === "business") {
-    return `${base} bg-violet-50 text-violet-700 ring-violet-200`;
-  }
-  if (clientType === "private") {
-    return `${base} bg-sky-50 text-sky-700 ring-sky-200`;
-  }
-  return `${base} bg-slate-100 text-slate-600 ring-slate-200`;
-}
-
 export default function AdminClientCard({ client }: AdminClientCardProps) {
   return (
-    <article className="flex h-full flex-col rounded-3xl border border-slate-200/80 bg-white p-6 shadow-[0_8px_30px_rgba(15,23,42,0.04)] transition hover:shadow-[0_12px_40px_rgba(15,23,42,0.06)]">
+    <article className={`flex h-full flex-col p-6 transition hover:shadow-[0_12px_40px_rgba(15,23,42,0.06)] ${CARD_CLASS}`}>
       <div className="flex flex-wrap items-start gap-4">
         <AdminClientAvatar
           key={client.avatarUrl ?? client.id}
@@ -44,11 +35,11 @@ export default function AdminClientCard({ client }: AdminClientCardProps) {
             </div>
             <div className="flex flex-col items-end gap-2">
               {client.clientType ? (
-                <span className={clientTypeBadgeClass(client.clientType)}>
+                <span className={clientTypeBadgeClass(client.clientType, true)}>
                   {formatClientTypeLabel(client.clientType)}
                 </span>
               ) : null}
-              <span className="inline-flex items-center rounded-full bg-[#EEF4FA] px-3 py-1 text-xs font-semibold text-[#34597E] ring-1 ring-[#C5D9EB]">
+              <span className={badgeClass("brand")}>
                 {client.ordersCount} заказ(ов)
               </span>
             </div>

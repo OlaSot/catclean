@@ -3,43 +3,15 @@
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SITE_CONTAINER_CLASS } from "@/components/layout/site-layout";
 import { usePublicT } from "@/i18n/public/usePublicT";
+import { HeroVideoBackground } from "./HeroVideoBackground";
 import { HomeBookingSection } from "./HomeBookingSection";
-
-const TRUST_BADGE_KEYS = [
-  "public.home.trust.deepRefresh",
-  "public.home.trust.petFriendly",
-  "public.home.trust.steam",
-  "public.home.trust.reliable",
-  "public.home.trust.fastEasy",
-  "public.home.trust.online",
-] as const;
-
-const TRUST_ICONS = [
-  "Sparkles",
-  "PawPrint",
-  "Droplets",
-  "ShieldCheck",
-  "Zap",
-  "Globe",
-] as const;
-
+import { TrustBadges } from "./TrustBadges";
 import {
-  Droplets,
-  Globe,
-  PawPrint,
-  ShieldCheck,
-  Sparkles,
-  Zap,
-} from "lucide-react";
-
-const ICON_MAP = {
-  Sparkles,
-  PawPrint,
-  Droplets,
-  ShieldCheck,
-  Zap,
-  Globe,
-};
+  HOME_BOOKING_PANEL_CLASS,
+  HOME_BOOKING_TITLE_CLASS,
+  HOME_HERO_SUBTITLE_CLASS,
+  HOME_HERO_TITLE_CLASS,
+} from "./home-styles";
 
 export function HomePageContent() {
   const { t } = usePublicT();
@@ -47,58 +19,45 @@ export function HomePageContent() {
   const heroFallbackImage = "/images/catclean-hero-placeholder.jpg";
 
   return (
-    <main className="min-h-screen bg-[#EEF2F7] text-slate-700">
-      <section className="relative min-h-screen overflow-hidden">
-        <video
-          className="absolute inset-0 h-full w-full object-cover motion-fade-in"
-          src={heroVideo}
-          autoPlay
-          muted
-          loop
-          playsInline
-          poster={heroFallbackImage}
-        />
-        <div className={`relative flex min-h-screen w-full flex-col py-4 ${SITE_CONTAINER_CLASS}`}>
-          <SiteHeader className="motion-reveal motion-delay-80" />
+    <main className="min-h-screen overflow-x-hidden bg-[#EEF2F7] text-slate-700 lg:bg-transparent">
+      <section className="relative lg:min-h-dvh lg:bg-transparent">
+        <div className="relative lg:contents">
+          <HeroVideoBackground src={heroVideo} poster={heroFallbackImage} />
 
-          <div className="mt-10 flex flex-1 flex-col pb-8 pt-[100px] sm:mt-14 sm:pt-[100px] md:mt-16 lg:mt-20 xl:mt-24">
-            <div className="motion-reveal motion-delay-180 max-w-xl pt-2 sm:pt-4 xl:max-w-2xl">
-              <h1 className="text-4xl leading-tight font-semibold tracking-tight text-slate-800 sm:text-5xl lg:text-6xl xl:text-7xl">
-                {t("public.home.hero.title1")}
-                <br />
-                {t("public.home.hero.title2")}
+          {/* Mobile: header floats over the video so the cat area stays unobstructed below */}
+          <div
+            className={`absolute inset-x-0 top-0 z-20 bg-linear-to-b from-white/70 via-white/30 to-transparent pb-6 lg:hidden ${SITE_CONTAINER_CLASS}`}
+          >
+            <SiteHeader className="motion-reveal motion-delay-80" />
+          </div>
+        </div>
+
+        <div
+          className={`relative z-10 flex w-full flex-col bg-[#EEF2F7] py-2.5 min-[420px]:py-3 sm:py-4 md:py-5 lg:min-h-dvh lg:bg-transparent ${SITE_CONTAINER_CLASS}`}
+        >
+          <SiteHeader className="motion-reveal motion-delay-80 hidden lg:flex" />
+
+          <div className="mt-3 flex min-h-0 flex-1 flex-col gap-4 pb-5 pt-0.5 min-[420px]:mt-4 min-[420px]:gap-5 sm:mt-5 sm:gap-6 sm:pb-6 md:mt-6 md:gap-7 md:pb-7 lg:mt-8 lg:gap-7 lg:pb-8 xl:mt-5 xl:gap-5 xl:pb-6 2xl:mt-10 2xl:gap-10 2xl:pb-12">
+            <div className="motion-reveal motion-delay-180 min-w-0 shrink-0 max-w-xl sm:pt-0.5 md:max-w-2xl lg:max-w-2xl xl:max-w-lg 2xl:max-w-3xl">
+              <h1 className={HOME_HERO_TITLE_CLASS}>
+                <span className="block">{t("public.home.hero.title1")}</span>
+                <span className="block">{t("public.home.hero.title2")}</span>
               </h1>
-              <p className="mt-4 max-w-md text-lg leading-relaxed text-slate-700 sm:text-xl xl:max-w-xl xl:text-2xl">
-                {t("public.home.hero.subtitle1")}
-                <br />
-                {t("public.home.hero.subtitle2")}
+              <p className={HOME_HERO_SUBTITLE_CLASS}>
+                <span className="block sm:inline">{t("public.home.hero.subtitle1")}</span>{" "}
+                <span className="block sm:inline">{t("public.home.hero.subtitle2")}</span>
               </p>
             </div>
 
             <section
               id="booking"
-              className="motion-reveal motion-delay-260 mt-8 w-full rounded-3xl border border-white/80 bg-[linear-gradient(225deg,rgba(255,255,255,0.98)_8%,rgba(255,255,255,0.42)_46%,rgba(255,255,255,0.08)_66%,rgba(255,255,255,0)_82%)] p-4 shadow-[0_16px_45px_rgba(15,23,42,0.10)] backdrop-blur-md sm:mt-10 sm:p-6 lg:mt-12"
+              className={`motion-reveal motion-delay-260 w-full min-w-0 lg:mt-auto ${HOME_BOOKING_PANEL_CLASS}`}
             >
-              <h2 className="text-center text-2xl font-medium tracking-tight text-slate-700 sm:text-3xl">
-                {t("public.home.booking.title")}
-              </h2>
+              <h2 className={HOME_BOOKING_TITLE_CLASS}>{t("public.home.booking.title")}</h2>
 
               <HomeBookingSection />
 
-              <div className="mt-6 flex flex-wrap items-center justify-center gap-3 sm:gap-3.5">
-                {TRUST_BADGE_KEYS.map((key, index) => {
-                  const Icon = ICON_MAP[TRUST_ICONS[index] as keyof typeof ICON_MAP];
-                  return (
-                    <span
-                      key={key}
-                      className="motion-reveal motion-hover-lift inline-flex items-center gap-3 rounded-full border border-[#c9d8e8]/80 bg-linear-to-br from-white/98 via-[#eef5fb]/94 to-[#dce9f5]/88 px-6 py-2.5 text-base font-semibold text-slate-700 shadow-[0_10px_24px_rgba(52,89,126,0.14)] sm:px-7 sm:py-3 sm:text-lg"
-                    >
-                      <Icon className="h-4.5 w-4.5 text-[#5B8DB8] sm:h-5 sm:w-5" aria-hidden />
-                      {t(key)}
-                    </span>
-                  );
-                })}
-              </div>
+              <TrustBadges />
             </section>
           </div>
         </div>

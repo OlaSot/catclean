@@ -1,5 +1,5 @@
-import ClientOrdersList from "@/features/orders/components/ClientOrdersList";
+import ClientDashboardView from "@/features/client-portal/views/ClientDashboardView";
 
-export default function ClientPage() {
-  return <ClientOrdersList />;
+export default function ClientDashboardPage() {
+  return <ClientDashboardView />;
 }

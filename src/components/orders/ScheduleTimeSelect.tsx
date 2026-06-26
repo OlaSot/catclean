@@ -13,8 +13,9 @@ type ScheduleTimeSelectProps = {
   name?: string;
 };
 
-const defaultClassName =
-  "rounded-lg border border-[#C5D9EB] bg-white px-2 py-1 text-sm font-semibold text-slate-800 shadow-sm outline-none focus:border-[#5B8DB8]/50 focus:ring-2 focus:ring-[#5B8DB8]/20";
+import { selectNative } from "@/lib/design-system/tokens";
+
+const defaultClassName = `${selectNative} font-semibold`;
 
 export function ScheduleTimeSelect({
   value,

@@ -14,6 +14,8 @@ import {
   displayValue,
   formatOrderDate,
 } from "@/features/orders/lib/format-order-display";
+import { clientTypeBadgeClass } from "@/lib/design-system/client-type-badge";
+import { CARD_CLASS } from "@/components/ui/Card";
 
 type LoadState = "loading" | "idle";
 
@@ -29,7 +31,7 @@ function DetailCard({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
+    <section className={`p-6 ${CARD_CLASS}`}>
       <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
         {title}
       </h2>
@@ -37,19 +39,6 @@ function DetailCard({
     </section>
   );
 }
-
-function clientTypeBadgeClass(clientType: string | null): string {
-  const base =
-    "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ring-1 capitalize";
-  if (clientType === "business") {
-    return `${base} bg-violet-50 text-violet-700 ring-violet-200`;
-  }
-  if (clientType === "private") {
-    return `${base} bg-sky-50 text-sky-700 ring-sky-200`;
-  }
-  return `${base} bg-slate-100 text-slate-600 ring-slate-200`;
-}
-
 export default function AdminClientDetailView({
   clientId,
 }: AdminClientDetailViewProps) {

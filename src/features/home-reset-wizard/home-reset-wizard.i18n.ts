@@ -54,6 +54,10 @@ export function kitchenDeepResetSummaryLabel(t: PublicTranslateFn): string {
   return t("public.homeReset.customize.kitchen.summaryLabel");
 }
 
+export function bathroomDeepResetSummaryLabel(t: PublicTranslateFn): string {
+  return t("public.homeReset.customize.bathroom.title");
+}
+
 export function petHomeUpgradeSummaryLabel(t: PublicTranslateFn): string {
   return t("public.homeReset.pets.upgrade.summaryLabel");
 }

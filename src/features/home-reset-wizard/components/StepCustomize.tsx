@@ -9,7 +9,11 @@ import { UpgradeScopeDialog } from "./UpgradeScopeDialog";
 import { PetHomeIncludedCard } from "./PetHomeIncludedCard";
 import { getCustomizeUpgradeOptions } from "../home-reset-wizard.i18n";
 import { hasPetsSelected } from "../home-reset-wizard.utils";
-import type { HomeResetPetsOption, HomeResetUpgrade } from "../home-reset-wizard.types";
+import type {
+  HomeResetDeepUpgrades,
+  HomeResetPetsOption,
+  HomeResetUpgrade,
+} from "../home-reset-wizard.types";
 
 const UPGRADE_ICONS = {
   standard_home_reset: Home,
@@ -26,8 +30,8 @@ type ScopeView = { title: string; items: readonly string[] } | null;
 
 type Props = {
   petsOption: HomeResetPetsOption;
-  value: HomeResetUpgrade;
-  onChange: (upgrade: HomeResetUpgrade) => void;
+  value: HomeResetDeepUpgrades;
+  onChange: (upgrades: HomeResetDeepUpgrades) => void;
 };
 
 export function StepCustomize({ petsOption, value, onChange }: Props) {
@@ -36,6 +40,23 @@ export function StepCustomize({ petsOption, value, onChange }: Props) {
   const upgradeOptions = useMemo(() => getCustomizeUpgradeOptions(t), [t]);
   const cardCount = upgradeOptions.length + (petsSelected ? 1 : 0);
   const [scopeView, setScopeView] = useState<ScopeView>(null);
+
+  function toggleUpgrade(id: HomeResetUpgrade) {
+    if (id === "kitchen_upgrade") {
+      onChange({ ...value, kitchen: !value.kitchen });
+      return;
+    }
+    if (id === "bathroom_upgrade") {
+      onChange({ ...value, bathroom: !value.bathroom });
+    }
+  }
+
+  function isSelected(id: HomeResetUpgrade): boolean {
+    if (id === "standard_home_reset") return true;
+    if (id === "kitchen_upgrade") return value.kitchen;
+    if (id === "bathroom_upgrade") return value.bathroom;
+    return false;
+  }
 
   return (
     <div className="space-y-5">
@@ -58,8 +79,13 @@ export function StepCustomize({ petsOption, value, onChange }: Props) {
               benefits={option.benefits}
               priceEur={option.priceEur}
               priceLabel={option.priceLabel}
-              selected={value === option.id}
-              onClick={() => onChange(option.id)}
+              selected={isSelected(option.id)}
+              locked={option.id === "standard_home_reset"}
+              onClick={
+                option.id === "standard_home_reset"
+                  ? undefined
+                  : () => toggleUpgrade(option.id)
+              }
               onViewFullScope={
                 option.fullScope
                   ? () => setScopeView({ title: option.title, items: option.fullScope! })

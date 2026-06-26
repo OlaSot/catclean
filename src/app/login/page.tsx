@@ -1,11 +1,31 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { SitePageShell } from "@/components/layout/SitePageShell";
+import { motion, AnimatePresence } from "framer-motion";
+import { Loader2, Lock, Mail, Phone } from "lucide-react";
+import { LoginBackground } from "@/components/login/LoginBackground";
+import { LoginFooter } from "@/components/login/LoginFooter";
+import { LoginHeroPanel } from "@/components/login/LoginHeroPanel";
+import { LoginSegmentedControl } from "@/components/login/LoginSegmentedControl";
+import {
+  LOGIN_CARD_CLASS,
+  LOGIN_COPY,
+  LOGIN_INPUT_CLASS,
+  LOGIN_LAYOUT_MAX_WIDTH_CLASS,
+  LOGIN_PRIMARY_BUTTON_CLASS,
+} from "@/components/login/login-styles";
 import { devLog } from "@/lib/dev-log";
 import { PHONE_FORM_EXAMPLE } from "@/lib/phone/profile-phone";
 import { createSupabaseBrowserClient } from "@/lib/supabase/supabaseBrowser";
+
+const fieldMotion = {
+  initial: { opacity: 0, y: 12 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] as const },
+};
 
 export default function LoginPage() {
   const router = useRouter();
@@ -59,103 +79,220 @@ export default function LoginPage() {
     router.refresh();
   };
 
-  return (
-    <SitePageShell backgroundClassName="min-h-screen bg-[#EEF2F7] text-slate-700" contentClassName="py-6 sm:py-8">
-      <div className="mx-auto flex w-full max-w-md flex-col justify-center py-8 sm:py-12">
-      <div className="w-full rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h1 className="mb-5 text-2xl font-semibold text-slate-900">CatClean CRM</h1>
+  const handleTabChange = (tab: "staff" | "phone") => {
+    setActiveTab(tab);
+    setErrorText(null);
+  };
 
-        <div className="mb-5 grid grid-cols-2 rounded-xl bg-slate-100 p-1">
-          <button
-            type="button"
-            onClick={() => setActiveTab("staff")}
-            className={`rounded-lg px-3 py-2 text-sm font-medium transition ${
-              activeTab === "staff"
-                ? "bg-white text-[#34597E] shadow-sm"
-                : "text-slate-600 hover:text-slate-800"
-            }`}
-          >
-            Staff login
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setActiveTab("phone");
-              setErrorText(null);
-            }}
-            className={`rounded-lg px-3 py-2 text-sm font-medium transition ${
-              activeTab === "phone"
-                ? "bg-white text-[#34597E] shadow-sm"
-                : "text-slate-600 hover:text-slate-800"
-            }`}
-          >
-            Phone login
-          </button>
+  const copy = LOGIN_COPY[activeTab];
+
+  return (
+    <LoginBackground>
+      <div
+        className={`mx-auto flex min-h-dvh w-full ${LOGIN_LAYOUT_MAX_WIDTH_CLASS} flex-col justify-center px-4 py-8 sm:px-6 sm:py-10 md:px-8 md:py-10`}
+      >
+        <div className="order-1 md:hidden">
+          <LoginHeroPanel variant="compact" />
         </div>
 
-        {activeTab === "staff" ? (
-          <form onSubmit={onSubmit}>
-            <p className="mb-4 text-sm text-slate-600">
-              Use your admin/operator account.
-            </p>
+        <div className="order-2 grid w-full grid-cols-1 gap-6 sm:gap-8 md:grid-cols-[46fr_54fr] md:items-stretch md:gap-10 lg:gap-12">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="flex w-full md:order-1"
+          >
+            <div className={`w-full ${LOGIN_CARD_CLASS}`}>
+            <Link href="/" className="mb-7 inline-flex sm:mb-8">
+              <Image
+                src="/logo_main.svg"
+                alt="CatClean"
+                width={160}
+                height={48}
+                className="h-8 w-auto sm:h-9"
+                priority
+              />
+            </Link>
 
-            <label className="text-sm text-slate-700">Email</label>
-            <input
-              className="mb-3 mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 outline-none ring-[#34597E]/20 transition focus:border-[#34597E] focus:ring-4"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="email"
-            />
+            <div className="mb-7 sm:mb-8">
+              <LoginSegmentedControl
+                activeTab={activeTab}
+                onTabChange={handleTabChange}
+              />
+            </div>
 
-            <label className="text-sm text-slate-700">Password</label>
-            <input
-              type="password"
-              className="mb-4 mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 outline-none ring-[#34597E]/20 transition focus:border-[#34597E] focus:ring-4"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
-            />
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeTab}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.22 }}
+                className="mb-7 space-y-2 sm:mb-8"
+              >
+                <h1 className="text-balance text-2xl font-semibold tracking-tight text-slate-800 sm:text-3xl">
+                  {copy.title}
+                </h1>
+                <p className="text-base leading-relaxed text-slate-600 sm:text-lg">
+                  {copy.subtitle}
+                </p>
+              </motion.div>
+            </AnimatePresence>
 
-            {errorText && <p className="mb-3 text-sm text-rose-600">{errorText}</p>}
+            <AnimatePresence mode="wait">
+              {activeTab === "staff" ? (
+                <motion.form
+                  key="staff-form"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.25 }}
+                  onSubmit={onSubmit}
+                  className="space-y-5"
+                >
+                  <motion.p
+                    {...fieldMotion}
+                    className="text-sm text-slate-500"
+                  >
+                    {LOGIN_COPY.staff.helper}
+                  </motion.p>
 
-            <button
-              disabled={loading}
-              className="w-full rounded-lg bg-[#34597E] px-3 py-2 text-sm font-medium text-white transition hover:bg-[#2d4b6b] disabled:cursor-not-allowed disabled:opacity-70"
-            >
-              {loading ? "Signing in..." : "Sign in"}
-            </button>
-          </form>
-        ) : (
-          <div>
-            <p className="mb-4 text-sm text-slate-600">
-              For clients and cleaners. Coming soon.
-            </p>
+                  <motion.div {...fieldMotion} transition={{ ...fieldMotion.transition, delay: 0.05 }}>
+                    <label htmlFor="login-email" className="mb-2 block text-sm font-medium text-slate-600">
+                      Email
+                    </label>
+                    <div className="relative">
+                      <Mail
+                        className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+                        aria-hidden
+                      />
+                      <input
+                        id="login-email"
+                        className={LOGIN_INPUT_CLASS}
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        autoComplete="email"
+                        placeholder="you@example.com"
+                      />
+                    </div>
+                  </motion.div>
 
-            <label className="text-sm text-slate-700">Phone</label>
-            <input
-              className="mb-2 mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-500 outline-none"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder={PHONE_FORM_EXAMPLE}
-              autoComplete="tel"
-            />
-            <p className="mb-1 text-xs text-slate-500">Use German phone format</p>
-            <p className="mb-4 text-xs text-slate-400">{PHONE_FORM_EXAMPLE}</p>
-            <p className="mb-3 text-sm text-slate-500">
-              Phone login for clients and cleaners is coming soon.
-            </p>
+                  <motion.div {...fieldMotion} transition={{ ...fieldMotion.transition, delay: 0.1 }}>
+                    <label htmlFor="login-password" className="mb-2 block text-sm font-medium text-slate-600">
+                      Password
+                    </label>
+                    <div className="relative">
+                      <Lock
+                        className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+                        aria-hidden
+                      />
+                      <input
+                        id="login-password"
+                        type="password"
+                        className={LOGIN_INPUT_CLASS}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        autoComplete="current-password"
+                        placeholder="Enter your password"
+                      />
+                    </div>
+                  </motion.div>
 
-            <button
-              type="button"
-              disabled
-              className="w-full cursor-not-allowed rounded-lg bg-slate-200 px-3 py-2 text-sm font-medium text-slate-500"
-            >
-              Send code
-            </button>
+                  <AnimatePresence>
+                    {errorText ? (
+                      <motion.p
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="text-sm text-rose-600"
+                      >
+                        {errorText}
+                      </motion.p>
+                    ) : null}
+                  </AnimatePresence>
+
+                  <motion.div {...fieldMotion} transition={{ ...fieldMotion.transition, delay: 0.15 }}>
+                    <motion.button
+                      type="submit"
+                      disabled={loading}
+                      whileHover={loading ? undefined : { scale: 1.01 }}
+                      whileTap={loading ? undefined : { scale: 0.99 }}
+                      className={LOGIN_PRIMARY_BUTTON_CLASS}
+                    >
+                      {loading ? (
+                        <>
+                          <Loader2 className="h-5 w-5 animate-spin" aria-hidden />
+                          Signing in…
+                        </>
+                      ) : (
+                        "Sign in"
+                      )}
+                    </motion.button>
+                  </motion.div>
+                </motion.form>
+              ) : (
+                <motion.div
+                  key="phone-form"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.25 }}
+                  className="space-y-5"
+                >
+                  <motion.p
+                    {...fieldMotion}
+                    className="text-sm text-slate-500"
+                  >
+                    {LOGIN_COPY.phone.helper}
+                  </motion.p>
+
+                  <motion.div {...fieldMotion} transition={{ ...fieldMotion.transition, delay: 0.05 }}>
+                    <label htmlFor="login-phone" className="mb-2 block text-sm font-medium text-slate-600">
+                      Phone
+                    </label>
+                    <div className="relative">
+                      <Phone
+                        className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+                        aria-hidden
+                      />
+                      <input
+                        id="login-phone"
+                        className={`${LOGIN_INPUT_CLASS} text-slate-500`}
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        placeholder={PHONE_FORM_EXAMPLE}
+                        autoComplete="tel"
+                      />
+                    </div>
+                    <p className="mt-2 text-xs text-slate-400">
+                      Use German phone format — {PHONE_FORM_EXAMPLE}
+                    </p>
+                  </motion.div>
+
+                  <motion.div {...fieldMotion} transition={{ ...fieldMotion.transition, delay: 0.1 }}>
+                    <button
+                      type="button"
+                      disabled
+                      className="inline-flex h-12 w-full cursor-not-allowed items-center justify-center rounded-full bg-slate-100 px-6 text-base font-semibold text-slate-400 sm:h-14"
+                    >
+                      Send code
+                    </button>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+            </div>
+          </motion.div>
+
+          <div className="hidden w-full md:order-2 md:block">
+            <LoginHeroPanel variant="full" />
           </div>
-        )}
+        </div>
+
+        <div className="order-3 mt-6 sm:mt-8">
+          <LoginFooter />
+        </div>
       </div>
-      </div>
-    </SitePageShell>
+    </LoginBackground>
   );
 }

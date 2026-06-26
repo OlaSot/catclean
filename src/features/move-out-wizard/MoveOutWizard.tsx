@@ -35,15 +35,44 @@ import {
   packageForCondition,
   serializeMoveOutComment,
 } from "./move-out-wizard.utils";
+import type { RepeatBookingPrefill } from "@/lib/booking/repeat-booking-prefill";
+import {
+  applyAddressPrefill,
+  applyContactPrefill,
+} from "@/lib/booking/repeat-booking-prefill";
 
 type ValidationErrors = Record<string, string>;
 
-export function MoveOutWizard() {
+type MoveOutWizardProps = {
+  repeatPrefill?: RepeatBookingPrefill;
+};
+
+function buildInitialState(repeatPrefill?: RepeatBookingPrefill): MoveOutWizardState {
+  if (!repeatPrefill) return INITIAL_MOVE_OUT_STATE;
+  const withAddress = applyAddressPrefill(INITIAL_MOVE_OUT_STATE, repeatPrefill);
+  const withContact = applyContactPrefill(withAddress, repeatPrefill);
+  return {
+    ...withContact,
+    visitNotes: {
+      ...withContact.visitNotes,
+      accessNotes: repeatPrefill.address.accessNotes || withContact.visitNotes.accessNotes,
+      petsInfo: repeatPrefill.petsInfo ?? withContact.visitNotes.petsInfo,
+    },
+    contact: {
+      ...withContact.contact,
+      customerComment:
+        repeatPrefill.customerComment ?? withContact.contact.customerComment,
+    },
+  };
+  // TODO: map package, extras, propertySizeM2 from serviceDetails
+}
+
+export function MoveOutWizard({ repeatPrefill }: MoveOutWizardProps = {}) {
   const { t } = usePublicT();
   const router = useRouter();
   const { progressStep, displayStep, phase, goToStep, handleStepAnimationEnd } =
     useHomeResetStepTransition(1);
-  const [state, setState] = useState<MoveOutWizardState>(INITIAL_MOVE_OUT_STATE);
+  const [state, setState] = useState<MoveOutWizardState>(() => buildInitialState(repeatPrefill));
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -294,7 +323,7 @@ export function MoveOutWizard() {
   );
 
   const nextLabel = isConfirm
-    ? t("public.moveOut.bookMoveOut")
+    ? undefined
     : displayStep === 7
       ? t("public.common.reviewSummary")
       : undefined;
@@ -316,6 +345,7 @@ export function MoveOutWizard() {
                 nextLabel={nextLabel}
                 submitting={submitting}
                 showBack={displayStep > 1}
+                mode={isConfirm ? "checkout" : "default"}
               />
             </WizardContentPanel>
           </div>
@@ -327,15 +357,16 @@ export function MoveOutWizard() {
           {submitError ? <p className="mt-4 text-sm text-rose-600">{submitError}</p> : null}
           <HomeResetWizardNav
             onBack={handleBack}
-            onNext={handleNext}
+            onNext={isConfirm ? handleSubmit : handleNext}
             nextLabel={nextLabel}
             submitting={submitting}
             showBack={displayStep > 1}
+            mode={isConfirm ? "checkout" : "default"}
           />
         </WizardContentPanel>
       )}
 
-      {progressStep > 1 ? <TrustStrip /> : null}
+      {progressStep > 1 && !isConfirm ? <TrustStrip /> : null}
     </div>
   );
 }

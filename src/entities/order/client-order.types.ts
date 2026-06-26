@@ -26,6 +26,8 @@ export type ClientOrder = {
     email: string;
     phone: string;
   } | null;
+  serviceType: string;
+  serviceTypeLabel: string;
 };
 
 export type ClientOrderCancellationPreview = {

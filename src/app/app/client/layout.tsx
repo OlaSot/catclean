@@ -1,12 +1,14 @@
-export default function AdminLayout({
+import ClientPortalShell from "@/features/client-portal/components/ClientPortalShell";
+import { ClientPortalProvider } from "@/features/client-portal/providers/ClientPortalProvider";
+
+export default function ClientLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <div>
-      <header>Client header</header>
-      <main>{children}</main>
-    </div>
+    <ClientPortalProvider>
+      <ClientPortalShell>{children}</ClientPortalShell>
+    </ClientPortalProvider>
   );
 }

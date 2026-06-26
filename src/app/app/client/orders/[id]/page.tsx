@@ -1,4 +1,4 @@
-import ClientOrderDetailView from "@/features/orders/components/ClientOrderDetailView";
+import PortalOrderDetailView from "@/features/client-portal/views/PortalOrderDetailView";
 
 type ClientOrderDetailPageProps = {
   params: Promise<{ id: string }>;
@@ -9,5 +9,5 @@ export default async function ClientOrderDetailPage({
 }: ClientOrderDetailPageProps) {
   const { id } = await params;
 
-  return <ClientOrderDetailView orderId={id} />;
+  return <PortalOrderDetailView orderId={id} />;
 }

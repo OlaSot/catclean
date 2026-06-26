@@ -5,6 +5,12 @@ export type HomeResetUpgrade =
   | "kitchen_upgrade"
   | "bathroom_upgrade";
 
+/** Optional deep-reset add-ons on top of Standard Home Reset. */
+export type HomeResetDeepUpgrades = {
+  kitchen: boolean;
+  bathroom: boolean;
+};
+
 export type HomeResetPetsOption = "no_pets" | "cat" | "dog" | "multiple";
 
 export type HomeResetEnhancement = "oven_refresh" | "fridge_refresh" | "balcony_cleaning";
@@ -36,7 +42,7 @@ export type HomeResetContact = {
 export type HomeResetWizardState = {
   propertyType: HomeResetPropertyType | null;
   propertySizeM2: number;
-  upgrade: HomeResetUpgrade;
+  deepUpgrades: HomeResetDeepUpgrades;
   petsOption: HomeResetPetsOption;
   enhancements: HomeResetEnhancements;
   specialRequest: string;

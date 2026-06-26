@@ -65,7 +65,7 @@ export function StyledSelect({
         aria-haspopup="listbox"
         aria-expanded={open}
         onClick={() => setOpen((current) => !current)}
-        className="flex w-full items-center justify-between gap-2 rounded-xl border border-slate-200/80 bg-white px-3 py-2 text-left text-sm font-medium text-slate-800 shadow-sm outline-none transition hover:border-slate-300 focus:border-[#5B8DB8]/50 focus:ring-2 focus:ring-[#5B8DB8]/10 disabled:cursor-not-allowed disabled:opacity-60"
+        className={`flex w-full items-center justify-between gap-2 rounded-2xl border border-slate-200/80 bg-white px-4 py-3 text-left text-sm font-medium text-slate-800 shadow-sm outline-none transition hover:border-slate-300 focus:border-[#5B8DB8]/50 focus:ring-4 focus:ring-[#5B8DB8]/10 disabled:cursor-not-allowed disabled:opacity-60`}
       >
         <span className={`truncate ${selected ? "" : "text-slate-400"}`}>
           {displayLabel}

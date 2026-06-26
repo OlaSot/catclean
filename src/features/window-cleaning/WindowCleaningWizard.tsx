@@ -17,13 +17,33 @@ import { WindowCleaningWizardStepper } from "./components/WindowCleaningWizardSt
 import { INITIAL_WINDOW_CLEANING_STATE } from "./window-cleaning.state";
 import type { WindowCleaningWizardState, WindowItemId } from "./window-cleaning.types";
 import { calculateWindowCleaningEstimate, getSelectedWindowItems } from "./window-cleaning.utils";
+import type { RepeatBookingPrefill } from "@/lib/booking/repeat-booking-prefill";
+import {
+  applyAddressPrefill,
+  applyContactPrefill,
+} from "@/lib/booking/repeat-booking-prefill";
 
 type ValidationErrors = Record<string, string>;
 
-export function WindowCleaningWizard() {
+type WindowCleaningWizardProps = {
+  repeatPrefill?: RepeatBookingPrefill;
+};
+
+function buildInitialState(repeatPrefill?: RepeatBookingPrefill): WindowCleaningWizardState {
+  if (!repeatPrefill) return INITIAL_WINDOW_CLEANING_STATE;
+  return applyContactPrefill(
+    applyAddressPrefill(INITIAL_WINDOW_CLEANING_STATE, repeatPrefill),
+    repeatPrefill,
+  );
+  // TODO: map window quantities and extras from serviceDetails
+}
+
+export function WindowCleaningWizard({ repeatPrefill }: WindowCleaningWizardProps = {}) {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
-  const [state, setState] = useState<WindowCleaningWizardState>(INITIAL_WINDOW_CLEANING_STATE);
+  const [state, setState] = useState<WindowCleaningWizardState>(() =>
+    buildInitialState(repeatPrefill),
+  );
   const [errors, setErrors] = useState<ValidationErrors>({});
 
   const estimate = useMemo(() => calculateWindowCleaningEstimate(state), [state]);
@@ -182,31 +202,47 @@ export function WindowCleaningWizard() {
     />
   );
 
+  const layoutWithSidebar = !isSummaryStep;
+
   return (
     <div className="space-y-6 sm:space-y-8">
       <WindowCleaningWizardStepper currentStep={currentStep} />
 
-      <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_260px] lg:items-start lg:gap-6 xl:grid-cols-[minmax(0,1fr)_280px] xl:gap-8">
-        <div className="min-w-0 space-y-6">
-          <div className="lg:hidden">{sidebar}</div>
+      {layoutWithSidebar ? (
+        <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_260px] lg:items-start lg:gap-6 xl:grid-cols-[minmax(0,1fr)_280px] xl:gap-8">
+          <div className="min-w-0 space-y-6">
+            <div className="lg:hidden">{sidebar}</div>
 
-          <WizardContentPanel>
-            {renderStep()}
+            <WizardContentPanel>
+              {renderStep()}
 
-            {errors.submit ? <p className="text-sm text-rose-600">{errors.submit}</p> : null}
+              {errors.submit ? <p className="text-sm text-rose-600">{errors.submit}</p> : null}
 
-            <WindowCleaningWizardNav
-              onBack={handleBack}
-              onNext={handleNext}
-              nextLabel={isSummaryStep ? "Complete booking" : "Next step"}
-            />
-          </WizardContentPanel>
+              <WindowCleaningWizardNav
+                onBack={handleBack}
+                onNext={handleNext}
+                nextLabel="Next step"
+              />
+            </WizardContentPanel>
+          </div>
+
+          <div className="sticky top-6 hidden lg:block">{sidebar}</div>
         </div>
+      ) : (
+        <WizardContentPanel>
+          {renderStep()}
 
-        <div className="sticky top-6 hidden lg:block">{sidebar}</div>
-      </div>
+          {errors.submit ? <p className="text-sm text-rose-600">{errors.submit}</p> : null}
 
-      <TrustStrip />
+          <WindowCleaningWizardNav
+            onBack={handleBack}
+            onNext={handleNext}
+            mode="checkout"
+          />
+        </WizardContentPanel>
+      )}
+
+      {!isSummaryStep ? <TrustStrip /> : null}
     </div>
   );
 }

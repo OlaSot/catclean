@@ -48,7 +48,7 @@ export function UpgradeScopeDialog({ open, title, items, onClose }: Props) {
         aria-label={t("public.homeReset.dialog.close")}
         onClick={onClose}
       />
-      <div className="hr-wizard-dialog-panel-enter relative z-10 w-full max-w-md rounded-2xl border border-stone-200/90 bg-white p-5 shadow-[0_24px_64px_rgba(15,23,42,0.22)] sm:p-6">
+      <div className="hr-wizard-dialog-panel-enter relative z-10 w-full max-w-md p-5 sm:p-6 rounded-2xl border border-slate-200/90 bg-white shadow-[0_24px_64px_rgba(15,23,42,0.22)]">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs font-medium tracking-wide text-[#5B8DB8] uppercase">

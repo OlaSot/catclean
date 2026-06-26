@@ -9,10 +9,16 @@ import { UpholsteryBookingSidebar } from "./components/UpholsteryBookingSidebar"
 import { UpholsteryWizardNav } from "./components/UpholsteryWizardNav";
 import { UpholsteryWizardStepper } from "./components/UpholsteryWizardStepper";
 import { WizardContentPanel } from "@/components/booking/WizardContentPanel";
+import type { RepeatBookingPrefill } from "@/lib/booking/repeat-booking-prefill";
 
 const ACTIVE_STEP = 1;
 
-export function UpholsteryWizard() {
+type UpholsteryWizardProps = {
+  /** Reserved for repeat-booking address/service prefill — TODO: implement item selection prefill */
+  repeatPrefill?: RepeatBookingPrefill;
+};
+
+export function UpholsteryWizard({ repeatPrefill: _repeatPrefill }: UpholsteryWizardProps = {}) {
   const router = useRouter();
   const [selectedId, setSelectedId] = useState<UpholsteryItemId | null>(null);
   const [error, setError] = useState<string | null>(null);

@@ -35,11 +35,32 @@ import {
   serializeHomeResetComment,
   stripKitchenIncludedEnhancements,
 } from "./home-reset-wizard.utils";
+import { serializeHomeResetUpgradeIds } from "@/lib/orders/home-reset-upgrade";
 import "./home-reset-motion.css";
+import type { RepeatBookingPrefill } from "@/lib/booking/repeat-booking-prefill";
+import {
+  applyAddressPrefill,
+  applyContactPrefill,
+} from "@/lib/booking/repeat-booking-prefill";
 
 type ValidationErrors = Record<string, string>;
 
-export function HomeResetWizard() {
+type HomeResetWizardProps = {
+  repeatPrefill?: RepeatBookingPrefill;
+};
+
+function buildInitialState(repeatPrefill?: RepeatBookingPrefill): HomeResetWizardState {
+  if (!repeatPrefill) return INITIAL_HOME_RESET_STATE;
+  const withAddress = applyAddressPrefill(INITIAL_HOME_RESET_STATE, repeatPrefill);
+  const withContact = applyContactPrefill(withAddress, repeatPrefill);
+  return {
+    ...withContact,
+    specialRequest: repeatPrefill.customerComment ?? withContact.specialRequest,
+  };
+  // TODO: map propertyType, propertySizeM2, enhancements, petsOption from serviceDetails
+}
+
+export function HomeResetWizard({ repeatPrefill }: HomeResetWizardProps = {}) {
   const { t } = usePublicT();
   const router = useRouter();
   const {
@@ -49,7 +70,7 @@ export function HomeResetWizard() {
     goToStep,
     handleStepAnimationEnd,
   } = useHomeResetStepTransition(1);
-  const [state, setState] = useState<HomeResetWizardState>(INITIAL_HOME_RESET_STATE);
+  const [state, setState] = useState<HomeResetWizardState>(() => buildInitialState(repeatPrefill));
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -145,7 +166,7 @@ export function HomeResetWizard() {
     const payload = {
       serviceType: HOME_RESET_ORDER_SERVICE_TYPE,
       bookingProduct: BOOKING_PRODUCT_HOME_RESET,
-      homeResetUpgrade: state.upgrade,
+      homeResetUpgrade: serializeHomeResetUpgradeIds(state.deepUpgrades),
       serviceDetails,
       clientName: state.contact.name.trim(),
       clientPhone: normalizedPhone,
@@ -214,13 +235,13 @@ export function HomeResetWizard() {
         return (
           <StepCustomize
             petsOption={state.petsOption}
-            value={state.upgrade}
-            onChange={(upgrade) =>
+            value={state.deepUpgrades}
+            onChange={(deepUpgrades) =>
               setState((prev) => ({
                 ...prev,
-                upgrade,
+                deepUpgrades,
                 enhancements:
-                  upgrade === "kitchen_upgrade"
+                  deepUpgrades.kitchen && !prev.deepUpgrades.kitchen
                     ? stripKitchenIncludedEnhancements(prev.enhancements)
                     : prev.enhancements,
               }))
@@ -230,7 +251,7 @@ export function HomeResetWizard() {
       case 5:
         return (
           <StepEnhancements
-            upgrade={state.upgrade}
+            kitchenDeepResetSelected={state.deepUpgrades.kitchen}
             value={state.enhancements}
             onChange={(enhancements) => setState((prev) => ({ ...prev, enhancements }))}
           />
@@ -307,7 +328,7 @@ export function HomeResetWizard() {
   );
 
   const nextLabel = isConfirm
-    ? t("public.homeReset.bookMyReset")
+    ? undefined
     : displayStep === 9
       ? t("public.homeReset.reviewSummary")
       : undefined;
@@ -330,6 +351,7 @@ export function HomeResetWizard() {
                   nextLabel={nextLabel}
                   submitting={submitting}
                   showBack={displayStep > 1}
+                  mode={isConfirm ? "checkout" : "default"}
                 />
               ) : null}
             </WizardContentPanel>
@@ -347,12 +369,13 @@ export function HomeResetWizard() {
               nextLabel={nextLabel}
               submitting={submitting}
               showBack={displayStep > 1}
+              mode={isConfirm ? "checkout" : "default"}
             />
           ) : null}
         </WizardContentPanel>
       )}
 
-      {progressStep > 1 ? <TrustStrip /> : null}
+      {progressStep > 1 && !isConfirm ? <TrustStrip /> : null}
     </div>
   );
 }

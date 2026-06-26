@@ -3,11 +3,27 @@
 :root {
   --background: #f6f8fb;
   --foreground: #334155;
+
+  /* CatClean brand palette */
+  --cc-brand: #34597e;
+  --cc-brand-hover: #2d4d6f;
+  --cc-brand-accent: #5b8db8;
+  --cc-brand-light: #eef4fa;
+  --cc-brand-ring: #c5d9eb;
+  --cc-page-bg: #f6f8fb;
+  --cc-page-bg-alt: #eef2f7;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-cc-brand: var(--cc-brand);
+  --color-cc-brand-hover: var(--cc-brand-hover);
+  --color-cc-brand-accent: var(--cc-brand-accent);
+  --color-cc-brand-light: var(--cc-brand-light);
+  --color-cc-brand-ring: var(--cc-brand-ring);
+  --color-cc-page: var(--cc-page-bg);
+  --color-cc-page-alt: var(--cc-page-bg-alt);
   --font-sans: var(--font-montserrat);
   --font-mono: var(--font-geist-mono);
 }
@@ -16,6 +32,11 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), sans-serif;
+  overflow-x: clip;
+}
+
+html {
+  overflow-x: clip;
 }
 
 @keyframes fade-up-soft {
@@ -125,24 +146,32 @@ body {
   animation-delay: 440ms;
 }
 
-#booking .mt-6 > span {
+#booking .trust-badge {
   animation: fade-up-soft 700ms cubic-bezier(0.2, 0.72, 0.24, 1) both;
 }
 
-#booking .mt-6 > span:nth-child(1) {
+#booking .trust-badge:nth-child(1) {
   animation-delay: 420ms;
 }
 
-#booking .mt-6 > span:nth-child(2) {
+#booking .trust-badge:nth-child(2) {
   animation-delay: 470ms;
 }
 
-#booking .mt-6 > span:nth-child(3) {
+#booking .trust-badge:nth-child(3) {
   animation-delay: 520ms;
 }
 
-#booking .mt-6 > span:nth-child(4) {
+#booking .trust-badge:nth-child(4) {
   animation-delay: 570ms;
+}
+
+#booking .trust-badge:nth-child(5) {
+  animation-delay: 620ms;
+}
+
+#booking .trust-badge:nth-child(6) {
+  animation-delay: 670ms;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -162,7 +191,7 @@ body {
   }
 
   #services > article,
-  #booking .mt-6 > span {
+  #booking .trust-badge {
     animation: none !important;
   }
 }

@@ -3,7 +3,10 @@ import type { HomeResetWizardState } from "./home-reset-wizard.types";
 export const INITIAL_HOME_RESET_STATE: HomeResetWizardState = {
   propertyType: null,
   propertySizeM2: 80,
-  upgrade: "standard_home_reset",
+  deepUpgrades: {
+    kitchen: false,
+    bathroom: false,
+  },
   petsOption: "no_pets",
   enhancements: {
     oven_refresh: false,

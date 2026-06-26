@@ -1,7 +1,12 @@
 import type { OrderServiceType } from "@/lib/constants/orders";
-import { getHomeResetUpgradeSurchargeEur } from "@/lib/orders/home-reset-upgrade";
+import {
+  getHomeResetUpgradesSurchargeEur,
+  HOME_RESET_UPGRADE_SURCHARGE_EUR,
+  serializeHomeResetUpgradeIds,
+} from "@/lib/orders/home-reset-upgrade";
 import { tryCalculateOrderPrice } from "@/lib/pricing/calculate-order-price";
 import {
+  BATHROOM_DEEP_RESET,
   CUSTOMIZE_UPGRADE_OPTIONS,
   ENHANCEMENT_OPTIONS,
   ENHANCEMENTS_INCLUDED_IN_KITCHEN_DEEP_RESET,
@@ -35,7 +40,15 @@ export function isPetHomeUpgradeIncluded(state: HomeResetWizardState): boolean {
 }
 
 export function isKitchenDeepResetSelected(state: HomeResetWizardState): boolean {
-  return state.upgrade === "kitchen_upgrade";
+  return state.deepUpgrades.kitchen;
+}
+
+export function isBathroomDeepResetSelected(state: HomeResetWizardState): boolean {
+  return state.deepUpgrades.bathroom;
+}
+
+export function hasDeepUpgradesSelected(state: HomeResetWizardState): boolean {
+  return state.deepUpgrades.kitchen || state.deepUpgrades.bathroom;
 }
 
 export function petHomeUpgradeSummaryLabel(): string {
@@ -44,6 +57,10 @@ export function petHomeUpgradeSummaryLabel(): string {
 
 export function kitchenDeepResetSummaryLabel(): string {
   return KITCHEN_DEEP_RESET.summaryLabel;
+}
+
+export function bathroomDeepResetSummaryLabel(): string {
+  return BATHROOM_DEEP_RESET.title;
 }
 
 export function stripKitchenIncludedEnhancements(
@@ -56,8 +73,8 @@ export function stripKitchenIncludedEnhancements(
   };
 }
 
-export function getAvailableEnhancementOptions(upgrade: HomeResetUpgrade) {
-  if (upgrade === "kitchen_upgrade") {
+export function getAvailableEnhancementOptions(kitchenDeepResetSelected: boolean) {
+  if (kitchenDeepResetSelected) {
     return ENHANCEMENT_OPTIONS.filter(
       (item) => !ENHANCEMENTS_INCLUDED_IN_KITCHEN_DEEP_RESET.includes(item.id)
     );
@@ -88,8 +105,8 @@ export function upgradeLabel(upgrade: HomeResetUpgrade): string {
   return CUSTOMIZE_UPGRADE_OPTIONS.find((item) => item.id === upgrade)?.title ?? upgrade;
 }
 
-export function getUpgradeSurchargeEur(upgrade: HomeResetUpgrade): number {
-  return getHomeResetUpgradeSurchargeEur(upgrade);
+export function getDeepUpgradeSurchargeEur(state: HomeResetWizardState): number {
+  return getHomeResetUpgradesSurchargeEur(serializeHomeResetUpgradeIds(state.deepUpgrades));
 }
 
 export function propertyTypeLabel(type: HomeResetWizardState["propertyType"]): string {
@@ -106,7 +123,7 @@ export function petsLabel(option: HomeResetWizardState["petsOption"]): string {
 }
 
 export function getSelectedEnhancements(state: HomeResetWizardState): HomeResetEnhancement[] {
-  return getAvailableEnhancementOptions(state.upgrade)
+  return getAvailableEnhancementOptions(isKitchenDeepResetSelected(state))
     .filter((item) => state.enhancements[item.id])
     .map((item) => item.id);
 }
@@ -148,7 +165,7 @@ export function calculateHomeResetEstimate(state: HomeResetWizardState): HomeRes
   const result = tryCalculateOrderPrice(HOME_RESET_ORDER_SERVICE_TYPE, details);
   if (!result) return { price: null, durationMinutes: null };
 
-  const upgradeSurcharge = getUpgradeSurchargeEur(state.upgrade);
+  const upgradeSurcharge = getDeepUpgradeSurchargeEur(state);
   const price = Math.round((result.estimatedPrice + upgradeSurcharge) * 100) / 100;
 
   return {
@@ -160,14 +177,21 @@ export function calculateHomeResetEstimate(state: HomeResetWizardState): HomeRes
 export function serializeHomeResetComment(state: HomeResetWizardState): string {
   const lines: string[] = ["Home Reset booking"];
   lines.push(`Property type: ${propertyTypeLabel(state.propertyType)}`);
-  const surcharge = getUpgradeSurchargeEur(state.upgrade);
+
   if (isKitchenDeepResetSelected(state)) {
-    lines.push(`${KITCHEN_DEEP_RESET.summaryLabel}${surcharge > 0 ? ` (+€${surcharge})` : ""}`);
-  } else {
+    const surcharge = HOME_RESET_UPGRADE_SURCHARGE_EUR.kitchen_upgrade;
     lines.push(
-      `Selected Home Reset option: ${upgradeLabel(state.upgrade)}${surcharge > 0 ? ` (+€${surcharge})` : ""}`
+      `${KITCHEN_DEEP_RESET.summaryLabel}${surcharge > 0 ? ` (+€${surcharge})` : ""}`,
     );
   }
+  if (isBathroomDeepResetSelected(state)) {
+    const surcharge = HOME_RESET_UPGRADE_SURCHARGE_EUR.bathroom_upgrade;
+    lines.push(`${BATHROOM_DEEP_RESET.title}${surcharge > 0 ? ` (+€${surcharge})` : ""}`);
+  }
+  if (!hasDeepUpgradesSelected(state)) {
+    lines.push("Selected Home Reset option: Standard Home Reset");
+  }
+
   lines.push(`Pets: ${petsLabel(state.petsOption)}`);
   if (isPetHomeUpgradeIncluded(state)) {
     lines.push(PET_HOME_UPGRADE.summaryLabel);

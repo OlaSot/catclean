@@ -1,0 +1,67 @@
+@keyframes checkout-price-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes checkout-scope-expand {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.checkout-price-animate {
+  animation: checkout-price-in 0.45s ease-out;
+}
+
+.checkout-scope-content {
+  animation: checkout-scope-expand 0.28s ease-out;
+}
+
+.checkout-card-hover {
+  transition:
+    box-shadow 0.22s ease,
+    border-color 0.22s ease,
+    transform 0.22s ease;
+}
+
+.checkout-card-hover:hover {
+  border-color: rgb(197 217 235 / 0.9);
+  box-shadow: 0 12px 40px rgba(52, 89, 126, 0.08);
+  transform: translateY(-1px);
+}
+
+.checkout-confirm-btn-loading {
+  position: relative;
+}
+
+.checkout-confirm-btn-loading::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.12) 50%,
+    transparent 100%
+  );
+  animation: checkout-shimmer 1.2s ease-in-out infinite;
+}
+
+@keyframes checkout-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}

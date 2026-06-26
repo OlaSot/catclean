@@ -12,6 +12,8 @@ import type { AdminUpdateOrderApiResponse } from "@/features/orders/types/admin-
 import { Bell, BellRing, MoreVertical } from "lucide-react";
 import { ScheduleTimeSelect } from "@/components/orders/ScheduleTimeSelect";
 import { normalizeScheduleTime } from "@/lib/orders/schedule-time";
+import { badgeClass, orderStatusTone, serviceTypeTone } from "@/lib/design-system/badge-variants";
+import { buttonSizes, buttonVariants } from "@/lib/design-system/tokens";
 
 function formatDate(iso: string) {
   const [y, m, d] = iso.split("-").map(Number);
@@ -32,40 +34,16 @@ function productBadgeKey(order: Order): string {
   return order.productKey ?? order.bookingProduct ?? order.serviceType;
 }
 
-const pillBase =
-  "inline-flex h-5 items-center rounded-full px-2 text-[11px] font-semibold ring-1";
+const btnPrimary = `${buttonVariants.primary} ${buttonSizes.sm}`;
 
-const btnPrimary =
-  "inline-flex h-8 items-center justify-center gap-1.5 rounded-full bg-[#34597E] px-3 text-xs font-semibold text-white shadow-sm transition hover:bg-[#2d4d6f]";
+const btnGhost = `${buttonVariants.ghost} ${buttonSizes.sm}`;
 
-const btnGhost =
-  "inline-flex h-8 items-center justify-center gap-1 rounded-full border border-slate-200/80 bg-white px-2.5 text-xs font-medium text-slate-600 transition hover:border-slate-300 hover:bg-[#EEF4FA]";
+const btnLink = `text-xs ${buttonVariants.link}`;
 
-const btnLink =
-  "text-xs font-medium text-[#34597E] transition hover:text-[#2d4d6f] hover:underline disabled:opacity-50";
-
-const btnLinkDanger =
-  "text-xs font-medium text-rose-600 transition hover:text-rose-700 hover:underline disabled:opacity-50";
+const btnLinkDanger = `text-xs ${buttonVariants.linkDanger}`;
 
 function statusPillStyle(status: Order["status"]): string {
-  const map: Partial<Record<Order["status"], string>> = {
-    awaiting_confirmation: "bg-amber-50 text-amber-800 ring-amber-200",
-    new: "bg-sky-50 text-sky-700 ring-sky-200",
-    waiting_for_payment: "bg-amber-50 text-amber-800 ring-amber-200",
-    paid: "bg-emerald-50 text-emerald-700 ring-emerald-200",
-    searching_cleaner: "bg-violet-50 text-violet-700 ring-violet-200",
-    confirmed: "bg-emerald-50 text-emerald-700 ring-emerald-200",
-    cleaner_assigned: "bg-indigo-50 text-indigo-700 ring-indigo-200",
-    in_progress: "bg-amber-50 text-amber-800 ring-amber-200",
-    problem: "bg-rose-50 text-rose-800 ring-rose-200",
-    completed: "bg-emerald-50 text-emerald-700 ring-emerald-200",
-    canceled: "bg-rose-50 text-rose-700 ring-rose-200",
-    cancelled_by_client: "bg-rose-50 text-rose-700 ring-rose-200",
-    cancelled_by_cleaner: "bg-rose-50 text-rose-700 ring-rose-200",
-    cancelled_by_admin: "bg-rose-50 text-rose-700 ring-rose-200",
-    refunded: "bg-slate-100 text-slate-600 ring-slate-200",
-  };
-  return map[status] ?? "bg-sky-50 text-sky-700 ring-sky-200";
+  return badgeClass(orderStatusTone(status), "xs");
 }
 
 function PaymentPill({
@@ -78,13 +56,13 @@ function PaymentPill({
 
   const cls =
     payment.status === "paid"
-      ? "bg-emerald-50 text-emerald-700 ring-emerald-200"
+      ? badgeClass("emerald", "xs")
       : payment.status === "card_hold"
-        ? "bg-indigo-50 text-indigo-700 ring-indigo-200"
-        : "bg-rose-50 text-rose-700 ring-rose-200";
+        ? badgeClass("indigo", "xs")
+        : badgeClass("rose", "xs");
 
   return (
-    <span className={`${pillBase} ${cls}`}>{label}</span>
+    <span className={cls}>{label}</span>
   );
 }
 
@@ -98,20 +76,7 @@ function initials(name: string): string {
 }
 
 function serviceBadgeStyle(serviceType: string): string {
-  const key = (serviceType ?? "").trim();
-  const map: Record<string, string> = {
-    home_care: "bg-teal-50 text-teal-800 ring-teal-200",
-    home_reset: "bg-violet-50 text-violet-800 ring-violet-200",
-    move_out: "bg-indigo-50 text-indigo-700 ring-indigo-200",
-    regular_cleaning: "bg-sky-50 text-sky-700 ring-sky-200",
-    move_in_out: "bg-indigo-50 text-indigo-700 ring-indigo-200",
-    airbnb_turnover: "bg-violet-50 text-violet-700 ring-violet-200",
-    office_cleaning: "bg-emerald-50 text-emerald-700 ring-emerald-200",
-    dry_cleaning: "bg-amber-50 text-amber-800 ring-amber-200",
-    window_cleaning: "bg-slate-100 text-slate-700 ring-slate-200",
-    special_pet_package: "bg-rose-50 text-rose-700 ring-rose-200",
-  };
-  return map[key] ?? "bg-slate-100 text-slate-700 ring-slate-200";
+  return badgeClass(serviceTypeTone(serviceType), "xs");
 }
 
 type OrderCardProps = {
@@ -391,7 +356,7 @@ export default function OrderCard({ order, onChanged }: OrderCardProps) {
               #{order.displayId}
             </span>
             <span
-              className={`${pillBase} ${serviceBadgeStyle(productBadgeKey(order))}`}
+              className={serviceBadgeStyle(productBadgeKey(order))}
             >
               {primaryProductLabel}
             </span>
@@ -491,11 +456,11 @@ export default function OrderCard({ order, onChanged }: OrderCardProps) {
               payment={order.payment}
               label={paymentLabel(order.payment.status)}
             />
-            <span className={`${pillBase} ${statusPillStyle(order.status)}`}>
+            <span className={statusPillStyle(order.status)}>
               {orderStatusLabel(order.status)}
             </span>
             {showAwaitingConfirmationBadge ? (
-              <span className={`${pillBase} bg-amber-50 text-amber-800 ring-amber-200`}>
+              <span className={badgeClass("amber", "xs")}>
                 {t("orders.awaitingClientConfirmation")}
               </span>
             ) : null}

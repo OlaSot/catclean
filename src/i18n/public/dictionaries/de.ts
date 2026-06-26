@@ -16,6 +16,9 @@ export const de: Record<string, string> = {
   "public.nav.whatWeClean": "Was wir reinigen",
   "public.nav.about": "Über uns",
   "public.nav.contact": "Kontakt",
+  "public.nav.menu": "Menü",
+  "public.nav.openMenu": "Menü öffnen",
+  "public.nav.closeMenu": "Menü schließen",
   "public.header.bookCleaning": "Reinigung buchen",
   "public.lang.de": "Deutsch",
   "public.lang.en": "English",
@@ -67,6 +70,9 @@ export const de: Record<string, string> = {
   "public.home.cta.homeReset": "Home Reset starten →",
   "public.home.cta.book": "Weiter →",
   "public.home.badge.signature": "Signature Service",
+  "public.home.carousel.prev": "Vorherige Leistungen",
+  "public.home.carousel.next": "Nächste Leistungen",
+  "public.home.carousel.page": "Leistungsseite",
 
   // What we clean (shell)
   "public.compare.title": "Welche Reinigung passt zu Ihnen?",
@@ -137,6 +143,28 @@ export const de: Record<string, string> = {
   "public.booking.homeCare": "Home Care",
   "public.booking.homeReset": "Home Reset",
   "public.booking.moveOut": "Umzugsreinigung",
+
+  // Booking — service selection (/booking)
+  "public.booking.selection.eyebrow": "Reinigung buchen",
+  "public.booking.selection.title": "Was möchten Sie reinigen lassen?",
+  "public.booking.selection.subtitle":
+    "Wählen Sie Ihre Leistung — jeder Ablauf ist auf Ihr Zuhause zugeschnitten.",
+  "public.booking.selection.startCta": "Buchung starten",
+  "public.booking.service.homeCare.title": "Home Care",
+  "public.booking.service.homeCare.subtitle":
+    "Regelmäßige Pflege für ein dauerhaft frisches Zuhause",
+  "public.booking.service.homeReset.title": "Home Reset",
+  "public.booking.service.homeReset.subtitle":
+    "Tiefenreinigung, wenn Ihr Zuhause einen Neustart braucht",
+  "public.booking.service.moveOut.title": "Umzugsreinigung",
+  "public.booking.service.moveOut.subtitle":
+    "Übergabefertig und kautionssicher",
+  "public.booking.service.window.title": "Fensterreinigung",
+  "public.booking.service.window.subtitle":
+    "Klare Scheiben — innen und außen",
+  "public.booking.service.upholstery.title": "Polsterreinigung",
+  "public.booking.service.upholstery.subtitle":
+    "Sofas, Matratzen und Stoffe erfrischt",
 
   // Home Care wizard
   "public.homeCare.step.frequency": "Rhythmus",
@@ -315,6 +343,10 @@ export const de: Record<string, string> = {
   "public.trust.insured.desc": "Geprüfte Profis an Ihrer Tür",
   "public.trust.satisfaction.title": "Zufriedenheit zuerst",
   "public.trust.satisfaction.desc": "Bis es sich wieder richtig anfühlt",
+  "public.trust.experienced.title": "Erfahrene Reinigungskräfte",
+  "public.trust.experienced.desc": "Geschult & geprüft",
+  "public.trust.support.title": "Support 7 Tage die Woche",
+  "public.trust.support.desc": "Wir sind für Sie da",
 
   // Service types (public confirm)
   "public.serviceType.regular_cleaning": "Regelmäßige Reinigung",

@@ -5,13 +5,15 @@ import { getTimeSlotLabel } from "@/i18n/public/schedule-i18n";
 import {
   getEnhancementOptions,
   kitchenDeepResetSummaryLabel,
+  bathroomDeepResetSummaryLabel,
   petHomeUpgradeSummaryLabel,
   translateHomeResetPets,
   translateHomeResetPropertyType,
-  translateHomeResetUpgrade,
 } from "../home-reset-wizard.i18n";
 import {
   getSelectedEnhancements,
+  hasDeepUpgradesSelected,
+  isBathroomDeepResetSelected,
   isKitchenDeepResetSelected,
   isPetHomeUpgradeIncluded,
   formatHomeResetDuration,
@@ -34,7 +36,7 @@ export function HomeResetSummarySidebar({
   className = "",
 }: Props) {
   const { t, locale } = usePublicI18n();
-  const hasContent = state.propertyType || state.upgrade;
+  const hasContent = state.propertyType || hasDeepUpgradesSelected(state);
   const dateLocale = locale === "de" ? "de-DE" : "en-GB";
 
   const formattedDate = state.schedule.date
@@ -80,12 +82,19 @@ export function HomeResetSummarySidebar({
                 label={t("public.homeReset.sidebar.included")}
                 value={kitchenDeepResetSummaryLabel(t)}
               />
-            ) : (
+            ) : null}
+            {isBathroomDeepResetSelected(state) ? (
               <SummaryRow
                 label={t("public.homeReset.sidebar.selectedOption")}
-                value={translateHomeResetUpgrade(t, state.upgrade)}
+                value={bathroomDeepResetSummaryLabel(t)}
               />
-            )}
+            ) : null}
+            {!hasDeepUpgradesSelected(state) ? (
+              <SummaryRow
+                label={t("public.homeReset.sidebar.selectedOption")}
+                value={t("public.homeReset.customize.standard.title")}
+              />
+            ) : null}
             {state.petsOption !== "no_pets" ? (
               <SummaryRow
                 label={t("public.homeReset.sidebar.pets")}

@@ -31,15 +31,33 @@ import {
   HOME_CARE_ORDER_SERVICE_TYPE,
   serializeHomeCareComment,
 } from "./home-care-wizard.utils";
+import type { RepeatBookingPrefill } from "@/lib/booking/repeat-booking-prefill";
+import {
+  applyAddressPrefill,
+  applyContactPrefill,
+} from "@/lib/booking/repeat-booking-prefill";
 
 type ValidationErrors = Record<string, string>;
 
-export function HomeCareWizard() {
+type HomeCareWizardProps = {
+  repeatPrefill?: RepeatBookingPrefill;
+};
+
+function buildInitialState(repeatPrefill?: RepeatBookingPrefill): HomeCareWizardState {
+  if (!repeatPrefill) return INITIAL_HOME_CARE_STATE;
+  return applyContactPrefill(
+    applyAddressPrefill(INITIAL_HOME_CARE_STATE, repeatPrefill),
+    repeatPrefill,
+  );
+  // TODO: map serviceDetails enhancements and petsOption from repeatPrefill.petsInfo
+}
+
+export function HomeCareWizard({ repeatPrefill }: HomeCareWizardProps = {}) {
   const { t } = usePublicT();
   const router = useRouter();
   const { progressStep, displayStep, phase, goToStep, handleStepAnimationEnd } =
     useHomeResetStepTransition(1);
-  const [state, setState] = useState<HomeCareWizardState>(INITIAL_HOME_CARE_STATE);
+  const [state, setState] = useState<HomeCareWizardState>(() => buildInitialState(repeatPrefill));
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -268,7 +286,7 @@ export function HomeCareWizard() {
   );
 
   const nextLabel = isConfirm
-    ? t("public.homeCare.bookHomeCare")
+    ? undefined
     : displayStep === 7
       ? t("public.common.reviewSummary")
       : undefined;
@@ -290,6 +308,7 @@ export function HomeCareWizard() {
                 nextLabel={nextLabel}
                 submitting={submitting}
                 showBack={displayStep > 1}
+                mode={isConfirm ? "checkout" : "default"}
               />
             </WizardContentPanel>
           </div>
@@ -305,11 +324,12 @@ export function HomeCareWizard() {
             nextLabel={nextLabel}
             submitting={submitting}
             showBack={displayStep > 1}
+            mode={isConfirm ? "checkout" : "default"}
           />
         </WizardContentPanel>
       )}
 
-      {progressStep > 1 ? <TrustStrip /> : null}
+      {progressStep > 1 && !isConfirm ? <TrustStrip /> : null}
     </div>
   );
 }

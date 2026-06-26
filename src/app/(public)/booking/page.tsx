@@ -1,95 +1,98 @@
 import { LegacyBookingIntro } from "@/components/booking/LegacyBookingIntro";
+import { BookingServiceSelection } from "@/components/booking/BookingServiceSelection";
 import { SitePageShell } from "@/components/layout/SitePageShell";
 import { BookingWizard } from "@/features/booking-wizard";
-import { HomeCareWizard, HOME_CARE_SERVICE_PARAM } from "@/features/home-care-wizard";
+import { HomeCareWizard } from "@/features/home-care-wizard";
 import { HomeResetWizard } from "@/features/home-reset-wizard";
-import { MoveOutWizard, MOVE_OUT_SERVICE_PARAM } from "@/features/move-out-wizard";
+import { MoveOutWizard } from "@/features/move-out-wizard";
 import { UpholsteryWizard } from "@/features/upholstery-wizard";
-import { WindowCleaningWizard, WINDOW_SERVICE_PARAM } from "@/features/window-cleaning";
+import { WindowCleaningWizard } from "@/features/window-cleaning";
+import { resolveBookingServiceParam } from "@/lib/booking/booking-services";
+import { loadBookingPrefill } from "@/server/queries/orders/loadBookingPrefill";
 
 type BookingPageProps = {
-  searchParams?: Promise<{ service?: string }>;
+  searchParams?: Promise<{
+    service?: string;
+    repeatFrom?: string;
+    addressId?: string;
+  }>;
 };
-
-const HOME_RESET_SERVICE_PARAM = "home_reset";
-const MOVE_OUT_PARAM = MOVE_OUT_SERVICE_PARAM;
-const UPHOLSTERY_SERVICE_PARAM = "dry_cleaning";
-const LEGACY_REGULAR_CLEANING_PARAM = "regular_cleaning";
 
 export default async function BookingPage({ searchParams }: BookingPageProps) {
   const params = await searchParams;
-  const isHomeResetFlow = params?.service === HOME_RESET_SERVICE_PARAM;
-  const isMoveOutFlow = params?.service === MOVE_OUT_PARAM;
-  const isHomeCareFlow =
-    params?.service === HOME_CARE_SERVICE_PARAM ||
-    params?.service === LEGACY_REGULAR_CLEANING_PARAM;
-  const isUpholsteryFlow = params?.service === UPHOLSTERY_SERVICE_PARAM;
-  const isWindowCleaningFlow = params?.service === WINDOW_SERVICE_PARAM;
+  const repeatPrefill = await loadBookingPrefill({
+    repeatFrom: params?.repeatFrom,
+    addressId: params?.addressId,
+  });
+  const service = resolveBookingServiceParam(params?.service);
 
-  if (isHomeCareFlow) {
+  if (service === "home_care") {
     return (
       <SitePageShell
         backgroundClassName="min-h-screen bg-white text-slate-700"
-        bookHref="/booking?service=home_care"
         contentClassName="py-4 sm:py-6 lg:py-8"
       >
-        <HomeCareWizard />
+        <HomeCareWizard repeatPrefill={repeatPrefill} />
       </SitePageShell>
     );
   }
 
-  if (isMoveOutFlow) {
+  if (service === "move_out") {
     return (
       <SitePageShell
         backgroundClassName="min-h-screen bg-white text-slate-700"
-        bookHref="/booking?service=move_out"
         contentClassName="py-4 sm:py-6 lg:py-8"
       >
-        <MoveOutWizard />
+        <MoveOutWizard repeatPrefill={repeatPrefill} />
       </SitePageShell>
     );
   }
 
-  if (isHomeResetFlow) {
+  if (service === "home_reset") {
     return (
       <SitePageShell
         backgroundClassName="min-h-screen bg-white text-slate-700"
-        bookHref="/booking?service=home_reset"
         contentClassName="py-4 sm:py-6 lg:py-8"
       >
-        <HomeResetWizard />
+        <HomeResetWizard repeatPrefill={repeatPrefill} />
       </SitePageShell>
     );
   }
 
-  if (isUpholsteryFlow) {
+  if (service === "upholstery") {
     return (
       <SitePageShell
         backgroundClassName="min-h-screen bg-[#EEF2F7] text-slate-700"
-        bookHref="/booking?service=dry_cleaning"
         contentClassName="py-4 sm:py-6 lg:py-8"
       >
-        <UpholsteryWizard />
+        <UpholsteryWizard repeatPrefill={repeatPrefill} />
       </SitePageShell>
     );
   }
 
-  if (isWindowCleaningFlow) {
+  if (service === "window_cleaning") {
     return (
       <SitePageShell
         backgroundClassName="min-h-screen bg-[#EEF2F7] text-slate-700"
-        bookHref="/booking?service=window_cleaning"
         contentClassName="py-4 sm:py-6 lg:py-8"
       >
-        <WindowCleaningWizard />
+        <WindowCleaningWizard repeatPrefill={repeatPrefill} />
+      </SitePageShell>
+    );
+  }
+
+  if (service === "legacy") {
+    return (
+      <SitePageShell contentClassName="py-6 sm:py-8">
+        <LegacyBookingIntro />
+        <BookingWizard />
       </SitePageShell>
     );
   }
 
   return (
-    <SitePageShell contentClassName="py-6 sm:py-8">
-      <LegacyBookingIntro />
-      <BookingWizard initialService={params?.service} />
+    <SitePageShell contentClassName="py-6 sm:py-10 md:py-12">
+      <BookingServiceSelection />
     </SitePageShell>
   );
 }
