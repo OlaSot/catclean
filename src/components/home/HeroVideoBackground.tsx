@@ -20,11 +20,13 @@ export function HeroVideoBackground({ src, poster }: HeroVideoBackgroundProps) {
 
     video.muted = true;
     video.defaultMuted = true;
+    video.setAttribute("playsinline", "");
+    video.setAttribute("webkit-playsinline", "");
 
-    if (!video.paused) return;
-
-    void video.play().catch(() => {
-      // Mobile browsers may block the first attempt; loadeddata/visibility handlers retry.
+    void video.play().then(() => {
+      video.removeAttribute("poster");
+    }).catch(() => {
+      // Retried by load/visibility/gesture handlers.
     });
   }, []);
 
@@ -36,34 +38,48 @@ export function HeroVideoBackground({ src, poster }: HeroVideoBackgroundProps) {
     const onVisibilityChange = () => {
       if (document.visibilityState === "visible") ensurePlaying();
     };
+    const unlockOnGesture = () => ensurePlaying();
 
     video.addEventListener("loadeddata", onReady);
     video.addEventListener("canplay", onReady);
+    video.addEventListener("canplaythrough", onReady);
+    video.addEventListener("playing", onReady, { once: true });
     document.addEventListener("visibilitychange", onVisibilityChange);
     window.addEventListener("pageshow", onReady);
+    document.addEventListener("touchstart", unlockOnGesture, { passive: true });
+    document.addEventListener("click", unlockOnGesture);
 
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries.some((entry) => entry.isIntersecting)) ensurePlaying();
       },
-      { threshold: 0.1 },
+      { threshold: 0.01 },
     );
     observer.observe(video);
 
+    video.load();
     ensurePlaying();
+
+    const retryTimers = [150, 400, 900, 1800].map((delay) =>
+      window.setTimeout(ensurePlaying, delay),
+    );
 
     return () => {
       video.removeEventListener("loadeddata", onReady);
       video.removeEventListener("canplay", onReady);
+      video.removeEventListener("canplaythrough", onReady);
       document.removeEventListener("visibilitychange", onVisibilityChange);
       window.removeEventListener("pageshow", onReady);
+      document.removeEventListener("touchstart", unlockOnGesture);
+      document.removeEventListener("click", unlockOnGesture);
       observer.disconnect();
+      retryTimers.forEach((timer) => window.clearTimeout(timer));
     };
   }, [ensurePlaying, src]);
 
   return (
     <div
-      className="pointer-events-none relative h-[30svh] min-h-[190px] max-h-[260px] w-full overflow-hidden sm:h-[32svh] sm:max-h-[280px] md:h-[36svh] md:max-h-[320px] lg:absolute lg:inset-0 lg:h-full lg:max-h-none"
+      className="pointer-events-none relative h-[32svh] min-h-[200px] max-h-[280px] w-full overflow-hidden sm:h-[34svh] sm:max-h-[300px] md:h-[36svh] md:max-h-[320px] lg:absolute lg:inset-0 lg:h-full lg:max-h-none"
       aria-hidden
     >
       <video
@@ -79,7 +95,7 @@ export function HeroVideoBackground({ src, poster }: HeroVideoBackgroundProps) {
       />
 
       {/* Mobile: light overlay + fade into content area below */}
-      <div className="motion-fade-in absolute inset-0 bg-linear-to-b from-white/25 via-transparent via-55% to-[#EEF2F7] lg:hidden" />
+      <div className="absolute inset-0 bg-linear-to-b from-white/25 via-transparent via-55% to-[#EEF2F7] lg:hidden" />
 
       {/* Desktop: very subtle bottom fade only — no white wash */}
       <div className="absolute inset-0 hidden bg-linear-to-b from-transparent via-transparent to-black/15 lg:block" />

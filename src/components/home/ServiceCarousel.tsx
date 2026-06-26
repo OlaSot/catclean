@@ -152,11 +152,13 @@ function ServiceCard({ service, isSelected, onSelect, layout }: ServiceCardProps
 
   const sizeClass =
     layout === "strip"
-      ? "min-h-[7.75rem] w-[min(72vw,17.5rem)] snap-center shrink-0 rounded-xl px-3 py-2.5 min-[420px]:min-h-[8.25rem] min-[420px]:rounded-2xl min-[420px]:px-3.5 min-[420px]:py-3"
+      ? "min-h-[clamp(8.5rem,28vw,10.5rem)] w-full min-w-0 rounded-xl px-3 py-2.5 min-[420px]:rounded-2xl min-[420px]:px-4 min-[420px]:py-3 sm:rounded-2xl sm:px-4 sm:py-3.5"
       : "min-h-[clamp(8.5rem,28vw,10.5rem)] w-full min-w-0 rounded-xl px-3 py-2.5 min-[420px]:rounded-2xl min-[420px]:px-4 min-[420px]:py-3 sm:rounded-2xl sm:px-4 sm:py-3.5 md:min-h-[9.5rem] md:rounded-2xl md:px-4 md:py-3.5 lg:min-h-[10.5rem] lg:px-5 xl:min-h-[8.75rem] xl:rounded-xl xl:px-3 xl:py-2.5 2xl:min-h-[14.75rem] 2xl:rounded-3xl 2xl:px-8 2xl:py-5";
 
+  const wrapperClass = layout === "strip" ? "w-full shrink-0 snap-center" : "min-w-0 py-0.5 sm:py-1 xl:py-0.5";
+
   return (
-    <div className={layout === "strip" ? "shrink-0" : "min-w-0 py-0.5 sm:py-1 xl:py-0.5"}>
+    <div className={wrapperClass}>
       <button
         type="button"
         onClick={() => onSelect(service.id)}
@@ -214,6 +216,94 @@ type Props = {
   onSelect: (id: HomeServiceId) => void;
 };
 
+function MobileServiceStrip({ selectedId, onSelect }: Props) {
+  const stripRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<Partial<Record<HomeServiceId, HTMLDivElement>>>({});
+  const scrollRaf = useRef<number | null>(null);
+  const isScrollingToSelection = useRef(false);
+
+  const scrollCardToCenter = useCallback((id: HomeServiceId, behavior: ScrollBehavior = "smooth") => {
+    const strip = stripRef.current;
+    const card = cardRefs.current[id];
+    if (!strip || !card) return;
+
+    const targetLeft = card.offsetLeft - (strip.clientWidth - card.offsetWidth) / 2;
+    isScrollingToSelection.current = true;
+    strip.scrollTo({ left: targetLeft, behavior });
+    window.setTimeout(() => {
+      isScrollingToSelection.current = false;
+    }, behavior === "smooth" ? 420 : 0);
+  }, []);
+
+  useEffect(() => {
+    scrollCardToCenter(selectedId, "instant");
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps -- initial center only
+
+  const syncSelectionToScroll = useCallback(() => {
+    const strip = stripRef.current;
+    if (!strip || isScrollingToSelection.current) return;
+
+    const stripCenter = strip.scrollLeft + strip.clientWidth / 2;
+    let closestId: HomeServiceId | null = null;
+    let closestDistance = Number.POSITIVE_INFINITY;
+
+    for (const service of SERVICES) {
+      const card = cardRefs.current[service.id];
+      if (!card) continue;
+
+      const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+      const distance = Math.abs(stripCenter - cardCenter);
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestId = service.id;
+      }
+    }
+
+    if (closestId && closestId !== selectedId) {
+      onSelect(closestId);
+    }
+  }, [onSelect, selectedId]);
+
+  const handleScroll = () => {
+    if (scrollRaf.current != null) return;
+    scrollRaf.current = window.requestAnimationFrame(() => {
+      scrollRaf.current = null;
+      syncSelectionToScroll();
+    });
+  };
+
+  return (
+    <div className="relative mt-2 min-w-0 sm:mt-2.5">
+      <div
+        ref={stripRef}
+        onScroll={handleScroll}
+        className="-mx-3 flex gap-2.5 overflow-x-auto overscroll-x-contain px-[4.5vw] py-1.5 scroll-px-[4.5vw] [scrollbar-width:none] snap-x snap-mandatory [-webkit-overflow-scrolling:touch] sm:-mx-4 sm:gap-3 sm:px-[4.5vw] [&::-webkit-scrollbar]:hidden"
+      >
+        {SERVICES.map((service) => (
+          <div
+            key={service.id}
+            ref={(node) => {
+              if (node) cardRefs.current[service.id] = node;
+              else delete cardRefs.current[service.id];
+            }}
+            className="w-[91vw] max-w-[24rem] shrink-0 snap-center"
+          >
+            <ServiceCard
+              service={service}
+              isSelected={selectedId === service.id}
+              onSelect={(id) => {
+                onSelect(id);
+                scrollCardToCenter(id);
+              }}
+              layout="strip"
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function ServiceCarousel({ selectedId, onSelect }: Props) {
   const { t } = usePublicT();
   const compact = useCompactCarouselLayout();
@@ -256,21 +346,7 @@ export function ServiceCarousel({ selectedId, onSelect }: Props) {
   const trackOffsetPercent = page * slideWidthPercent;
 
   if (compact) {
-    return (
-      <div className="relative mt-1.5 min-w-0 sm:mt-2">
-        <div className="-mx-0.5 flex gap-2.5 overflow-x-auto overscroll-x-contain px-0.5 py-1 [scrollbar-width:none] snap-x snap-mandatory [&::-webkit-scrollbar]:hidden">
-          {SERVICES.map((service) => (
-            <ServiceCard
-              key={service.id}
-              service={service}
-              isSelected={selectedId === service.id}
-              onSelect={onSelect}
-              layout="strip"
-            />
-          ))}
-        </div>
-      </div>
-    );
+    return <MobileServiceStrip selectedId={selectedId} onSelect={onSelect} />;
   }
 
   return (

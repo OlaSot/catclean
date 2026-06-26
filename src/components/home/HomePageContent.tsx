@@ -33,11 +33,11 @@ export function HomePageContent() {
         </div>
 
         <div
-          className={`relative z-10 -mt-8 flex w-full flex-col bg-[#EEF2F7] py-2 min-[420px]:-mt-10 min-[420px]:py-2.5 sm:-mt-12 sm:py-3 md:mt-0 md:py-5 lg:min-h-dvh lg:bg-transparent ${SITE_CONTAINER_CLASS}`}
+          className={`relative z-10 -mt-5 flex w-full flex-col bg-[#EEF2F7] py-2.5 min-[420px]:-mt-6 min-[420px]:py-3 sm:-mt-7 sm:py-4 md:mt-0 md:py-5 lg:min-h-dvh lg:bg-transparent ${SITE_CONTAINER_CLASS}`}
         >
           <SiteHeader className="motion-reveal motion-delay-80 hidden lg:flex" />
 
-          <div className="flex min-h-0 flex-1 flex-col gap-3 pb-4 pt-0 min-[420px]:gap-3.5 sm:gap-4 sm:pb-5 md:mt-6 md:gap-7 md:pb-7 lg:mt-10 lg:gap-7 lg:pb-8 xl:mt-12 xl:gap-5 xl:pb-6 2xl:mt-14 2xl:gap-10 2xl:pb-12">
+          <div className="mt-2 flex min-h-0 flex-1 flex-col gap-4 pb-5 pt-0.5 min-[420px]:mt-3 min-[420px]:gap-4 sm:mt-4 sm:gap-5 sm:pb-6 md:mt-6 md:gap-7 md:pb-7 lg:mt-10 lg:gap-7 lg:pb-8 xl:mt-12 xl:gap-5 xl:pb-6 2xl:mt-14 2xl:gap-10 2xl:pb-12">
             <div className="motion-reveal motion-delay-180 min-w-0 shrink-0 max-w-xl sm:pt-0.5 md:max-w-2xl lg:max-w-2xl lg:pt-2 xl:max-w-lg xl:pt-4 2xl:max-w-3xl 2xl:pt-6">
               <h1 className={HOME_HERO_TITLE_CLASS}>
                 <span className="block">{t("public.home.hero.title1")}</span>
