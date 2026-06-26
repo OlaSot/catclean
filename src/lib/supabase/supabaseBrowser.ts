@@ -1,8 +1,14 @@
 import { createBrowserClient } from "@supabase/ssr";
+import { getSupabasePublicEnv } from "@/lib/supabase/env";
 
 export function createSupabaseBrowserClient() {
-  return createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+  const { url, anonKey } = getSupabasePublicEnv();
+
+  if (!url || !anonKey) {
+    throw new Error(
+      "Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY."
+    );
+  }
+
+  return createBrowserClient(url, anonKey);
 }
