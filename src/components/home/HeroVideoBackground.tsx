@@ -1,11 +1,20 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, type CSSProperties } from "react";
 
 type HeroVideoBackgroundProps = {
   src: string;
   poster: string;
 };
+
+const MOBILE_VIDEO_MASK =
+  "linear-gradient(to bottom, #000 0%, #000 54%, rgba(0,0,0,0.82) 66%, rgba(0,0,0,0.32) 82%, rgba(0,0,0,0.08) 94%, transparent 100%)";
+
+const MOBILE_COLOR_FADE =
+  "linear-gradient(to bottom, transparent 0%, transparent 40%, rgba(255,255,255,0.04) 54%, rgba(238,242,247,0.16) 68%, rgba(238,242,247,0.36) 82%, rgba(238,242,247,0.58) 93%, #EEF2F7 100%)";
+
+const MOBILE_BLUR_MASK =
+  "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.06) 62%, rgba(0,0,0,0.32) 84%, rgba(0,0,0,0.68) 100%)";
 
 /**
  * Mobile: dedicated top video band with focal point on the cat (object-position).
@@ -84,7 +93,12 @@ export function HeroVideoBackground({ src, poster }: HeroVideoBackgroundProps) {
     >
       <video
         ref={videoRef}
-        className="absolute inset-0 h-full w-full object-cover object-[52%_28%] min-[390px]:object-[50%_30%] sm:object-[50%_32%] md:object-[50%_38%] lg:object-[50%_42%] xl:object-center"
+        className="absolute inset-0 h-full w-full object-cover object-[52%_28%] min-[390px]:object-[50%_30%] sm:object-[50%_32%] md:object-[50%_38%] lg:object-[50%_42%] xl:object-center max-lg:[mask-image:var(--hero-video-mask)] max-lg:[-webkit-mask-image:var(--hero-video-mask)]"
+        style={
+          {
+            "--hero-video-mask": MOBILE_VIDEO_MASK,
+          } as CSSProperties
+        }
         src={src}
         autoPlay
         muted
@@ -94,10 +108,19 @@ export function HeroVideoBackground({ src, poster }: HeroVideoBackgroundProps) {
         {...(poster ? { poster } : {})}
       />
 
-      {/* Mobile: frosted fade under the cat into the page background */}
+      {/* Mobile/tablet: dissolve video into page background */}
       <div className="absolute inset-0 lg:hidden" aria-hidden>
-        <div className="absolute inset-0 bg-linear-to-b from-white/25 via-transparent via-45% to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 h-[58%] bg-linear-to-b from-transparent via-white/30 to-[#EEF2F7]/92 backdrop-blur-md backdrop-saturate-150" />
+        <div
+          className="absolute inset-0"
+          style={{ background: MOBILE_COLOR_FADE }}
+        />
+        <div
+          className="absolute inset-x-0 bottom-0 h-[58%] backdrop-blur-[6px] backdrop-saturate-105"
+          style={{
+            maskImage: MOBILE_BLUR_MASK,
+            WebkitMaskImage: MOBILE_BLUR_MASK,
+          }}
+        />
       </div>
 
       {/* Desktop: very subtle bottom fade only — no white wash */}

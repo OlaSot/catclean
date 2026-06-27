@@ -168,7 +168,9 @@ function ServiceCard({ service, isSelected, onSelect, layout }: ServiceCardProps
         {isSelected ? (
           <span
             className={`absolute top-2 right-2 inline-flex h-5 w-5 items-center justify-center rounded-full sm:top-2.5 sm:right-2.5 sm:h-6 sm:w-6 xl:top-2 xl:right-2 xl:h-5 xl:w-5 2xl:top-3 2xl:right-3 2xl:h-7 2xl:w-7 ${
-              isFeatured && isSelected ? "bg-white text-[#34597E]" : "bg-[#34597E] text-white"
+              isFeatured && isSelected
+                ? "bg-white text-[#34597E]"
+                : "bg-[#34597E] text-white"
             }`}
             aria-hidden
           >
@@ -191,7 +193,9 @@ function ServiceCard({ service, isSelected, onSelect, layout }: ServiceCardProps
 
         <service.icon
           className={`mx-auto h-7 w-7 transition-all duration-300 group-hover:scale-[1.04] min-[420px]:h-8 min-[420px]:w-8 sm:h-9 sm:w-9 md:h-9 md:w-9 lg:h-10 lg:w-10 xl:h-7 xl:w-7 2xl:h-12 2xl:w-12 ${
-            isFeatured && isSelected ? "text-white/95" : "text-[#5B8DB8] group-hover:text-[#3f6f98]"
+            isFeatured && isSelected
+              ? "text-white/95"
+              : "text-[#5B8DB8] group-hover:text-[#3f6f98]"
           }`}
         />
         <h3
@@ -277,7 +281,7 @@ function MobileServiceStrip({ selectedId, onSelect }: Props) {
       <div
         ref={stripRef}
         onScroll={handleScroll}
-        className="-mx-3 flex gap-2.5 overflow-x-auto overscroll-x-contain px-[4.5vw] py-1.5 scroll-px-[4.5vw] [scrollbar-width:none] snap-x snap-mandatory [-webkit-overflow-scrolling:touch] sm:-mx-4 sm:gap-3 sm:px-[4.5vw] [&::-webkit-scrollbar]:hidden"
+        className="flex gap-3 overflow-x-auto overscroll-x-contain px-[5%] py-1.5 scroll-px-[5%] [scrollbar-width:none] snap-x snap-mandatory [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden"
       >
         {SERVICES.map((service) => (
           <div
@@ -286,7 +290,7 @@ function MobileServiceStrip({ selectedId, onSelect }: Props) {
               if (node) cardRefs.current[service.id] = node;
               else delete cardRefs.current[service.id];
             }}
-            className="w-[91vw] max-w-[24rem] shrink-0 snap-center"
+            className="w-[90%] shrink-0 snap-center"
           >
             <ServiceCard
               service={service}
