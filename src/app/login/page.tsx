@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, Lock, Mail, Phone } from "lucide-react";
 import { LoginBackground } from "@/components/login/LoginBackground";
@@ -19,6 +19,7 @@ import {
 } from "@/components/login/login-styles";
 import { devLog } from "@/lib/dev-log";
 import { PHONE_FORM_EXAMPLE } from "@/lib/phone/profile-phone";
+import { isSupabasePublicEnvConfigured } from "@/lib/supabase/env";
 import { createSupabaseBrowserClient } from "@/lib/supabase/supabaseBrowser";
 
 const fieldMotion = {
@@ -28,8 +29,13 @@ const fieldMotion = {
 };
 
 export default function LoginPage() {
-  const router = useRouter();
-  const supabase = useMemo(() => createSupabaseBrowserClient(), []);
+  const searchParams = useSearchParams();
+  const configError = searchParams.get("error") === "config";
+  const supabaseConfigured = isSupabasePublicEnvConfigured();
+  const supabase = useMemo(
+    () => (supabaseConfigured ? createSupabaseBrowserClient() : null),
+    [supabaseConfigured],
+  );
   const [activeTab, setActiveTab] = useState<"staff" | "phone">("staff");
 
   const [email, setEmail] = useState("");
@@ -40,6 +46,11 @@ export default function LoginPage() {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!supabase) {
+      setErrorText("Login is unavailable: Supabase is not configured on this deployment.");
+      return;
+    }
+
     setLoading(true);
     setErrorText(null);
 
@@ -69,14 +80,19 @@ export default function LoginPage() {
       userId: sessionCheck.session?.user.id ?? data.user?.id ?? null,
     });
 
-    setLoading(false);
+    if (!sessionCheck.session) {
+      setLoading(false);
+      setErrorText("Sign-in succeeded but the session was not saved. Try again.");
+      return;
+    }
 
     devLog("[login] redirect", {
       target: "/app",
       userId: data.user?.id ?? null,
     });
-    router.push("/app");
-    router.refresh();
+
+    // Full navigation so auth cookies reach the server on Vercel/production.
+    window.location.assign("/app");
   };
 
   const handleTabChange = (tab: "staff" | "phone") => {
@@ -199,6 +215,17 @@ export default function LoginPage() {
                   </motion.div>
 
                   <AnimatePresence>
+                    {configError || !supabaseConfigured ? (
+                      <motion.p
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="text-sm text-rose-600"
+                      >
+                        Login is unavailable on this server. Add NEXT_PUBLIC_SUPABASE_URL and
+                        NEXT_PUBLIC_SUPABASE_ANON_KEY in Vercel, then redeploy.
+                      </motion.p>
+                    ) : null}
                     {errorText ? (
                       <motion.p
                         initial={{ opacity: 0, height: 0 }}

@@ -1,9 +1,21 @@
 import { devLog } from "@/lib/dev-log";
 import { redirect } from "next/navigation";
+import { isSupabasePublicEnvConfigured } from "@/lib/supabase/env";
 import { createSupabaseServerClient } from "@/lib/supabase/supabaseServer";
 
 export default async function AppIndex() {
-  const supabase = await createSupabaseServerClient();
+  if (!isSupabasePublicEnvConfigured()) {
+    devLog("[app/page] redirect", { target: "/login", reason: "supabase env missing" });
+    redirect("/login?error=config");
+  }
+
+  let supabase;
+  try {
+    supabase = await createSupabaseServerClient();
+  } catch (error) {
+    console.error("[app/page] createSupabaseServerClient failed:", error);
+    redirect("/login?error=config");
+  }
 
   const {
     data: { user },
