@@ -1,4 +1,5 @@
 import { createSupabaseServerClient } from "@/lib/supabase/supabaseServer";
+import { isSupabasePublicEnvConfigured } from "@/lib/supabase/env";
 import type { ClientSavedAddress } from "@/lib/booking/saved-address";
 import type { RepeatBookingPrefill } from "@/lib/booking/repeat-booking-prefill";
 import { getClientSavedAddresses } from "@/server/queries/addresses/getClientSavedAddresses";
@@ -74,23 +75,32 @@ export async function loadBookingPrefill(options: {
   repeatFrom?: string;
   addressId?: string;
 }): Promise<RepeatBookingPrefill | undefined> {
-  const repeatPrefill = await loadRepeatBookingPrefill(options.repeatFrom);
-  if (repeatPrefill) return repeatPrefill;
+  if (!isSupabasePublicEnvConfigured()) {
+    return undefined;
+  }
 
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  try {
+    const repeatPrefill = await loadRepeatBookingPrefill(options.repeatFrom);
+    if (repeatPrefill) return repeatPrefill;
 
-  if (!user) return undefined;
+    const supabase = await createSupabaseServerClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .maybeSingle();
+    if (!user) return undefined;
 
-  if (profile?.role !== "client") return undefined;
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .maybeSingle();
 
-  return loadSavedAddressPrefill(options.addressId, user.id);
+    if (profile?.role !== "client") return undefined;
+
+    return loadSavedAddressPrefill(options.addressId, user.id);
+  } catch (error) {
+    console.error("[loadBookingPrefill]", error);
+    return undefined;
+  }
 }

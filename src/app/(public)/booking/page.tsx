@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { LegacyBookingIntro } from "@/components/booking/LegacyBookingIntro";
 import { BookingServiceSelection } from "@/components/booking/BookingServiceSelection";
 import { SitePageShell } from "@/components/layout/SitePageShell";
@@ -100,7 +101,9 @@ export default async function BookingPage({ searchParams }: BookingPageProps) {
 
   return (
     <SitePageShell contentClassName="py-6 sm:py-10 md:py-12">
-      <BookingServiceSelection />
+      <Suspense fallback={null}>
+        <BookingServiceSelection />
+      </Suspense>
     </SitePageShell>
   );
 }
