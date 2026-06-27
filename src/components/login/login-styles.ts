@@ -20,10 +20,6 @@ export const LOGIN_HERO_CSS_FALLBACK_CLASS =
 
 export const LOGIN_CARD_CLASS = `${surfaces.cardPanel} w-full rounded-[32px] p-7 sm:p-9`;
 
-/** Mobile login card — overlaps hero, premium app feel */
-export const LOGIN_CARD_MOBILE_CLASS =
-  "max-md:-mt-5 max-md:rounded-[32px] max-md:border-slate-100/90 max-md:bg-white max-md:p-5 max-md:pt-6 max-md:shadow-[0_20px_50px_rgba(15,23,42,0.09)] max-md:ring-1 max-md:ring-slate-100/80";
-
 export const LOGIN_INPUT_CLASS = inputLg;
 
 export const LOGIN_INPUT_MOBILE_CLASS = "max-md:h-14 max-md:min-h-14";
@@ -48,16 +44,11 @@ export const LOGIN_COPY = {
 /** Mobile-only staff headline — desktop keeps LOGIN_COPY.staff */
 export const LOGIN_MOBILE_STAFF_COPY = {
   title: "Welcome back",
-  subtitle: "Sign in to continue managing bookings and daily operations.",
+  subtitle: "Sign in to continue managing your bookings and daily operations.",
 } as const;
 
 export const LOGIN_HERO_LINES = [
   "Professional cleaning.",
   "Premium home experience.",
   "Trusted in Hannover.",
-] as const;
-
-export const LOGIN_HERO_MOBILE_LINES = [
-  "Professional cleaning.",
-  "Premium experience.",
 ] as const;
