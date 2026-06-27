@@ -94,8 +94,11 @@ export function HeroVideoBackground({ src, poster }: HeroVideoBackgroundProps) {
         {...(poster ? { poster } : {})}
       />
 
-      {/* Mobile: light overlay + fade into content area below */}
-      <div className="absolute inset-0 bg-linear-to-b from-white/25 via-transparent via-55% to-[#EEF2F7] lg:hidden" />
+      {/* Mobile: frosted fade under the cat into the page background */}
+      <div className="absolute inset-0 lg:hidden" aria-hidden>
+        <div className="absolute inset-0 bg-linear-to-b from-white/25 via-transparent via-45% to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-[58%] bg-linear-to-b from-transparent via-white/30 to-[#EEF2F7]/92 backdrop-blur-md backdrop-saturate-150" />
+      </div>
 
       {/* Desktop: very subtle bottom fade only — no white wash */}
       <div className="absolute inset-0 hidden bg-linear-to-b from-transparent via-transparent to-black/15 lg:block" />

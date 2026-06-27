@@ -33,7 +33,7 @@ export function HomePageContent() {
         </div>
 
         <div
-          className={`relative z-10 -mt-5 flex w-full flex-col bg-[#EEF2F7] py-2.5 min-[420px]:-mt-6 min-[420px]:py-3 sm:-mt-7 sm:py-4 md:mt-0 md:py-5 lg:min-h-dvh lg:bg-transparent ${SITE_CONTAINER_CLASS}`}
+          className={`relative z-10 -mt-5 flex w-full flex-col bg-linear-to-b from-transparent from-0% via-[#EEF2F7]/75 via-14% to-[#EEF2F7] to-30% py-2.5 min-[420px]:-mt-6 min-[420px]:py-3 sm:-mt-7 sm:py-4 md:mt-0 md:bg-[#EEF2F7] md:py-5 lg:min-h-dvh lg:bg-transparent ${SITE_CONTAINER_CLASS}`}
         >
           <SiteHeader className="motion-reveal motion-delay-80 hidden lg:flex" />
 
