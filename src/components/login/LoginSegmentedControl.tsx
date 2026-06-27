@@ -34,7 +34,7 @@ export function LoginSegmentedControl({
             role="tab"
             aria-selected={isActive}
             onClick={() => onTabChange(tab.id)}
-            className={`relative z-10 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors sm:py-3 sm:text-[0.9375rem] ${
+            className={`relative z-10 rounded-xl px-3 py-3 text-sm font-semibold transition-colors max-md:min-h-[44px] sm:py-3 sm:text-[0.9375rem] ${
               isActive ? "text-[#34597E]" : "text-slate-500 hover:text-slate-700"
             }`}
           >

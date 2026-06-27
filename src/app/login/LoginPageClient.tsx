@@ -12,10 +12,14 @@ import { LoginHeroPanel } from "@/components/login/LoginHeroPanel";
 import { LoginSegmentedControl } from "@/components/login/LoginSegmentedControl";
 import {
   LOGIN_CARD_CLASS,
+  LOGIN_CARD_MOBILE_CLASS,
   LOGIN_COPY,
   LOGIN_INPUT_CLASS,
+  LOGIN_INPUT_MOBILE_CLASS,
   LOGIN_LAYOUT_MAX_WIDTH_CLASS,
+  LOGIN_MOBILE_STAFF_COPY,
   LOGIN_PRIMARY_BUTTON_CLASS,
+  LOGIN_PRIMARY_BUTTON_MOBILE_CLASS,
 } from "@/components/login/login-styles";
 import { devLog } from "@/lib/dev-log";
 import { PHONE_FORM_EXAMPLE } from "@/lib/phone/profile-phone";
@@ -108,36 +112,54 @@ export function LoginPageClient({ supabaseUrl, supabaseAnonKey }: Props) {
   };
 
   const copy = LOGIN_COPY[activeTab];
+  const displayTitle =
+    activeTab === "staff" ? (
+      <>
+        <span className="md:hidden">{LOGIN_MOBILE_STAFF_COPY.title}</span>
+        <span className="hidden md:inline">{copy.title}</span>
+      </>
+    ) : (
+      copy.title
+    );
+  const displaySubtitle =
+    activeTab === "staff" ? (
+      <>
+        <span className="md:hidden">{LOGIN_MOBILE_STAFF_COPY.subtitle}</span>
+        <span className="hidden md:inline">{copy.subtitle}</span>
+      </>
+    ) : (
+      copy.subtitle
+    );
 
   return (
     <LoginBackground>
       <div
-        className={`mx-auto flex min-h-dvh w-full ${LOGIN_LAYOUT_MAX_WIDTH_CLASS} flex-col justify-center px-4 py-8 sm:px-6 sm:py-10 md:px-8 md:py-10`}
+        className={`mx-auto flex min-h-dvh w-full ${LOGIN_LAYOUT_MAX_WIDTH_CLASS} flex-col max-md:justify-start max-md:px-4 max-md:pb-5 max-md:pt-3 sm:px-6 md:justify-center md:px-8 md:py-10`}
       >
         <div className="order-1 md:hidden">
           <LoginHeroPanel variant="compact" />
         </div>
 
-        <div className="order-2 grid w-full grid-cols-1 gap-6 sm:gap-8 md:grid-cols-[46fr_54fr] md:items-stretch md:gap-10 lg:gap-12">
+        <div className="order-2 grid w-full grid-cols-1 max-md:mt-0 max-md:gap-0 md:grid-cols-[46fr_54fr] md:items-stretch md:gap-10 lg:gap-12">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
             className="flex w-full md:order-1"
           >
-            <div className={`w-full ${LOGIN_CARD_CLASS}`}>
-            <Link href="/" className="mb-7 inline-flex sm:mb-8">
+            <div className={`w-full ${LOGIN_CARD_CLASS} ${LOGIN_CARD_MOBILE_CLASS}`}>
+            <Link href="/" className="mb-5 inline-flex max-md:mb-4 sm:mb-8">
               <Image
                 src="/logo_main.svg"
                 alt="CatClean"
                 width={160}
                 height={48}
-                className="h-8 w-auto sm:h-9"
+                className="h-7 w-auto max-md:h-7 sm:h-9"
                 priority
               />
             </Link>
 
-            <div className="mb-7 sm:mb-8">
+            <div className="mb-5 max-md:mb-4 sm:mb-8">
               <LoginSegmentedControl
                 activeTab={activeTab}
                 onTabChange={handleTabChange}
@@ -151,13 +173,13 @@ export function LoginPageClient({ supabaseUrl, supabaseAnonKey }: Props) {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -6 }}
                 transition={{ duration: 0.22 }}
-                className="mb-7 space-y-2 sm:mb-8"
+                className="mb-5 space-y-1.5 max-md:mb-4 sm:mb-8 sm:space-y-2"
               >
-                <h1 className="text-balance text-2xl font-semibold tracking-tight text-slate-800 sm:text-3xl">
-                  {copy.title}
+                <h1 className="text-balance text-xl font-semibold tracking-tight text-slate-800 sm:text-3xl">
+                  {displayTitle}
                 </h1>
-                <p className="text-base leading-relaxed text-slate-600 sm:text-lg">
-                  {copy.subtitle}
+                <p className="text-sm leading-relaxed text-slate-600 sm:text-lg">
+                  {displaySubtitle}
                 </p>
               </motion.div>
             </AnimatePresence>
@@ -171,11 +193,11 @@ export function LoginPageClient({ supabaseUrl, supabaseAnonKey }: Props) {
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.25 }}
                   onSubmit={onSubmit}
-                  className="space-y-5"
+                  className="space-y-4 max-md:space-y-4 sm:space-y-5"
                 >
                   <motion.p
                     {...fieldMotion}
-                    className="text-sm text-slate-500"
+                    className="hidden text-sm text-slate-500 md:block"
                   >
                     {LOGIN_COPY.staff.helper}
                   </motion.p>
@@ -191,7 +213,7 @@ export function LoginPageClient({ supabaseUrl, supabaseAnonKey }: Props) {
                       />
                       <input
                         id="login-email"
-                        className={LOGIN_INPUT_CLASS}
+                        className={`${LOGIN_INPUT_CLASS} ${LOGIN_INPUT_MOBILE_CLASS}`}
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         autoComplete="email"
@@ -212,7 +234,7 @@ export function LoginPageClient({ supabaseUrl, supabaseAnonKey }: Props) {
                       <input
                         id="login-password"
                         type="password"
-                        className={LOGIN_INPUT_CLASS}
+                        className={`${LOGIN_INPUT_CLASS} ${LOGIN_INPUT_MOBILE_CLASS}`}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         autoComplete="current-password"
@@ -252,7 +274,7 @@ export function LoginPageClient({ supabaseUrl, supabaseAnonKey }: Props) {
                       disabled={loading}
                       whileHover={loading ? undefined : { scale: 1.01 }}
                       whileTap={loading ? undefined : { scale: 0.99 }}
-                      className={LOGIN_PRIMARY_BUTTON_CLASS}
+                      className={`${LOGIN_PRIMARY_BUTTON_CLASS} ${LOGIN_PRIMARY_BUTTON_MOBILE_CLASS}`}
                     >
                       {loading ? (
                         <>
@@ -272,11 +294,11 @@ export function LoginPageClient({ supabaseUrl, supabaseAnonKey }: Props) {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.25 }}
-                  className="space-y-5"
+                  className="space-y-4 max-md:space-y-4 sm:space-y-5"
                 >
                   <motion.p
                     {...fieldMotion}
-                    className="text-sm text-slate-500"
+                    className="text-sm text-slate-500 max-md:text-xs"
                   >
                     {LOGIN_COPY.phone.helper}
                   </motion.p>
@@ -292,7 +314,7 @@ export function LoginPageClient({ supabaseUrl, supabaseAnonKey }: Props) {
                       />
                       <input
                         id="login-phone"
-                        className={`${LOGIN_INPUT_CLASS} text-slate-500`}
+                        className={`${LOGIN_INPUT_CLASS} ${LOGIN_INPUT_MOBILE_CLASS} text-slate-500`}
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         placeholder={PHONE_FORM_EXAMPLE}
@@ -308,7 +330,7 @@ export function LoginPageClient({ supabaseUrl, supabaseAnonKey }: Props) {
                     <button
                       type="button"
                       disabled
-                      className="inline-flex h-12 w-full cursor-not-allowed items-center justify-center rounded-full bg-slate-100 px-6 text-base font-semibold text-slate-400 sm:h-14"
+                      className="inline-flex h-14 w-full cursor-not-allowed items-center justify-center rounded-full bg-slate-100 px-6 text-base font-semibold text-slate-400"
                     >
                       Send code
                     </button>
@@ -324,7 +346,7 @@ export function LoginPageClient({ supabaseUrl, supabaseAnonKey }: Props) {
           </div>
         </div>
 
-        <div className="order-3 mt-6 sm:mt-8">
+        <div className="order-3 mt-4 max-md:mt-3 sm:mt-8">
           <LoginFooter />
         </div>
       </div>

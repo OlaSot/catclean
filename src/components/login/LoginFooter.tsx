@@ -9,7 +9,7 @@ const FOOTER_LINKS = [
 export function LoginFooter() {
   return (
     <nav
-      className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-slate-400 sm:mt-10"
+      className="mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-slate-400 sm:mt-10"
       aria-label="Legal and support"
     >
       {FOOTER_LINKS.map((link) => (
