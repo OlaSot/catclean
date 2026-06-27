@@ -5,14 +5,24 @@ import { useEffect, useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { I18nProvider } from "@/i18n/I18nProvider";
 import { devLog } from "@/lib/dev-log";
+import { isSupabasePublicEnvConfigured } from "@/lib/supabase/env";
 import { createSupabaseBrowserClient } from "@/lib/supabase/supabaseBrowser";
 
 export default function ClientAppLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const supabase = useMemo(() => createSupabaseBrowserClient(), []);
+  const supabaseConfigured = isSupabasePublicEnvConfigured();
+  const supabase = useMemo(
+    () => (supabaseConfigured ? createSupabaseBrowserClient() : null),
+    [supabaseConfigured],
+  );
 
   useEffect(() => {
+    if (!supabase) {
+      router.replace("/login?error=config");
+      return;
+    }
+
     const run = async () => {
       const { data: userRes, error: userError } = await supabase.auth.getUser();
       const user = userRes.user;

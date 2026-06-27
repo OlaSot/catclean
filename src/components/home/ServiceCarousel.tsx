@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Building2,
   Check,
@@ -95,26 +95,19 @@ const MOBILE_PAGES: HomeService[][] = SERVICES.map((service) => [service]);
 
 const DESKTOP_BREAKPOINT = "(min-width: 768px)";
 
-function subscribeCompactLayout(onStoreChange: () => void) {
-  const media = window.matchMedia(DESKTOP_BREAKPOINT);
-  media.addEventListener("change", onStoreChange);
-  return () => media.removeEventListener("change", onStoreChange);
-}
-
-function getCompactLayoutSnapshot() {
-  return !window.matchMedia(DESKTOP_BREAKPOINT).matches;
-}
-
-function getCompactLayoutServerSnapshot() {
-  return true;
-}
-
+/** Avoid SSR/client layout mismatch — resolve compact mode after mount. */
 function useCompactCarouselLayout() {
-  return useSyncExternalStore(
-    subscribeCompactLayout,
-    getCompactLayoutSnapshot,
-    getCompactLayoutServerSnapshot
-  );
+  const [compact, setCompact] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const media = window.matchMedia(DESKTOP_BREAKPOINT);
+    const update = () => setCompact(!media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+
+  return compact;
 }
 
 function getPages(compact: boolean): HomeService[][] {
@@ -314,7 +307,7 @@ export function ServiceCarousel({ selectedId, onSelect }: Props) {
   const [page, setPage] = useState(0);
   const touchStartX = useRef<number | null>(null);
 
-  const pages = getPages(compact);
+  const pages = getPages(compact === true);
   const pageCount = pages.length;
   const slideWidthPercent = 100 / pageCount;
 
@@ -326,9 +319,18 @@ export function ServiceCarousel({ selectedId, onSelect }: Props) {
   );
 
   useEffect(() => {
+    if (compact !== true) return;
     const targetPage = getPageIndexForService(selectedId, pages);
     setPage((current) => (current === targetPage ? current : targetPage));
-  }, [selectedId, pages]);
+  }, [selectedId, pages, compact]);
+
+  if (compact === null) {
+    return <div className="mt-2 h-[clamp(8.5rem,28vw,10.5rem)] min-w-0 sm:mt-2.5" aria-hidden />;
+  }
+
+  if (compact) {
+    return <MobileServiceStrip selectedId={selectedId} onSelect={onSelect} />;
+  }
 
   const handleTouchStart = (event: React.TouchEvent) => {
     touchStartX.current = event.touches[0]?.clientX ?? null;
@@ -348,10 +350,6 @@ export function ServiceCarousel({ selectedId, onSelect }: Props) {
   };
 
   const trackOffsetPercent = page * slideWidthPercent;
-
-  if (compact) {
-    return <MobileServiceStrip selectedId={selectedId} onSelect={onSelect} />;
-  }
 
   return (
     <div className="relative mt-2 min-w-0 sm:mt-2.5 md:mt-3 lg:mt-4 xl:mt-2 2xl:mt-5">
