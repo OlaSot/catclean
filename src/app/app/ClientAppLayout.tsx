@@ -5,16 +5,28 @@ import { useEffect, useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { I18nProvider } from "@/i18n/I18nProvider";
 import { devLog } from "@/lib/dev-log";
-import { isSupabasePublicEnvConfigured } from "@/lib/supabase/env";
 import { createSupabaseBrowserClient } from "@/lib/supabase/supabaseBrowser";
 
-export default function ClientAppLayout({ children }: { children: ReactNode }) {
+type Props = {
+  children: ReactNode;
+  supabaseUrl: string | null;
+  supabaseAnonKey: string | null;
+};
+
+export default function ClientAppLayout({
+  children,
+  supabaseUrl,
+  supabaseAnonKey,
+}: Props) {
   const router = useRouter();
   const pathname = usePathname();
-  const supabaseConfigured = isSupabasePublicEnvConfigured();
+  const supabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
   const supabase = useMemo(
-    () => (supabaseConfigured ? createSupabaseBrowserClient() : null),
-    [supabaseConfigured],
+    () =>
+      supabaseConfigured
+        ? createSupabaseBrowserClient({ url: supabaseUrl!, anonKey: supabaseAnonKey! })
+        : null,
+    [supabaseAnonKey, supabaseConfigured, supabaseUrl],
   );
 
   useEffect(() => {

@@ -1,8 +1,15 @@
 import { createBrowserClient } from "@supabase/ssr";
 import { getSupabasePublicEnv } from "@/lib/supabase/env";
 
-export function createSupabaseBrowserClient() {
-  const { url, anonKey } = getSupabasePublicEnv();
+export type SupabaseBrowserConfig = {
+  url: string;
+  anonKey: string;
+};
+
+export function createSupabaseBrowserClient(config?: SupabaseBrowserConfig) {
+  const fromEnv = getSupabasePublicEnv();
+  const url = config?.url ?? fromEnv.url;
+  const anonKey = config?.anonKey ?? fromEnv.anonKey;
 
   if (!url || !anonKey) {
     throw new Error(
