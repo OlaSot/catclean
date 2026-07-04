@@ -16,6 +16,14 @@ import {
   Search,
   Sparkles,
 } from "lucide-react";
+import {
+  ADMIN_CARD_CLASS,
+  ADMIN_PAGE_HEADER_ROW_CLASS,
+  ADMIN_PAGE_STACK_CLASS,
+  ADMIN_PAGE_SUBTITLE_CLASS,
+  ADMIN_PAGE_TITLE_CLASS,
+  ADMIN_PRIMARY_ACTION_CLASS,
+} from "@/lib/admin-styles";
 
 type LoadState = "loading" | "idle";
 
@@ -54,18 +62,22 @@ function KpiCard({
   icon: React.ReactNode;
 }) {
   return (
-    <div className="rounded-3xl border border-slate-200/80 bg-white p-4 shadow-[0_8px_28px_rgba(15,23,42,0.05)] sm:p-5">
-      <div className="flex items-start justify-between gap-3">
+    <div className={`${ADMIN_CARD_CLASS} min-w-0`}>
+      <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+          <p className="text-[clamp(0.5625rem,2vmin,0.6875rem)] font-semibold uppercase tracking-wide text-slate-500">
             {label}
           </p>
-          <p className="mt-1 text-2xl font-semibold tracking-tight text-slate-900">
+          <p className="mt-0.5 text-[clamp(1rem,4.5vmin,1.5rem)] font-semibold leading-none tracking-tight text-slate-900">
             {value}
           </p>
-          {sub ? <p className="mt-0.5 text-xs text-slate-400">{sub}</p> : null}
+          {sub ? (
+            <p className="mt-0.5 line-clamp-2 text-[clamp(0.5625rem,2vmin,0.6875rem)] text-slate-400">
+              {sub}
+            </p>
+          ) : null}
         </div>
-        <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#EEF4FA] text-[#34597E]">
+        <span className="inline-flex h-[clamp(1.75rem,7vmin,2.5rem)] w-[clamp(1.75rem,7vmin,2.5rem)] shrink-0 items-center justify-center rounded-xl bg-[#EEF4FA] text-[#34597E] [&_svg]:h-[clamp(0.875rem,3.5vmin,1.25rem)] [&_svg]:w-[clamp(0.875rem,3.5vmin,1.25rem)]">
           {icon}
         </span>
       </div>
@@ -87,18 +99,20 @@ function SectionCard({
   actionLabel?: string;
 }) {
   return (
-    <section className="rounded-3xl border border-slate-200/80 bg-white p-4 shadow-[0_8px_28px_rgba(15,23,42,0.05)] sm:p-5">
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-[#EEF4FA] text-[#34597E]">
+    <section className={`${ADMIN_CARD_CLASS} min-w-0`}>
+      <div className="mb-[clamp(0.375rem,1.2vh,1rem)] flex flex-col gap-1 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+        <div className="flex min-w-0 items-center gap-2">
+          <span className="inline-flex h-[clamp(1.5rem,6vmin,2rem)] w-[clamp(1.5rem,6vmin,2rem)] shrink-0 items-center justify-center rounded-lg bg-[#EEF4FA] text-[#34597E] [&_svg]:h-3.5 [&_svg]:w-3.5">
             {icon}
           </span>
-          <h2 className="text-sm font-semibold text-slate-800">{title}</h2>
+          <h2 className="min-w-0 text-[clamp(0.6875rem,2.8vmin,0.875rem)] font-semibold leading-snug text-slate-800">
+            {title}
+          </h2>
         </div>
         {actionHref && actionLabel ? (
           <Link
             href={actionHref}
-            className="text-xs font-semibold text-[#34597E] transition hover:text-[#2d4d6f]"
+            className="shrink-0 text-xs font-semibold text-[#34597E] transition hover:text-[#2d4d6f]"
           >
             {actionLabel}
           </Link>
@@ -190,20 +204,17 @@ export default function AdminDashboard() {
   const isLoading = loadState === "loading";
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
+    <div className={ADMIN_PAGE_STACK_CLASS}>
+      <div className={ADMIN_PAGE_HEADER_ROW_CLASS}>
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight text-slate-800">
+          <h1 className={ADMIN_PAGE_TITLE_CLASS}>
             Дашборд
           </h1>
-          <p className="mt-1.5 text-sm text-slate-500">
+          <p className={ADMIN_PAGE_SUBTITLE_CLASS}>
             Ежедневный операционный обзор заказов и активности команды.
           </p>
         </div>
-        <Link
-          href="/app/admin/orders/new"
-          className="inline-flex shrink-0 items-center justify-center rounded-full bg-[#34597E] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(52,89,126,0.22)] transition hover:bg-[#2d4d6f]"
-        >
+        <Link href="/app/admin/orders/new" className={ADMIN_PRIMARY_ACTION_CLASS}>
           + Новый заказ
         </Link>
       </div>
@@ -222,7 +233,7 @@ export default function AdminDashboard() {
 
       {!isLoading && !error && data ? (
         <>
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
+          <div className="grid grid-cols-3 gap-[clamp(0.25rem,1vh,0.75rem)] sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
             <KpiCard
               label="Всего заказов"
               value={String(data.kpis.totalOrders)}
@@ -257,7 +268,7 @@ export default function AdminDashboard() {
             />
           </div>
 
-          <div className="grid gap-4 lg:grid-cols-2">
+          <div className="grid min-w-0 grid-cols-1 gap-[clamp(0.375rem,1.2vh,1rem)] lg:grid-cols-2">
             <SectionCard
               title="Заказы, требующие внимания"
               icon={<AlertCircle className="h-4 w-4" />}
@@ -272,17 +283,22 @@ export default function AdminDashboard() {
                     <li key={order.orderId}>
                       <Link
                         href={`/app/admin/orders/${order.orderId}`}
-                        className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200/80 bg-[#F6F8FB]/60 px-3 py-2.5 transition hover:border-[#C5D9EB] hover:bg-[#EEF4FA]"
+                        className="block min-w-0 rounded-2xl border border-slate-200/80 bg-[#F6F8FB]/60 px-3 py-3 transition hover:border-[#C5D9EB] hover:bg-[#EEF4FA]"
                       >
-                        <div className="min-w-0">
-                          <p className="text-sm font-semibold text-slate-800">
-                            #{order.displayId} · {order.clientName}
+                        <div className="flex items-start justify-between gap-2">
+                          <p className="min-w-0 text-sm font-semibold leading-snug text-slate-800">
+                            <span className="text-[#34597E]">#{order.displayId}</span>
+                            <span className="text-slate-400"> · </span>
+                            <span className="break-words">{order.clientName}</span>
                           </p>
-                          <p className="mt-0.5 truncate text-xs text-slate-500">
-                            {order.attentionReason} · {order.serviceLabel}
-                          </p>
+                          <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />
                         </div>
-                        <ArrowRight className="h-4 w-4 shrink-0 text-slate-400" />
+                        <p className="mt-2 inline-flex max-w-full rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-medium leading-snug text-amber-900 ring-1 ring-amber-200/80">
+                          {order.attentionReason}
+                        </p>
+                        <p className="mt-2 text-xs leading-relaxed text-slate-500">
+                          {order.serviceLabel}
+                        </p>
                       </Link>
                     </li>
                   ))}
@@ -296,14 +312,14 @@ export default function AdminDashboard() {
               actionHref={`/app/admin/schedule?date=${scheduleDate}`}
               actionLabel="Открыть день в расписании"
             >
-              <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
-                <label className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <div className="mb-3 flex flex-col gap-3">
+                <label className="block w-full text-xs font-semibold uppercase tracking-wide text-slate-500">
                   Дата
                   <input
                     type="date"
                     value={scheduleDate}
                     onChange={(e) => setScheduleDate(e.target.value)}
-                    className="mt-1 block rounded-xl border border-slate-200 px-2.5 py-1.5 text-sm font-medium text-slate-700"
+                    className="mt-1 block w-full rounded-xl border border-slate-200 px-2.5 py-2.5 text-sm font-medium text-slate-700"
                   />
                 </label>
                 <Link
@@ -326,20 +342,23 @@ export default function AdminDashboard() {
                     <li key={order.id}>
                       <Link
                         href={`/app/admin/orders/${order.id}`}
-                        className="block rounded-2xl border border-slate-200/80 px-3 py-2.5 transition hover:border-[#C5D9EB] hover:bg-[#EEF4FA]/50"
+                        className="block min-w-0 rounded-2xl border border-slate-200/80 px-3 py-3 transition hover:border-[#C5D9EB] hover:bg-[#EEF4FA]/50"
                       >
-                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                          <span className="text-sm font-semibold text-[#34597E]">
+                        <div className="flex items-start gap-2.5">
+                          <span className="inline-flex shrink-0 rounded-full bg-[#EEF4FA] px-2.5 py-1 text-sm font-semibold text-[#34597E]">
                             {order.scheduledTime}
                           </span>
-                          <span className="text-sm font-medium text-slate-800">
-                            {order.client.name}
-                          </span>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-medium leading-snug text-slate-800">
+                              {order.client.name}
+                            </p>
+                            <p className="mt-1 text-xs leading-relaxed text-slate-500">
+                              {order.serviceTypeLabel}
+                              {order.address.city ? ` · ${order.address.city}` : ""}
+                            </p>
+                          </div>
+                          <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-slate-400" />
                         </div>
-                        <p className="mt-1 text-xs text-slate-500">
-                          {order.serviceTypeLabel}
-                          {order.address.city ? ` · ${order.address.city}` : ""}
-                        </p>
                       </Link>
                     </li>
                   ))}

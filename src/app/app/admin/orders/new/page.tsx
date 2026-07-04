@@ -1,11 +1,16 @@
 import Link from "next/link";
 import CreateOrderForm from "@/features/orders/components/CreateOrderForm";
+import {
+  ADMIN_PAGE_STACK_CLASS,
+  ADMIN_PAGE_SUBTITLE_CLASS,
+  ADMIN_PAGE_TITLE_CLASS,
+} from "@/lib/admin-styles";
 
 export default function AdminCreateOrderPage() {
   return (
-    <div className="min-h-[calc(100vh-80px)] bg-[#F6F8FB] px-6 py-8">
+    <div className={ADMIN_PAGE_STACK_CLASS}>
       <div className="mx-auto w-full max-w-3xl">
-        <div className="mb-8">
+        <div>
           <Link
             href="/app/admin/orders"
             className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-[#34597E]"
@@ -14,15 +19,15 @@ export default function AdminCreateOrderPage() {
             Назад к заказам
           </Link>
 
-          <h1 className="mt-4 text-3xl font-semibold tracking-tight text-slate-800">
+          <h1 className={`mt-4 ${ADMIN_PAGE_TITLE_CLASS}`}>
             Новый заказ
           </h1>
-          <p className="mt-2 text-sm text-slate-500">
+          <p className={ADMIN_PAGE_SUBTITLE_CLASS}>
             Привяжите существующий профиль клиента, затем добавьте адрес и расписание.
           </p>
         </div>
 
-        <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-[0_12px_40px_rgba(15,23,42,0.06)] md:p-8">
+        <div className="rounded-3xl border border-slate-200/80 bg-white p-5 shadow-[0_12px_40px_rgba(15,23,42,0.06)] sm:p-6 md:p-8">
           <CreateOrderForm />
         </div>
       </div>

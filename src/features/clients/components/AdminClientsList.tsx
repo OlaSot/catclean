@@ -10,6 +10,13 @@ import AdminClientsFilters, {
   type AdminClientsFilterState,
 } from "@/features/clients/components/AdminClientsFilters";
 import type { AdminClientsApiResponse } from "@/features/clients/types/admin-clients-api.types";
+import {
+  ADMIN_PAGE_HEADER_ROW_CLASS,
+  ADMIN_PAGE_STACK_CLASS,
+  ADMIN_PAGE_SUBTITLE_CLASS,
+  ADMIN_PAGE_TITLE_CLASS,
+  ADMIN_PRIMARY_ACTION_CLASS,
+} from "@/lib/admin-styles";
 
 type LoadState = "loading" | "idle";
 
@@ -69,13 +76,13 @@ export default function AdminClientsList() {
     filters.search.trim() !== "" || filters.clientType !== "all";
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-wrap items-end justify-between gap-6">
+    <div className={ADMIN_PAGE_STACK_CLASS}>
+      <div className={ADMIN_PAGE_HEADER_ROW_CLASS}>
         <div className="max-w-2xl">
-          <h1 className="text-3xl font-semibold tracking-tight text-slate-800">
+          <h1 className={ADMIN_PAGE_TITLE_CLASS}>
             Клиенты
           </h1>
-          <p className="mt-2 text-sm leading-relaxed text-slate-500">
+          <p className={ADMIN_PAGE_SUBTITLE_CLASS}>
             Управление профилями клиентов, контактами и историей заказов.
           </p>
           {!isLoading && !error ? (
@@ -89,10 +96,7 @@ export default function AdminClientsList() {
           ) : null}
         </div>
 
-        <Link
-          href="/app/admin/clients/new"
-          className="inline-flex shrink-0 items-center justify-center rounded-full bg-[#34597E] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(52,89,126,0.22)] transition hover:bg-[#2d4d6f]"
-        >
+        <Link href="/app/admin/clients/new" className={ADMIN_PRIMARY_ACTION_CLASS}>
           + Добавить клиента
         </Link>
       </div>

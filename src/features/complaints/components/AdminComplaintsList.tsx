@@ -9,6 +9,11 @@ import type {
   AdminComplaintsApiResponse,
   AdminUpdateComplaintApiResponse,
 } from "@/features/complaints/types/admin-complaints-api.types";
+import {
+  ADMIN_PAGE_STACK_CLASS,
+  ADMIN_PAGE_SUBTITLE_CLASS,
+  ADMIN_PAGE_TITLE_CLASS,
+} from "@/lib/admin-styles";
 
 type LoadState = "loading" | "idle";
 
@@ -128,12 +133,12 @@ export default function AdminComplaintsList() {
   const isLoading = loadState === "loading";
 
   return (
-    <div className="space-y-8">
+    <div className={ADMIN_PAGE_STACK_CLASS}>
       <div className="max-w-2xl">
-        <h1 className="text-3xl font-semibold tracking-tight text-slate-800">
+        <h1 className={ADMIN_PAGE_TITLE_CLASS}>
           Complaints
         </h1>
-        <p className="mt-2 text-sm leading-relaxed text-slate-500">
+        <p className={ADMIN_PAGE_SUBTITLE_CLASS}>
           Client complaints and internal follow-up notes.
         </p>
         {!isLoading && !error ? (

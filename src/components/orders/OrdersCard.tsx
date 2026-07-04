@@ -43,7 +43,7 @@ const btnLink = `text-xs ${buttonVariants.link}`;
 const btnLinkDanger = `text-xs ${buttonVariants.linkDanger}`;
 
 function statusPillStyle(status: Order["status"]): string {
-  return badgeClass(orderStatusTone(status), "xs");
+  return `${badgeClass(orderStatusTone(status), "xs")} max-w-full whitespace-normal text-center leading-snug max-sm:h-auto max-sm:min-h-5 max-sm:rounded-xl max-sm:px-2 max-sm:py-0.5 max-sm:text-[10px]`;
 }
 
 function PaymentPill({
@@ -62,7 +62,9 @@ function PaymentPill({
         : badgeClass("rose", "xs");
 
   return (
-    <span className={cls}>{label}</span>
+    <span className={`${cls} max-w-full whitespace-normal text-center leading-snug max-sm:h-auto max-sm:min-h-5 max-sm:rounded-xl max-sm:px-2 max-sm:py-0.5 max-sm:text-[10px]`}>
+      {label}
+    </span>
   );
 }
 
@@ -348,36 +350,52 @@ export default function OrderCard({ order, onChanged }: OrderCardProps) {
     .join(", ");
 
   return (
-    <article className="rounded-3xl border border-slate-200/80 bg-white p-3.5 shadow-[0_8px_28px_rgba(15,23,42,0.05)] sm:p-4">
-      <header className="flex gap-3">
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
-              #{order.displayId}
+    <article className="min-w-0 rounded-[clamp(1rem,3vmin,1.5rem)] border border-slate-200/80 bg-white p-[clamp(0.5rem,1.5vh,1rem)] shadow-[0_8px_28px_rgba(15,23,42,0.05)]">
+      <header className="space-y-[clamp(0.375rem,1.2vh,0.75rem)]">
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+            #{order.displayId}
+          </span>
+          <span className={serviceBadgeStyle(productBadgeKey(order))}>
+            {primaryProductLabel}
+          </span>
+          {showServiceTypeSecondary ? (
+            <span className="text-[10px] font-medium text-slate-400">
+              {serviceLabel(order.serviceType)}
             </span>
+          ) : null}
+        </div>
+
+        <div className="flex flex-wrap gap-1.5">
+          <PaymentPill
+            payment={order.payment}
+            label={paymentLabel(order.payment.status)}
+          />
+          <span className={statusPillStyle(order.status)}>
+            {orderStatusLabel(order.status)}
+          </span>
+          {showAwaitingConfirmationBadge ? (
             <span
-              className={serviceBadgeStyle(productBadgeKey(order))}
+              className={`${badgeClass("amber", "xs")} max-w-full whitespace-normal text-center leading-snug max-sm:h-auto max-sm:min-h-5 max-sm:rounded-xl max-sm:px-2 max-sm:py-0.5 max-sm:text-[10px]`}
             >
-              {primaryProductLabel}
+              {t("orders.awaitingClientConfirmation")}
             </span>
-            {showServiceTypeSecondary ? (
-              <span className="text-[10px] font-medium text-slate-400">
-                {serviceLabel(order.serviceType)}
-              </span>
-            ) : null}
-          </div>
+          ) : null}
+        </div>
 
-          <h3 className="mt-0.5 truncate text-base font-semibold leading-snug text-slate-900">
-            {clientHref ? (
-              <Link href={clientHref} className="hover:text-[#34597E] hover:underline">
-                {order.customer.name}
-              </Link>
-            ) : (
-              order.customer.name
-            )}
-          </h3>
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <h3 className="truncate text-base font-semibold leading-snug text-slate-900">
+              {clientHref ? (
+                <Link href={clientHref} className="hover:text-[#34597E] hover:underline">
+                  {order.customer.name}
+                </Link>
+              ) : (
+                order.customer.name
+              )}
+            </h3>
 
-          <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-500">
+            <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-500">
             <span className="inline-flex items-center gap-1">
               <Calendar className="h-3.5 w-3.5 shrink-0 opacity-70" />
               {editingSchedule === "date" ? (
@@ -448,25 +466,9 @@ export default function OrderCard({ order, onChanged }: OrderCardProps) {
           {scheduleError ? (
             <p className="mt-1 text-[11px] text-rose-700">{scheduleError}</p>
           ) : null}
-        </div>
-
-        <div className="flex shrink-0 flex-col items-end gap-1.5">
-          <div className="inline-flex flex-wrap items-center justify-end gap-1 rounded-full bg-slate-50/90 p-0.5 ring-1 ring-slate-200/70">
-            <PaymentPill
-              payment={order.payment}
-              label={paymentLabel(order.payment.status)}
-            />
-            <span className={statusPillStyle(order.status)}>
-              {orderStatusLabel(order.status)}
-            </span>
-            {showAwaitingConfirmationBadge ? (
-              <span className={badgeClass("amber", "xs")}>
-                {t("orders.awaitingClientConfirmation")}
-              </span>
-            ) : null}
           </div>
 
-          <div className="text-right leading-none">
+          <div className="shrink-0 text-right leading-none">
             <p className="text-xl font-semibold tracking-tight text-slate-900">
               {formatMoney(order.pricing.total)}{" "}
               <span className="text-xs font-medium text-slate-500">
@@ -621,20 +623,20 @@ export default function OrderCard({ order, onChanged }: OrderCardProps) {
           ) : null}
         </div>
 
-        <div className="flex shrink-0 flex-wrap items-center justify-end gap-1.5">
+        <div className="flex shrink-0 flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
           {detailHref ? (
-            <Link href={detailHref} className={btnPrimary}>
+            <Link href={detailHref} className={`${btnPrimary} w-full justify-center sm:w-auto`}>
               {t("common.viewDetails")}
             </Link>
           ) : null}
           {editHref ? (
-            <Link href={editHref} className={btnGhost}>
+            <Link href={editHref} className={`${btnGhost} w-full justify-center sm:w-auto`}>
               <Pencil className="h-3.5 w-3.5" />
               {t("common.edit")}
             </Link>
           ) : null}
 
-          <div className="relative" ref={cardMenuRef}>
+          <div className="relative sm:ml-0" ref={cardMenuRef}>
             <button
               type="button"
               onClick={() => setCardMenuOpen((open) => !open)}

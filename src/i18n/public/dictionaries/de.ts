@@ -20,6 +20,7 @@ export const de: Record<string, string> = {
   "public.nav.openMenu": "Menü öffnen",
   "public.nav.closeMenu": "Menü schließen",
   "public.header.bookCleaning": "Reinigung buchen",
+  "public.header.bookShort": "Buchen",
   "public.lang.de": "Deutsch",
   "public.lang.en": "English",
   "public.lang.aria": "Sprache wählen",
@@ -42,10 +43,22 @@ export const de: Record<string, string> = {
   "public.common.compareDetailsHint": "Vollständiger Leistungsumfang — optional",
 
   // Home
-  "public.home.hero.title1": "Makellose Wohnungen mit",
-  "public.home.hero.title2": "katzenhafter Präzision",
-  "public.home.hero.subtitle1": "Professioneller Home Reset",
+  "public.home.hero.title1": "Wieder gern nach Hause kommen.",
+  "public.home.hero.title2": "",
+  "public.home.hero.subtitle":
+    "Premium Home Reset für haustierfreundliche Zuhause — professionell, online, ohne Anrufe.",
+  "public.home.hero.subtitle1": "Premium Home Reset",
   "public.home.hero.subtitle2": "für haustierfreundliche Zuhause",
+  "public.home.hero.mobile.title": "Wieder gern nach Hause kommen.",
+  "public.home.hero.mobile.title1": "Wieder gern",
+  "public.home.hero.mobile.title2": "nach Hause kommen.",
+  "public.home.hero.mobile.subtitle": "Premium Home Reset · Haustierfreundlich · 100 % online",
+  "public.home.social.aria": "Kundenvertrauen",
+  "public.home.social.rating": "★★★★☆",
+  "public.home.social.line": "Geschätzt von hunderten Familien in Deutschland.",
+  "public.home.social.supporting":
+    "Professionelle Reinigungskräfte · Haustierfreundlich · Premium-Pflege",
+  "public.home.mobile.alsoAvailable": "Auch verfügbar",
   "public.home.booking.title": "Was brauchen Sie heute?",
   "public.home.booking.orCalculate": "Oder Preis direkt berechnen",
   "public.home.trust.deepRefresh": "Tiefen-Refresh",
@@ -73,6 +86,7 @@ export const de: Record<string, string> = {
   "public.home.carousel.prev": "Vorherige Leistungen",
   "public.home.carousel.next": "Nächste Leistungen",
   "public.home.carousel.page": "Leistungsseite",
+  "public.home.service.viewAll": "Alle Leistungen ansehen",
 
   // What we clean (shell)
   "public.compare.title": "Welche Reinigung passt zu Ihnen?",

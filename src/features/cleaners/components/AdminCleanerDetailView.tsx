@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { ADMIN_PAGE_TITLE_CLASS } from "@/lib/admin-styles";
 
 type CleanerDetail = {
   id: string;
@@ -186,7 +187,7 @@ export default function AdminCleanerDetailView({ cleanerId }: { cleanerId: strin
         <Link href="/app/admin/cleaners" className="text-sm text-[#34597E] hover:underline">
           ← Назад к клинерам
         </Link>
-        <h1 className="mt-3 text-3xl font-semibold text-slate-800">{cleaner.fullName}</h1>
+        <h1 className={`mt-3 ${ADMIN_PAGE_TITLE_CLASS}`}>{cleaner.fullName}</h1>
         <p className="mt-1 text-sm text-slate-500">{cleaner.email} · {cleaner.phone}</p>
       </div>
 

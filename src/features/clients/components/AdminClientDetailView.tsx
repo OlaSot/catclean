@@ -16,6 +16,7 @@ import {
 } from "@/features/orders/lib/format-order-display";
 import { clientTypeBadgeClass } from "@/lib/design-system/client-type-badge";
 import { CARD_CLASS } from "@/components/ui/Card";
+import { ADMIN_PAGE_TITLE_CLASS } from "@/lib/admin-styles";
 
 type LoadState = "loading" | "idle";
 
@@ -263,7 +264,7 @@ export default function AdminClientDetailView({
             />
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-start gap-3">
-                <h1 className="text-3xl font-semibold tracking-tight text-slate-800">
+                <h1 className={ADMIN_PAGE_TITLE_CLASS}>
                   {client.name}
                 </h1>
                 {client.clientType ? (

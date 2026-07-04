@@ -17,6 +17,7 @@ import AdminOrderFilesCard from "@/features/orders/components/AdminOrderFilesCar
 import AdminOrderTimeline from "@/features/orders/components/AdminOrderTimeline";
 import OrderStatusChangeForm from "@/features/orders/components/OrderStatusChangeForm";
 import AdminOrderFinanceCard from "@/features/finance/components/AdminOrderFinanceCard";
+import { ADMIN_PAGE_TITLE_CLASS } from "@/lib/admin-styles";
 import {
   displayValue,
   formatOrderDate,
@@ -490,7 +491,7 @@ export default function AdminOrderDetailView({ orderId }: AdminOrderDetailViewPr
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                   {t("orders.orderControlCenter")}
                 </p>
-                <h1 className="mt-1 text-3xl font-semibold tracking-tight text-slate-800">
+                <h1 className={`mt-1 ${ADMIN_PAGE_TITLE_CLASS}`}>
                   #{order.displayId}
                 </h1>
                 <p className="mt-1 text-sm font-medium text-slate-700">{productLabel}</p>

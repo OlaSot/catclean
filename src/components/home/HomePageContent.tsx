@@ -1,67 +1,25 @@
 "use client";
 
-import { SiteHeader } from "@/components/layout/SiteHeader";
-import { SITE_CONTAINER_CLASS } from "@/components/layout/site-layout";
-import { usePublicT } from "@/i18n/public/usePublicT";
-import { HeroVideoBackground } from "./HeroVideoBackground";
-import { HomeBookingSection } from "./HomeBookingSection";
-import { TrustBadges } from "./TrustBadges";
-import {
-  HOME_BOOKING_PANEL_CLASS,
-  HOME_BOOKING_TITLE_CLASS,
-  HOME_HERO_SUBTITLE_CLASS,
-  HOME_HERO_TITLE_CLASS,
-} from "./home-styles";
+import { useEffect, useState } from "react";
+import { HomeDesktopLayout } from "./HomeDesktopLayout";
+import { HomeMobileLayout } from "./HomeMobileLayout";
+
+const DESKTOP_MQ = "(min-width: 1024px)";
 
 export function HomePageContent() {
-  const { t } = usePublicT();
-  const heroVideo = "/videos/catclean-hero.mp4";
-  const heroFallbackImage = "";
+  const [isDesktop, setIsDesktop] = useState<boolean | null>(null);
 
-  return (
-    <main className="min-h-screen overflow-x-hidden bg-[#EEF2F7] text-slate-700 lg:bg-transparent">
-      <section className="relative lg:min-h-dvh lg:bg-transparent">
-        <div className="relative lg:contents">
-          <HeroVideoBackground src={heroVideo} poster={heroFallbackImage} />
+  useEffect(() => {
+    const mq = window.matchMedia(DESKTOP_MQ);
+    const update = () => setIsDesktop(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
 
-          {/* Mobile: header floats over the video so the cat area stays unobstructed below */}
-          <div
-            className={`pointer-events-none absolute inset-x-0 top-0 z-20 bg-linear-to-b from-white/70 via-white/30 to-transparent pb-6 lg:hidden ${SITE_CONTAINER_CLASS}`}
-          >
-            <SiteHeader className="pointer-events-auto motion-reveal motion-delay-80" />
-          </div>
-        </div>
+  if (isDesktop === null) {
+    return <main className="min-h-dvh bg-[#EEF2F7]" aria-hidden />;
+  }
 
-        <div
-          className={`relative z-10 -mt-5 flex w-full flex-col max-md:bg-transparent md:bg-[#EEF2F7] py-2.5 min-[420px]:-mt-6 min-[420px]:py-3 sm:-mt-7 sm:py-4 md:mt-0 md:py-5 lg:min-h-dvh lg:bg-transparent ${SITE_CONTAINER_CLASS}`}
-        >
-          <SiteHeader className="motion-reveal motion-delay-80 hidden lg:flex" />
-
-          <div className="mt-2 flex min-h-0 flex-1 flex-col gap-4 pb-5 pt-0.5 min-[420px]:mt-3 min-[420px]:gap-4 sm:mt-4 sm:gap-5 sm:pb-6 md:mt-6 md:gap-7 md:pb-7 lg:mt-10 lg:gap-7 lg:pb-8 xl:mt-12 xl:gap-5 xl:pb-6 2xl:mt-14 2xl:gap-10 2xl:pb-12">
-            <div className="motion-reveal motion-delay-180 min-w-0 shrink-0 max-w-xl sm:pt-0.5 md:max-w-2xl lg:max-w-2xl lg:pt-2 xl:max-w-lg xl:pt-4 2xl:max-w-3xl 2xl:pt-6">
-              <h1 className={HOME_HERO_TITLE_CLASS}>
-                <span className="block">{t("public.home.hero.title1")}</span>
-                <span className="block">{t("public.home.hero.title2")}</span>
-              </h1>
-              <p className={HOME_HERO_SUBTITLE_CLASS}>
-                <span className="block sm:inline">{t("public.home.hero.subtitle1")}</span>{" "}
-                <span className="block sm:inline">{t("public.home.hero.subtitle2")}</span>
-              </p>
-            </div>
-
-            <section
-              id="booking"
-              className={`motion-reveal motion-delay-260 w-full min-w-0 lg:mt-auto ${HOME_BOOKING_PANEL_CLASS}`}
-            >
-              <h2 className={HOME_BOOKING_TITLE_CLASS}>{t("public.home.booking.title")}</h2>
-
-              <HomeBookingSection />
-
-              <TrustBadges />
-            </section>
-          </div>
-        </div>
-      </section>
-    </main>
-  );
+  return isDesktop ? <HomeDesktopLayout /> : <HomeMobileLayout />;
 }

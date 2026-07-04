@@ -152,6 +152,7 @@ export const en = {
   "schedule.cleanerTimeline": "Cleaner timeline",
   "schedule.defaultMinutesPerJob": "min per job",
   "schedule.noCleanersMatch": "No active cleaners match this filter.",
+  "schedule.noOrdersForCleaner": "No orders scheduled for this day.",
 
   "notifications.title": "Notifications",
   "notifications.marking": "Marking...",

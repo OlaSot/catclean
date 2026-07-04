@@ -1,10 +1,18 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { useState } from "react";
 import { usePathname } from "next/navigation";
 import AdminHeader from "@/components/layout/AdminHeader";
+import { AdminMobileDrawer } from "@/components/layout/AdminMobileDrawer";
 import AdminSidebar from "@/components/layout/AdminSidebar";
 import { useT } from "@/i18n/useT";
+import {
+  ADMIN_CONTENT_CLASS,
+  ADMIN_MAIN_CLASS,
+  ADMIN_SHELL_CLASS,
+} from "@/lib/admin-styles";
+import { AdminViewportFit } from "@/components/layout/AdminViewportFit";
 import {
   getAdminPageTitleKey,
   shouldHideAdminHeaderTitle,
@@ -23,22 +31,29 @@ export default function AdminShell({
 }: AdminShellProps) {
   const pathname = usePathname();
   const { t } = useT();
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const title = t(getAdminPageTitleKey(pathname));
   const showTitle = !shouldHideAdminHeaderTitle(pathname);
 
   return (
-    <div className="flex min-h-screen bg-[#F6F8FB]">
+    <div className={ADMIN_SHELL_CLASS}>
       <AdminSidebar userEmail={userEmail} />
-      <div className="flex min-w-0 flex-1 flex-col">
+      <AdminMobileDrawer
+        open={mobileNavOpen}
+        onClose={() => setMobileNavOpen(false)}
+        userEmail={userEmail}
+      />
+      <div className={ADMIN_MAIN_CLASS}>
         <AdminHeader
           title={title}
           showTitle={showTitle}
           userEmail={userEmail}
           userRole={userRole}
+          onOpenMobileNav={() => setMobileNavOpen(true)}
         />
-        <main className="flex-1 overflow-auto">
-          <div className="mx-auto w-full max-w-[1280px] px-8 py-8">
-            {children}
+        <main className="min-h-0 flex-1 overflow-hidden">
+          <div className={`${ADMIN_CONTENT_CLASS} flex min-h-0 flex-1 flex-col`}>
+            <AdminViewportFit>{children}</AdminViewportFit>
           </div>
         </main>
       </div>

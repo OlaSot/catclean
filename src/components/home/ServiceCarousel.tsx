@@ -132,23 +132,30 @@ function ServiceCard({ service, isSelected, onSelect, layout }: ServiceCardProps
 
   const cardClass = (() => {
     if (isFeatured && isSelected) {
-      return "border-[#2d4d6f] bg-[#34597E] text-white shadow-[0_12px_36px_rgba(52,89,126,0.38)]";
+      return "border-[#34597E]/50 bg-[#34597E]/95 text-white shadow-[0_10px_32px_rgba(52,89,126,0.22)]";
     }
     if (isFeatured) {
-      return "border-[#34597E]/35 bg-white/98 text-slate-800 shadow-[0_8px_22px_rgba(52,89,126,0.14)] hover:border-[#34597E]/55 hover:shadow-[0_12px_28px_rgba(52,89,126,0.18)]";
+      return "border-[#34597E]/20 bg-white/55 text-slate-800 shadow-[0_8px_28px_rgba(52,89,126,0.08)] hover:border-[#34597E]/30 hover:bg-white/70 hover:shadow-[0_10px_32px_rgba(52,89,126,0.12)]";
     }
     if (isSelected) {
-      return "border-[#34597E] bg-[#f9fcff] shadow-[0_10px_24px_rgba(52,89,126,0.16)] ring-2 ring-[#34597E]/25";
+      return "border-[#34597E]/35 bg-white/50 shadow-[0_8px_24px_rgba(52,89,126,0.1)] ring-1 ring-[#34597E]/15";
     }
-    return "border-slate-200/80 bg-white/94 shadow-[0_6px_16px_rgba(15,23,42,0.05)] hover:border-[#a9c2d9] hover:bg-[#f9fcff] hover:shadow-[0_10px_24px_rgba(52,89,126,0.12)]";
+    return "border-white/40 bg-white/40 shadow-[0_4px_18px_rgba(15,23,42,0.04)] hover:border-white/60 hover:bg-white/55 hover:shadow-[0_8px_24px_rgba(52,89,126,0.08)]";
   })();
 
   const sizeClass =
     layout === "strip"
-      ? "min-h-[clamp(8.5rem,28vw,10.5rem)] w-full min-w-0 rounded-xl px-3 py-2.5 min-[420px]:rounded-2xl min-[420px]:px-4 min-[420px]:py-3 sm:rounded-2xl sm:px-4 sm:py-3.5"
-      : "min-h-[clamp(8.5rem,28vw,10.5rem)] w-full min-w-0 rounded-xl px-3 py-2.5 min-[420px]:rounded-2xl min-[420px]:px-4 min-[420px]:py-3 sm:rounded-2xl sm:px-4 sm:py-3.5 md:min-h-[9.5rem] md:rounded-2xl md:px-4 md:py-3.5 lg:min-h-[10.5rem] lg:px-5 xl:min-h-[8.75rem] xl:rounded-xl xl:px-3 xl:py-2.5 2xl:min-h-[14.75rem] 2xl:rounded-3xl 2xl:px-8 2xl:py-5";
+      ? "min-h-[clamp(8.5rem,28vw,10.5rem)] w-full min-w-0 rounded-[20px] px-3 py-2.5 backdrop-blur-xl min-[420px]:px-4 min-[420px]:py-3 sm:px-4 sm:py-3.5"
+      : isFeatured
+        ? "min-h-[clamp(8.75rem,28vw,11.25rem)] w-full min-w-0 rounded-[22px] px-3.5 py-2.5 backdrop-blur-xl min-[420px]:rounded-[24px] min-[420px]:px-4 min-[420px]:py-3 sm:px-4 sm:py-3.5 md:min-h-[10rem] md:px-4 md:py-3 lg:min-h-[10.5rem] lg:scale-[1.04] lg:px-4 lg:py-3.5 xl:min-h-[9.5rem] xl:px-3.5 xl:py-3 2xl:min-h-[14.5rem] 2xl:scale-[1.05] 2xl:px-7 2xl:py-5"
+        : "min-h-[clamp(8rem,26vw,10rem)] w-full min-w-0 rounded-[20px] px-3 py-2 backdrop-blur-xl min-[420px]:rounded-[22px] min-[420px]:px-3.5 min-[420px]:py-2.5 sm:px-4 sm:py-3 md:min-h-[9rem] md:px-4 md:py-3 lg:min-h-[9.5rem] lg:px-4 lg:py-3 xl:min-h-[8.25rem] xl:px-3 xl:py-2.5 2xl:min-h-[13.5rem] 2xl:px-7 2xl:py-4.5";
 
-  const wrapperClass = layout === "strip" ? "w-full shrink-0 snap-center" : "min-w-0 py-0.5 sm:py-1 xl:py-0.5";
+  const wrapperClass =
+    layout === "strip"
+      ? "w-full shrink-0 snap-center"
+      : isFeatured
+        ? "relative z-[1] min-w-0 py-0.5 sm:py-1 xl:py-0.5"
+        : "min-w-0 py-0.5 sm:py-1 xl:py-0.5";
 
   return (
     <div className={wrapperClass}>
@@ -352,9 +359,9 @@ export function ServiceCarousel({ selectedId, onSelect }: Props) {
   const trackOffsetPercent = page * slideWidthPercent;
 
   return (
-    <div className="relative mt-2 min-w-0 sm:mt-2.5 md:mt-3 lg:mt-4 xl:mt-2 2xl:mt-5">
+    <div className="relative mt-1.5 min-w-0 sm:mt-2 md:mt-2 lg:mt-2.5 xl:mt-1.5 2xl:mt-4">
       <div
-        className="w-full overflow-hidden py-1.5 sm:py-2 md:py-2.5 xl:py-1.5 2xl:py-3"
+        className="w-full overflow-hidden py-1 sm:py-1.5 md:py-2 xl:py-1 2xl:py-2.5"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
@@ -387,7 +394,7 @@ export function ServiceCarousel({ selectedId, onSelect }: Props) {
         </div>
       </div>
 
-      <div className="mt-1.5 flex min-w-0 items-center justify-center gap-2 sm:mt-2 md:gap-3 xl:mt-1.5 xl:gap-2 2xl:mt-3 2xl:gap-4">
+      <div className="mt-1 flex min-w-0 items-center justify-center gap-1.5 sm:mt-1.5 md:gap-2 xl:mt-1 xl:gap-1.5 2xl:mt-2 2xl:gap-3">
         <button
           type="button"
           aria-label={t("public.home.carousel.prev")}

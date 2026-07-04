@@ -15,6 +15,13 @@ import AdminOrdersFilters, {
 import { normalizeOrdersFromApi } from "@/features/orders/lib/normalize-orders";
 import type { AdminOrdersApiResponse } from "@/features/orders/types/admin-orders-api.types";
 import { useT } from "@/i18n/useT";
+import {
+  ADMIN_PAGE_HEADER_ROW_CLASS,
+  ADMIN_PAGE_STACK_CLASS,
+  ADMIN_PAGE_SUBTITLE_CLASS,
+  ADMIN_PAGE_TITLE_CLASS,
+  ADMIN_PRIMARY_ACTION_CLASS,
+} from "@/lib/admin-styles";
 
 type LoadState = "loading" | "idle";
 
@@ -117,13 +124,13 @@ export default function AdminOrdersList() {
   }, [isLoading, orders.length, activeFilters]);
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
+    <div className={ADMIN_PAGE_STACK_CLASS}>
+      <div className={ADMIN_PAGE_HEADER_ROW_CLASS}>
         <div className="max-w-xl">
-          <h1 className="text-3xl font-semibold tracking-tight text-slate-800">
+          <h1 className={ADMIN_PAGE_TITLE_CLASS}>
             {t("nav.orders")}
           </h1>
-          <p className="mt-1.5 text-sm leading-relaxed text-slate-500">
+          <p className={ADMIN_PAGE_SUBTITLE_CLASS}>
             Manage bookings, assignments and order statuses.
           </p>
           {clientCreatedBanner ? (
@@ -136,10 +143,7 @@ export default function AdminOrdersList() {
           ) : null}
         </div>
 
-        <Link
-          href="/app/admin/orders/new"
-          className="inline-flex shrink-0 items-center justify-center rounded-full bg-[#34597E] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(52,89,126,0.22)] transition hover:bg-[#2d4d6f]"
-        >
+        <Link href="/app/admin/orders/new" className={ADMIN_PRIMARY_ACTION_CLASS}>
           + {t("common.addOrder")}
         </Link>
       </div>

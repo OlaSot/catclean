@@ -154,6 +154,7 @@ export const ru = {
   "schedule.cleanerTimeline": "Лента клинеров",
   "schedule.defaultMinutesPerJob": "мин на заказ по умолчанию",
   "schedule.noCleanersMatch": "Нет активных клинеров под текущий фильтр.",
+  "schedule.noOrdersForCleaner": "На этот день заказов нет.",
 
   "notifications.title": "Уведомления",
   "notifications.marking": "Отмечаем...",
