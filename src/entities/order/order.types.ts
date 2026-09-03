@@ -23,6 +23,8 @@ export type Order = {
   routeId: string;
   /** UI label: order_number, numeric id, or short uuid suffix. */
   displayId: string;
+  /** Timestamp when the order was first created. */
+  createdAt: string;
   orderNumber?: string | null;
   draftId?: number | null;
   channel: "Website" | "Phone" | "Partner" | "Manual";

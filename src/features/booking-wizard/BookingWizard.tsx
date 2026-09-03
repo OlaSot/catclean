@@ -4,6 +4,11 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { usePublicT } from "@/i18n/public/usePublicT";
 import { normalizePhone } from "@/lib/phone/normalize-phone";
+import { isPublicBookingSlotTooSoon } from "@/lib/booking/berlin-datetime";
+import {
+  translatePublicBookingError,
+  usePublicBookingSubmit,
+} from "@/lib/booking/submit-public-booking";
 import { HOME_RESET_STEPS, SIMPLE_STEPS, EMPTY_BOOKING_STATE, SIZE_PRESETS } from "./booking-wizard.constants";
 import {
   buildServiceDetailsForPricing,
@@ -11,7 +16,7 @@ import {
   mapServicePresetToOrderService,
   serializeVisitDetails,
 } from "./booking-wizard.utils";
-import type { BookingServicePreset, BookingWizardState, StepDef, StepId } from "./booking-wizard.types";
+import type { BookingServicePreset, StepDef, StepId } from "./booking-wizard.types";
 import { StepAddress } from "./steps/StepAddress";
 import { StepCondition } from "./steps/StepCondition";
 import { StepContact } from "./steps/StepContact";
@@ -25,12 +30,6 @@ import { StepService } from "./steps/StepService";
 import { StepSummary } from "./steps/StepSummary";
 import { StepSupplies } from "./steps/StepSupplies";
 import { StepVisitDetails } from "./steps/StepVisitDetails";
-
-type SubmitResult = {
-  orderId: string;
-  status: string;
-  confirmationPending: boolean;
-};
 
 type ValidationErrors = Record<string, string>;
 type BookingWizardProps = {
@@ -46,7 +45,7 @@ export function BookingWizard({ initialService }: BookingWizardProps) {
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [submitSuccess, setSubmitSuccess] = useState<SubmitResult | null>(null);
+  const { submit } = usePublicBookingSubmit();
 
   const estimate = useMemo(() => calculateBookingEstimate(state), [state]);
   const isHomeResetFlow = state.service === "home_reset";
@@ -118,6 +117,9 @@ export function BookingWizard({ initialService }: BookingWizardProps) {
 
     if (currentStep === "address") {
       if (!state.address.street.trim()) nextErrors.street = t("public.validation.required");
+      else if (!state.address.serviceAreaValidated) {
+        nextErrors.street = t("public.validation.regionHannoverAddress");
+      }
       if (!state.address.houseNumber.trim()) nextErrors.houseNumber = t("public.validation.required");
       if (!state.address.zip.trim()) nextErrors.zip = t("public.validation.required");
       if (!state.address.city.trim()) nextErrors.city = t("public.validation.required");
@@ -126,6 +128,9 @@ export function BookingWizard({ initialService }: BookingWizardProps) {
     if (currentStep === "schedule") {
       if (!state.schedule.date) nextErrors.date = t("public.validation.chooseDate");
       if (!state.schedule.time) nextErrors.time = t("public.validation.chooseTime");
+      else if (state.schedule.date && isPublicBookingSlotTooSoon(state.schedule.date, state.schedule.time)) {
+        nextErrors.time = t("public.validation.slotTooSoon");
+      }
     }
 
     if (currentStep === "contact") {
@@ -133,7 +138,8 @@ export function BookingWizard({ initialService }: BookingWizardProps) {
       const normalized = normalizePhone(state.contact.phone);
       if (!normalized) nextErrors.phone = t("public.validation.invalidPhone");
       const email = state.contact.email.trim();
-      if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      if (!email) nextErrors.email = t("public.validation.required");
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         nextErrors.email = t("public.validation.invalidEmail");
       }
     }
@@ -154,6 +160,16 @@ export function BookingWizard({ initialService }: BookingWizardProps) {
   }
 
   async function handleSubmit() {
+    if (submitting) return;
+    if (
+      state.schedule.date &&
+      state.schedule.time &&
+      isPublicBookingSlotTooSoon(state.schedule.date, state.schedule.time)
+    ) {
+      setErrors({ time: t("public.validation.slotTooSoon") });
+      setStep("schedule");
+      return;
+    }
     if (!validateCurrentStep()) return;
     setSubmitting(true);
     setSubmitError(null);
@@ -190,39 +206,19 @@ export function BookingWizard({ initialService }: BookingWizardProps) {
     };
 
     try {
-      const response = await fetch("/api/public/bookings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const body = (await response.json()) as {
-        data: SubmitResult | null;
-        error: string | null;
-      };
-      if (!response.ok || body.error || !body.data) {
-        setSubmitError(body.error ?? t("public.bookingLegacy.submitFailed"));
-        return;
+      const result = await submit(payload);
+      if (!result.ok && !("blocked" in result && result.blocked)) {
+        if (result.error === "public.validation.slotTooSoon") {
+          setErrors({ time: t("public.validation.slotTooSoon") });
+          setStep("schedule");
+        }
+        setSubmitError(translatePublicBookingError(t, result.error));
       }
-      setSubmitSuccess(body.data);
     } catch {
       setSubmitError(t("public.bookingLegacy.submitFailed"));
     } finally {
       setSubmitting(false);
     }
-  }
-
-  if (submitSuccess) {
-    return (
-      <div className="space-y-4 rounded-3xl border border-white/70 bg-white/75 p-8 backdrop-blur-md">
-        <h2 className="text-3xl font-semibold text-slate-700">{t("public.bookingLegacy.successTitle")}</h2>
-        <p className="text-slate-600">
-          {t("public.bookingLegacy.orderId")}:{" "}
-          <span className="font-semibold text-slate-800">{submitSuccess.orderId}</span>
-        </p>
-        <p className="text-slate-600">{t("public.bookingLegacy.confirmPending")}</p>
-        <p className="text-slate-600">{t("public.bookingLegacy.confirmHint")}</p>
-      </div>
-    );
   }
 
   return (

@@ -1,8 +1,8 @@
 export const SCHEDULE_TIME_STEP_MINUTES = 15;
 export const SCHEDULE_TIME_STEP_SECONDS = SCHEDULE_TIME_STEP_MINUTES * 60;
 
-/** Normalize "HH:mm" (or with seconds) to the nearest 15-minute slot. */
-export function normalizeScheduleTime(value: string): string | null {
+/** Validate "HH:mm" (optional seconds). Does not snap to a grid. */
+export function parseClockTime(value: string): string | null {
   const trimmed = value.trim();
   const match = /^(\d{1,2}):(\d{2})(?::\d{2})?$/.exec(trimmed);
   if (!match) return null;
@@ -11,7 +11,16 @@ export function normalizeScheduleTime(value: string): string | null {
   const minutes = Number(match[2]);
   if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) return null;
 
-  const totalMinutes = hours * 60 + minutes;
+  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+}
+
+/** Normalize "HH:mm" (or with seconds) to the nearest 15-minute slot. */
+export function normalizeScheduleTime(value: string): string | null {
+  const parsed = parseClockTime(value);
+  if (!parsed) return null;
+
+  const [hoursRaw, minutesRaw] = parsed.split(":").map(Number);
+  const totalMinutes = hoursRaw * 60 + minutesRaw;
   const snapped =
     Math.round(totalMinutes / SCHEDULE_TIME_STEP_MINUTES) *
     SCHEDULE_TIME_STEP_MINUTES;

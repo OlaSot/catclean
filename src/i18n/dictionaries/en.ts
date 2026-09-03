@@ -11,6 +11,8 @@ export const en = {
   "nav.admin": "Admin",
 
   "admin.logout": "Log out",
+  "admin.theme.toDark": "Switch to dark theme",
+  "admin.theme.toLight": "Switch to light theme",
   "admin.crmBadge": "Admin CRM",
 
   "common.loading": "Loading…",
@@ -72,6 +74,7 @@ export const en = {
   "orders.client": "Client",
   "orders.address": "Address",
   "orders.schedule": "Schedule",
+  "orders.createdAt": "Created",
   "orders.assignedCleaner": "Assigned cleaner",
   "orders.notAssigned": "Not assigned",
   "orders.openAttachmentsManager": "Open attachments manager",
@@ -172,6 +175,8 @@ export const en = {
   "forms.selectService": "Select service",
   "forms.scheduledDate": "Scheduled date",
   "forms.scheduledTime": "Scheduled time",
+  "forms.scheduledTimeHint":
+    "Any time of day. Public booking only offers 07:30–20:00 when a cleaner is free; you can override that here.",
   "forms.serviceParameters": "Service parameters",
   "forms.autoEstimated": "Auto-estimated",
   "forms.minimumOrderApplied": "minimum order applied",

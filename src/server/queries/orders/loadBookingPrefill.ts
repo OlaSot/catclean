@@ -26,6 +26,9 @@ function savedAddressToPrefill(address: ClientSavedAddress): RepeatBookingPrefil
     },
     petsInfo: null,
     customerComment: null,
+    serviceDetails: null,
+    suppliesNote: "",
+    equipmentNote: "",
   };
 }
 

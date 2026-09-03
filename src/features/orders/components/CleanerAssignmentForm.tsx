@@ -116,7 +116,7 @@ export default function CleanerAssignmentForm({
     return () => {
       cancelled = true;
     };
-  }, [assignment.assignedCleanerId]);
+  }, [assignment.assignedCleanerId, t]);
 
   useEffect(() => {
     let cancelled = false;

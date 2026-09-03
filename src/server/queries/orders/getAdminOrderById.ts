@@ -1,3 +1,4 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { mapOrderToAdminDetail } from "@/entities/order/admin-order-detail.mapper";
 import type { AdminOrderDetail } from "@/entities/order/admin-order-detail.types";
 import type { SupabaseOrderRow } from "@/entities/order/order.supabase.types";
@@ -7,7 +8,10 @@ import { fetchOrderStatusHistory } from "@/server/queries/orders/fetch-order-sta
 import { buildClientOrderStats } from "@/server/queries/orders/order-client-stats";
 import { ADMIN_ORDER_SELECT } from "@/server/queries/orders/order-select";
 
-export async function getAdminOrderById(orderId: string): Promise<{
+export async function getAdminOrderById(
+  orderId: string,
+  providedSupabase?: SupabaseClient
+): Promise<{
   order: AdminOrderDetail | null;
   error: string | null;
 }> {
@@ -16,7 +20,7 @@ export async function getAdminOrderById(orderId: string): Promise<{
     return { order: null, error: "Invalid order id" };
   }
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = providedSupabase ?? (await createSupabaseServerClient());
 
   const { data: row, error } = await supabase
     .from("orders")

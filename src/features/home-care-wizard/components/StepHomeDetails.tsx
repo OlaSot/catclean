@@ -4,6 +4,7 @@ import { Building2, Home } from "lucide-react";
 import { PremiumSelectCard } from "@/features/home-reset-wizard/components/PremiumSelectCard";
 import { WizardStepHeader } from "@/features/home-reset-wizard/components/WizardStepHeader";
 import { usePublicT } from "@/i18n/public/usePublicT";
+import { getHomeCareHouseSurchargeEur } from "@/lib/pricing/pricing.constants";
 import { SIZE_MAX_M2, SIZE_MIN_M2, SIZE_PRESETS } from "../home-care-wizard.constants";
 import { formatHomeCarePrice } from "../home-care-wizard.utils";
 import type { HomeCarePropertyType } from "../home-care-wizard.types";
@@ -11,18 +12,22 @@ import type { HomeCarePropertyType } from "../home-care-wizard.types";
 type Props = {
   propertyType: HomeCarePropertyType | null;
   propertySizeM2: number;
+  floorsCount: number;
   estimatePrice: number | null;
   onPropertyTypeChange: (type: HomeCarePropertyType) => void;
   onSizeChange: (size: number) => void;
+  onFloorsCountChange: (count: number) => void;
   error?: string;
 };
 
 export function StepHomeDetails({
   propertyType,
   propertySizeM2,
+  floorsCount,
   estimatePrice,
   onPropertyTypeChange,
   onSizeChange,
+  onFloorsCountChange,
   error,
 }: Props) {
   const { t } = usePublicT();
@@ -63,6 +68,40 @@ export function StepHomeDetails({
         </div>
         {error ? <p className="text-sm text-rose-600">{error}</p> : null}
       </div>
+
+      {propertyType === "house" ? (
+        <div className="space-y-3 rounded-2xl border border-[#34597E]/15 bg-[#34597E]/5 p-4">
+          <div>
+            <p className="text-sm font-medium text-slate-700">{t("public.homeCare.floors")}</p>
+            <p className="mt-1 text-xs leading-relaxed text-slate-500">
+              {t("public.homeCare.floorsHint")}
+            </p>
+          </div>
+          <div className="grid grid-cols-4 gap-2">
+            {[1, 2, 3, 4].map((count) => (
+              <button
+                key={count}
+                type="button"
+                aria-pressed={floorsCount === count}
+                onClick={() => onFloorsCountChange(count)}
+                className={`rounded-xl border px-3 py-2.5 text-sm font-semibold transition ${
+                  floorsCount === count
+                    ? "border-[#34597E] bg-[#34597E] text-white"
+                    : "border-stone-200 bg-white text-slate-600 hover:border-[#34597E]/40"
+                }`}
+              >
+                {count === 4 ? "4+" : count}
+              </button>
+            ))}
+          </div>
+          <p className="text-xs font-medium text-[#34597E]">
+            {t("public.homeCare.houseSurcharge").replace(
+              "{amount}",
+              String(getHomeCareHouseSurchargeEur(floorsCount))
+            )}
+          </p>
+        </div>
+      ) : null}
 
       <div className="space-y-4">
         <p className="text-sm font-medium text-slate-600">{t("public.homeCare.homeSize")}</p>

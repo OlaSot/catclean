@@ -6,21 +6,11 @@ import { calculateCleanerWorkload } from "@/lib/schedule/calculate-cleaner-workl
 import { calculateCleanerScore } from "@/lib/dispatch/calculate-cleaner-score";
 import type { SuggestedCleanerCandidate } from "@/features/orders/types/suggested-cleaners-api.types";
 import { getClientPreferredCleaners } from "@/lib/dispatch/get-client-preferred-cleaners";
+import { jobOverlapsSlot, parseScheduleTimeToMinutes } from "@/lib/schedule/slot-overlap";
 
 type RouteContext = {
   params: Promise<{ id: string }>;
 };
-
-function parseTimeToMinutes(value: string | null | undefined): number | null {
-  const raw = value?.trim();
-  if (!raw) return null;
-  const match = raw.match(/^(\d{1,2}):(\d{2})/);
-  if (!match) return null;
-  const hh = Number(match[1]);
-  const mm = Number(match[2]);
-  if (!Number.isFinite(hh) || !Number.isFinite(mm)) return null;
-  return hh * 60 + mm;
-}
 
 function hasOverlapWithOrder(params: {
   orderStart: number | null;
@@ -28,15 +18,14 @@ function hasOverlapWithOrder(params: {
   cleanerOrders: { scheduled_time: string | null; estimated_duration_minutes: number | null }[];
 }): boolean {
   if (params.orderStart == null) return false;
-  const orderStart = params.orderStart;
-  const orderEnd = orderStart + params.orderDuration;
-  return params.cleanerOrders.some((existing) => {
-    const existingStart = parseTimeToMinutes(existing.scheduled_time);
-    if (existingStart == null) return false;
-    const duration = Math.max(15, Number(existing.estimated_duration_minutes ?? 180));
-    const existingEnd = existingStart + duration;
-    return orderStart < existingEnd && existingStart < orderEnd;
-  });
+  return params.cleanerOrders.some((existing) =>
+    jobOverlapsSlot({
+      slotStart: params.orderStart as number,
+      slotDuration: params.orderDuration,
+      jobTime: existing.scheduled_time,
+      jobDurationMinutes: existing.estimated_duration_minutes,
+    })
+  );
 }
 
 export async function GET(_request: Request, context: RouteContext) {
@@ -71,7 +60,7 @@ export async function GET(_request: Request, context: RouteContext) {
     : orderRow.address;
   const orderCity = orderAddress?.city?.trim().toLowerCase() ?? "";
   const orderDate = orderRow.scheduled_date?.slice(0, 10) ?? "";
-  const orderStart = parseTimeToMinutes(orderRow.scheduled_time);
+  const orderStart = parseScheduleTimeToMinutes(orderRow.scheduled_time);
   const orderDuration = Math.max(
     15,
     Number(orderRow.estimated_duration_minutes ?? 180)

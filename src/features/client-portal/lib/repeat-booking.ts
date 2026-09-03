@@ -11,6 +11,7 @@ export function buildRepeatBookingHref(order: {
   const params = new URLSearchParams({
     service: serviceParam,
     repeatFrom: order.id,
+    from: "client-portal",
   });
   return `/booking?${params.toString()}`;
 }

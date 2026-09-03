@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Clock3, Menu, X } from "lucide-react";
 import { PublicLanguageSwitcher } from "@/components/i18n/PublicLanguageSwitcher";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { SITE_NAV_LINKS } from "./site-layout";
 import { usePublicT } from "@/i18n/public/usePublicT";
 
@@ -83,18 +84,20 @@ export function SiteHeader({
           href="/"
           className={`flex min-w-0 shrink-0 items-center ${compact ? "gap-1.5" : "gap-1.5 min-[420px]:gap-2 sm:gap-2.5 md:gap-3"}`}
         >
-          <Image
-            src="/logo_main.svg"
-            alt="CatClean"
-            width={190}
-            height={56}
-            className={
-              compact
-                ? "h-[1.375rem] w-auto"
-                : "h-7 w-auto min-[375px]:h-8 min-[420px]:h-9 sm:h-10 md:h-11 lg:h-11 xl:h-10 2xl:h-14"
-            }
-            priority
-          />
+          <span className="inline-flex items-center dark:rounded-xl dark:bg-white dark:px-2 dark:py-1">
+            <Image
+              src="/logo_main.svg"
+              alt="CatClean"
+              width={190}
+              height={56}
+              className={
+                compact
+                  ? "h-[1.375rem] w-auto"
+                  : "h-7 w-auto min-[375px]:h-8 min-[420px]:h-9 sm:h-10 md:h-11 lg:h-11 xl:h-10 2xl:h-14"
+              }
+              priority
+            />
+          </span>
         </Link>
 
         <nav className="hidden items-center gap-4 text-sm font-medium text-slate-700 lg:flex xl:gap-3.5 xl:text-[0.8125rem] 2xl:gap-6 2xl:text-sm">
@@ -110,6 +113,11 @@ export function SiteHeader({
         </nav>
 
         <div className={`flex shrink-0 items-center ${compact ? "gap-1" : "gap-1 min-[420px]:gap-1.5 sm:gap-2 md:gap-3"}`}>
+          <ThemeToggle
+            compact={compact}
+            toDarkLabel={t("public.theme.toDark")}
+            toLightLabel={t("public.theme.toLight")}
+          />
           {languageInMenu ? null : <PublicLanguageSwitcher />}
           <Link
             href={bookHref}
@@ -188,7 +196,11 @@ export function SiteHeader({
                 <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wide text-slate-400">
                   {t("public.lang.aria")}
                 </p>
-                <div className="px-1">
+                <div className="flex items-center gap-2 px-1">
+                  <ThemeToggle
+                    toDarkLabel={t("public.theme.toDark")}
+                    toLightLabel={t("public.theme.toLight")}
+                  />
                   <PublicLanguageSwitcher />
                 </div>
               </div>

@@ -16,7 +16,7 @@ export function normalizePhone(input: string): string | null {
   if (!trimmed) return null;
 
   // Remove spaces, brackets, dashes, dots, slashes (keep leading + during first pass)
-  let compact = trimmed.replace(/[\s\-()./]/g, "");
+  const compact = trimmed.replace(/[\s\-()./]/g, "");
 
   let digits: string;
 

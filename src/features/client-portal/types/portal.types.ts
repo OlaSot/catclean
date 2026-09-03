@@ -1,4 +1,5 @@
 import type { OrderStatus } from "@/entities/order/order.types";
+import type { ClientOrderCancellationPreview } from "@/entities/order/client-order.types";
 import type { PortalServiceId } from "../lib/service-catalog";
 
 export type PortalOrderStatus =
@@ -51,6 +52,7 @@ export type PortalOrderDetail = PortalOrder & {
   canReschedule: boolean;
   canLeaveReview: boolean;
   canOpenComplaint: boolean;
+  cancellationPreview: ClientOrderCancellationPreview | null;
 };
 
 export type PortalClientProfile = {

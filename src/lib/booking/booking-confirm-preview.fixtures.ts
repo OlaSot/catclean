@@ -26,6 +26,10 @@ const PREVIEW_ADDRESS = {
   city: "München",
   floor: "3",
   accessNotes: "Gate code 4821",
+  googlePlaceId: "preview-place-id",
+  latitude: 52.3759,
+  longitude: 9.732,
+  serviceAreaValidated: true,
 };
 
 const PREVIEW_CONTACT = {
@@ -88,6 +92,10 @@ export const MOVE_OUT_CONFIRM_PREVIEW_STATE: MoveOutWizardState = {
     zip: PREVIEW_ADDRESS.zip,
     city: PREVIEW_ADDRESS.city,
     floor: PREVIEW_ADDRESS.floor,
+    googlePlaceId: PREVIEW_ADDRESS.googlePlaceId,
+    latitude: PREVIEW_ADDRESS.latitude,
+    longitude: PREVIEW_ADDRESS.longitude,
+    serviceAreaValidated: PREVIEW_ADDRESS.serviceAreaValidated,
   },
   schedule: { ...PREVIEW_SCHEDULE },
   contact: {

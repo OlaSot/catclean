@@ -74,7 +74,7 @@ export function resolveBookingServiceParam(
 
 export function bookingServiceHref(
   param: BookingServiceParam | "home_care",
-  extra?: { addressId?: string; repeatFrom?: string },
+  extra?: { addressId?: string; repeatFrom?: string; from?: string },
 ): string {
   const search = new URLSearchParams({ service: param });
   if (extra?.addressId?.trim()) {
@@ -82,6 +82,9 @@ export function bookingServiceHref(
   }
   if (extra?.repeatFrom?.trim()) {
     search.set("repeatFrom", extra.repeatFrom.trim());
+  }
+  if (extra?.from?.trim()) {
+    search.set("from", extra.from.trim());
   }
   return `/booking?${search.toString()}`;
 }

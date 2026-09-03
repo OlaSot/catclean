@@ -75,7 +75,11 @@ export function StepConfirm({ state, estimatePrice }: Props) {
       id: "property",
       icon: "property",
       label: t("public.checkout.overview.property"),
-      value: `${translateHomeResetPropertyType(t, state.propertyType)} · ${formatSizeLabel(state.propertySizeM2)}`,
+      value: `${translateHomeResetPropertyType(t, state.propertyType)} · ${formatSizeLabel(state.propertySizeM2)}${
+        state.propertyType === "house"
+          ? ` · ${state.floorsCount}${state.floorsCount >= 4 ? "+" : ""} ${t("public.homeReset.home.floorsShort")}`
+          : ""
+      }`,
     },
     {
       id: "pets",

@@ -136,7 +136,7 @@ export function mapOrderToAdminDetail(
     "Unknown client";
 
   const doorbellRaw = address?.apartment?.trim() || null;
-  const commentRaw = address?.postal_code?.trim() || null;
+  const commentRaw = row.customer_comment?.trim() || null;
 
   const statusRaw = row.status?.trim() || "new";
   const bookingProductRaw = row.booking_product?.trim() || null;

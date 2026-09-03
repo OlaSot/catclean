@@ -7,7 +7,6 @@ import OrderCard from "@/components/orders/OrdersCard";
 import type { Order } from "@/entities/order/order.types";
 import AdminOrdersFilters, {
   buildOrdersQueryString,
-  EMPTY_ADMIN_ORDERS_FILTERS,
   hasActiveOrdersFilters,
   parseOrdersFilterStateFromSearchParams,
   type AdminOrdersFilterState,

@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import type { ActiveCleaner } from "@/entities/cleaner/active-cleaner.types";
 import type { CleanerProfileStatus } from "@/lib/constants/cleaner-status";
 import { getCleanerInitials } from "@/features/cleaners/lib/cleaner-initials";
@@ -44,9 +45,12 @@ function CleanerAvatar({
 
   if (showImage && avatarUrl) {
     return (
-      <img
+      <Image
         src={avatarUrl}
         alt=""
+        width={64}
+        height={64}
+        unoptimized
         referrerPolicy="no-referrer"
         onError={() => setImageFailed(true)}
         className="h-16 w-16 shrink-0 rounded-full border-2 border-white object-cover shadow-sm ring-2 ring-[#E5EDF5]"

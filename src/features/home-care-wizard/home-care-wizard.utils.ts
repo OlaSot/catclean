@@ -1,5 +1,6 @@
 import type { OrderServiceType } from "@/lib/constants/orders";
 import { tryCalculateOrderPrice } from "@/lib/pricing/calculate-order-price";
+import { getHomeCareHouseSurchargeEur } from "@/lib/pricing/pricing.constants";
 import {
   BOOKING_PRODUCT_HOME_CARE,
   ENHANCEMENT_OPTIONS,
@@ -70,6 +71,7 @@ export function buildServiceDetails(state: HomeCareWizardState): Record<string, 
     cleaningIntensity: "standard",
     cleaningFrequency: state.frequency,
     propertyType: state.propertyType,
+    floorsCount: state.propertyType === "house" ? state.floorsCount : 1,
     petsOption: state.petsOption,
     petType: state.petsOption === "no_pets" ? null : state.petsOption,
     ovenCleaning: state.enhancements.oven_refresh,
@@ -88,9 +90,14 @@ export function calculateHomeCareEstimate(state: HomeCareWizardState): HomeCareE
   const result = tryCalculateOrderPrice(HOME_CARE_ORDER_SERVICE_TYPE, details);
   if (!result) return { price: null, durationMinutes: null };
 
+  const houseSurcharge =
+    state.propertyType === "house" ? getHomeCareHouseSurchargeEur(state.floorsCount) : 0;
+  const houseDurationMinutes =
+    state.propertyType === "house" ? 15 + Math.max(0, state.floorsCount - 1) * 5 : 0;
+
   return {
-    price: result.estimatedPrice,
-    durationMinutes: result.estimatedDurationMinutes,
+    price: result.estimatedPrice + houseSurcharge,
+    durationMinutes: result.estimatedDurationMinutes + houseDurationMinutes,
   };
 }
 
@@ -103,6 +110,12 @@ export function serializeHomeCareComment(state: HomeCareWizardState): string {
     `Size: ${formatSizeLabel(state.propertySizeM2)}`,
     `Pets: ${petsLabel(state.petsOption)}`,
   ];
+
+  if (state.propertyType === "house") {
+    lines.push(
+      `Floors: ${state.floorsCount}${state.floorsCount >= 4 ? "+" : ""} (+€${getHomeCareHouseSurchargeEur(state.floorsCount)})`
+    );
+  }
 
   const extras = enhancementLabels(state);
   if (extras) lines.push(`Extras: ${extras}`);

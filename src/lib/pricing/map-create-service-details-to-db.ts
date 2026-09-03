@@ -48,6 +48,7 @@ export function mapCreateServiceDetailsToDbRow(
           d.cleaningFrequency ?? d.cleaning_frequency
         ),
         property_type: toOptionalString(d.propertyType ?? d.property_type),
+        floors_count: toOptionalInt(d.floorsCount ?? d.floors_count),
         rooms_count: toOptionalInt(d.roomsCount ?? d.rooms_count),
         bathrooms_count: toOptionalInt(
           d.bathroomsCount ?? d.bathrooms_count

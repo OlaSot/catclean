@@ -241,14 +241,6 @@ export const PETS_OPTIONS: Array<{
   { id: "multiple", label: "Multiple pets" },
 ];
 
-export const TIME_SLOTS = [
-  { id: "09:00", label: "09:00 – 11:00" },
-  { id: "11:00", label: "11:00 – 13:00" },
-  { id: "13:00", label: "13:00 – 15:00" },
-  { id: "15:00", label: "15:00 – 17:00" },
-  { id: "17:00", label: "17:00 – 19:00" },
-] as const;
-
 export const HOME_RESET_IMAGES = {
   hero: "/wizard/wizard_main.png",
   livingRoom: "/wizard/step-2.png",

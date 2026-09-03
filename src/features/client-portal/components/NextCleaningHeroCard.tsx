@@ -1,8 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
-import { Bell, User } from "lucide-react";
+import { User } from "lucide-react";
 import type { PortalOrder } from "../types/portal.types";
 import { PORTAL_CARD_CLASS } from "../lib/portal-styles";
 import PortalPrimaryButton from "./PortalPrimaryButton";

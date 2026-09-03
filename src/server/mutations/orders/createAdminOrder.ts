@@ -7,8 +7,8 @@ import {
   ORDER_SERVICE_TYPES,
   type OrderServiceType,
 } from "@/lib/constants/orders";
-import { CLIENT_PROFILE_MISSING_MESSAGE } from "@/features/orders/types/create-order.types";
-import { normalizeScheduleTime } from "@/lib/orders/schedule-time";
+import { berlinTodayDateKey } from "@/lib/booking/berlin-datetime";
+import { parseClockTime } from "@/lib/orders/schedule-time";
 import {
   checkDuplicateProfilePhone,
   DUPLICATE_PHONE_MESSAGE,
@@ -26,7 +26,11 @@ import {
   getDetailTableForService,
   mapCreateServiceDetailsToDbRow,
 } from "@/lib/pricing/map-create-service-details-to-db";
-import { supportsAutoPricing } from "@/lib/pricing/pricing.constants";
+import {
+  getHomeCareHouseSurchargeEur,
+  getHomeResetHouseSurchargeEur,
+  supportsAutoPricing,
+} from "@/lib/pricing/pricing.constants";
 import { getHomeResetUpgradeSurchargeEur } from "@/lib/orders/home-reset-upgrade";
 import { resolveBookingProductForPersist } from "@/lib/orders/booking-product-label";
 import { upsertProfileForAuthUser } from "@/server/mutations/profiles/upsertProfileForAuthUser";
@@ -39,6 +43,13 @@ const SERVICE_TYPE_SET = new Set(
 
 function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function isValidCalendarDate(value: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const [year, month, day] = value.split("-").map(Number);
+  const parsed = new Date(Date.UTC(year, month - 1, day));
+  return parsed.getUTCFullYear() === year && parsed.getUTCMonth() === month - 1 && parsed.getUTCDate() === day;
 }
 
 function toTrimmedString(value: unknown): string {
@@ -61,28 +72,6 @@ function parsePositiveInt(value: unknown): number | null {
   const n = parseMoney(value);
   if (n === null || n <= 0) return null;
   return Math.round(n);
-}
-
-async function findClientProfileIdByEmail(
-  supabase: SupabaseClient,
-  email: string
-): Promise<{ clientId: string | null; error: string | null }> {
-  const { data: profile, error } = await supabase
-    .from("profiles")
-    .select("id, email, role")
-    .eq("email", email)
-    .maybeSingle();
-
-  if (error) return { clientId: null, error: error.message };
-  if (!profile?.id) return { clientId: null, error: CLIENT_PROFILE_MISSING_MESSAGE };
-  if ((profile.role ?? "").toLowerCase() !== "client") {
-    return {
-      clientId: null,
-      error: `${CLIENT_PROFILE_MISSING_MESSAGE} (profile role is not client)`,
-    };
-  }
-
-  return { clientId: profile.id as string, error: null };
 }
 
 function generateTemporaryPassword(): string {
@@ -391,6 +380,7 @@ export async function createAdminOrder(
   fieldErrors?: Record<string, string>;
   createdClient?: boolean;
   clientId?: string;
+  orderId?: string;
 }> {
   const fieldErrors: Record<string, string> = {};
 
@@ -443,12 +433,14 @@ export async function createAdminOrder(
     fieldErrors.serviceType = "Select a service type";
   }
   if (!scheduledDate) fieldErrors.scheduledDate = "Date is required";
+  else if (!isValidCalendarDate(scheduledDate)) fieldErrors.scheduledDate = "Enter a valid date";
+  else if (scheduledDate < berlinTodayDateKey()) fieldErrors.scheduledDate = "Date cannot be in the past";
   const normalizedScheduledTime = scheduledTime
-    ? normalizeScheduleTime(scheduledTime)
+    ? parseClockTime(scheduledTime)
     : null;
   if (!scheduledTime) fieldErrors.scheduledTime = "Time is required";
   else if (!normalizedScheduledTime) {
-    fieldErrors.scheduledTime = "Time must be in 15-minute steps";
+    fieldErrors.scheduledTime = "Enter a valid time";
   }
   if (!street) fieldErrors.street = "Street is required";
   if (!city) fieldErrors.city = "City is required";
@@ -505,6 +497,62 @@ export async function createAdminOrder(
         ],
       };
     }
+
+    const isHomeResetHouse =
+      persistedBookingProduct === "home_reset" &&
+      toOptionalString(serviceDetails.propertyType ?? serviceDetails.property_type) === "house";
+    if (isHomeResetHouse && estimatedPrice != null && priceBreakdown) {
+      const floorsCount =
+        parsePositiveInt(serviceDetails.floorsCount ?? serviceDetails.floors_count) ?? 1;
+      const houseSurcharge = getHomeResetHouseSurchargeEur(floorsCount);
+      estimatedPrice = parseMoney(estimatedPrice + houseSurcharge)!;
+      estimatedDurationMinutes =
+        (estimatedDurationMinutes ?? 0) + 20 + Math.max(0, floorsCount - 1) * 10;
+      priceBreakdown = {
+        ...priceBreakdown,
+        extrasAmount: parseMoney(priceBreakdown.extrasAmount + houseSurcharge)!,
+        subtotalBeforeMinimum: parseMoney(
+          priceBreakdown.subtotalBeforeMinimum + houseSurcharge
+        )!,
+        autoPrice: estimatedPrice,
+        lines: [
+          ...priceBreakdown.lines,
+          {
+            key: "home_reset_house",
+            label: `House (${floorsCount}${floorsCount >= 4 ? "+" : ""} floors, stairs included)`,
+            amount: houseSurcharge,
+          },
+        ],
+      };
+    }
+
+    const isHomeCareHouse =
+      persistedBookingProduct === "home_care" &&
+      toOptionalString(serviceDetails.propertyType ?? serviceDetails.property_type) === "house";
+    if (isHomeCareHouse && estimatedPrice != null && priceBreakdown) {
+      const floorsCount =
+        parsePositiveInt(serviceDetails.floorsCount ?? serviceDetails.floors_count) ?? 1;
+      const houseSurcharge = getHomeCareHouseSurchargeEur(floorsCount);
+      estimatedPrice = parseMoney(estimatedPrice + houseSurcharge)!;
+      estimatedDurationMinutes =
+        (estimatedDurationMinutes ?? 0) + 15 + Math.max(0, floorsCount - 1) * 5;
+      priceBreakdown = {
+        ...priceBreakdown,
+        extrasAmount: parseMoney(priceBreakdown.extrasAmount + houseSurcharge)!,
+        subtotalBeforeMinimum: parseMoney(
+          priceBreakdown.subtotalBeforeMinimum + houseSurcharge
+        )!,
+        autoPrice: estimatedPrice,
+        lines: [
+          ...priceBreakdown.lines,
+          {
+            key: "home_care_house",
+            label: `House (${floorsCount}${floorsCount >= 4 ? "+" : ""} floors, stairs included)`,
+            amount: houseSurcharge,
+          },
+        ],
+      };
+    }
   } else {
     if (manualEstimatedPrice === null) {
       fieldErrors.estimatedPrice =
@@ -550,7 +598,7 @@ export async function createAdminOrder(
       house_number: houseNumber,
       floor,
       apartment: apartment ?? doorbellName,
-      postal_code: zip ?? customerComment,
+      postal_code: zip,
     })
     .select("id")
     .single();
@@ -580,11 +628,13 @@ export async function createAdminOrder(
       estimated_duration_minutes: estimatedDurationMinutes,
       created_by: createdBy ?? clientId,
       booking_product: persistedBookingProduct,
+      customer_comment: customerComment,
     })
     .select("id, service_type")
     .single();
 
   if (orderError || !createdOrder?.id) {
+    await supabase.from("addresses").delete().eq("id", address.id);
     return {
       order: null,
       error: orderError?.message ?? "Order was not created",
@@ -613,13 +663,16 @@ export async function createAdminOrder(
   const { error: detailError } = await supabase.from(detailTable).insert(detailRow);
 
   if (detailError) {
+    await supabase.from("orders").delete().eq("id", orderId);
+    await supabase.from("addresses").delete().eq("id", address.id);
     return { order: null, error: detailError.message, code: "server" };
   }
 
-  const result = await getAdminOrderById(String(orderId));
+  const result = await getAdminOrderById(String(orderId), supabase);
   return {
     ...result,
     createdClient: ensured.createdClient,
     clientId,
+    orderId: String(orderId),
   };
 }

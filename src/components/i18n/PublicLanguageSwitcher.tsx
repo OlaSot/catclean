@@ -1,45 +1,25 @@
 "use client";
 
+import { ChevronDown, Languages } from "lucide-react";
 import { usePublicT } from "@/i18n/public/usePublicT";
 import type { PublicLocale } from "@/i18n/public/public-i18n.types";
 
-const OPTIONS: { value: PublicLocale; labelKey: string; flag: string }[] = [
-  { value: "de", labelKey: "public.lang.de", flag: "🇩🇪" },
-  { value: "en", labelKey: "public.lang.en", flag: "🇬🇧" },
+const OPTIONS: { value: PublicLocale; label: string }[] = [
+  { value: "de", label: "DE" },
+  { value: "en", label: "EN" },
+  { value: "ru", label: "RU" },
 ];
 
 export function PublicLanguageSwitcher() {
   const { locale, setLocale, t } = usePublicT();
-
   return (
-    <div
-      className="inline-flex shrink-0 items-center rounded-full border border-slate-200/90 bg-white/95 p-0.5 text-[10px] font-semibold shadow-sm min-[420px]:text-[11px] sm:text-xs"
-      role="group"
-      aria-label={t("public.lang.aria")}
-    >
-      {OPTIONS.map((option) => {
-        const active = locale === option.value;
-        return (
-          <button
-            key={option.value}
-            type="button"
-            onClick={() => setLocale(option.value)}
-            aria-pressed={active}
-            aria-label={t(option.labelKey)}
-            className={`inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 transition min-[420px]:gap-1 min-[420px]:px-2 min-[420px]:py-1 sm:gap-1 sm:px-2.5 sm:py-1 md:px-3 ${
-              active
-                ? "bg-[#34597E] text-white shadow-sm"
-                : "text-slate-600 hover:bg-[#EEF4FA] hover:text-[#34597E]"
-            }`}
-          >
-            <span className="md:hidden">{option.value}</span>
-            <span aria-hidden className="hidden md:inline">
-              {option.flag}
-            </span>
-            <span className="hidden min-[480px]:inline">{t(option.labelKey)}</span>
-          </button>
-        );
-      })}
-    </div>
+    <label className="relative inline-flex h-9 shrink-0 items-center rounded-full border border-slate-200/90 bg-white text-[#34597E] shadow-sm transition hover:border-[#b9ccde] hover:bg-[#f8fbff]">
+      <span className="sr-only">{t("public.lang.aria")}</span>
+      <Languages className="pointer-events-none ml-3 h-4 w-4" aria-hidden />
+      <select value={locale} onChange={(event) => setLocale(event.target.value as PublicLocale)} aria-label={t("public.lang.aria")} className="h-full cursor-pointer appearance-none bg-transparent py-0 pr-8 pl-1.5 text-xs font-bold tracking-wide outline-none">
+        {OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+      </select>
+      <ChevronDown className="pointer-events-none absolute right-2.5 h-3.5 w-3.5" aria-hidden />
+    </label>
   );
 }

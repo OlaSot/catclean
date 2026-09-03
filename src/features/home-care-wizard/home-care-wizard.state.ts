@@ -4,6 +4,7 @@ export const INITIAL_HOME_CARE_STATE: HomeCareWizardState = {
   frequency: "biweekly",
   propertyType: null,
   propertySizeM2: 80,
+  floorsCount: 2,
   petsOption: "no_pets",
   enhancements: {
     oven_refresh: false,
@@ -20,6 +21,10 @@ export const INITIAL_HOME_CARE_STATE: HomeCareWizardState = {
     city: "",
     floor: "",
     accessNotes: "",
+    googlePlaceId: "",
+    latitude: null,
+    longitude: null,
+    serviceAreaValidated: false,
   },
   schedule: {
     date: "",

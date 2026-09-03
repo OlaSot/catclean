@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -24,7 +23,6 @@ import {
 import { mapClientOrderDetailToPortal } from "../lib/portal-order.mapper";
 import { buildRepeatBookingHref } from "../lib/repeat-booking";
 import { formatPortalMoney } from "../lib/portal-utils";
-import { PORTAL_SERVICE_BY_ID } from "../lib/service-catalog";
 import {
   PORTAL_CARD_CLASS,
   PORTAL_DESKTOP_GRID_CLASS,
@@ -197,7 +195,6 @@ export default function PortalOrderDetailView({
     );
   }
 
-  const heroImage = PORTAL_SERVICE_BY_ID[order.serviceId].imageUrl;
   const addressLine = [
     order.address.line,
     order.address.floor ? `Floor ${order.address.floor}` : null,
@@ -212,6 +209,13 @@ export default function PortalOrderDetailView({
     order.canReschedule ||
     order.canLeaveReview ||
     order.canOpenComplaint;
+  const bookingDetails = [...new Set([...order.included, ...order.extras])];
+  const customerNote = order.customerComment
+    ?.split("\n")
+    .filter((line) => /^(Additional notes|Special requests):/i.test(line))
+    .map((line) => line.replace(/^[^:]+:\s*/, ""))
+    .filter(Boolean)
+    .join("\n");
 
   return (
     <div className="space-y-6">
@@ -230,39 +234,25 @@ export default function PortalOrderDetailView({
 
       <div className={PORTAL_DESKTOP_GRID_CLASS}>
         <div className={`${PORTAL_DESKTOP_MAIN_CLASS} space-y-6`}>
-          <div className={`${PORTAL_CARD_CLASS} overflow-hidden`}>
-            <div className="relative aspect-[16/10] bg-[#EEF4FA] lg:aspect-[21/9]">
-              <Image
-                src={heroImage}
-                alt={order.serviceName}
-                fill
-                className="object-cover"
-                sizes="(max-width: 1024px) 100vw, 800px"
-                priority
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/70 via-slate-900/25 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-6 lg:p-8">
-                <h1 className={`${PORTAL_GREETING_CLASS} text-white`}>
-                  {order.serviceName}
-                </h1>
-                <div className="mt-3">
-                  <PortalStatusBadge
-                    label={order.statusLabel}
-                    status={order.status}
-                  />
-                </div>
-              </div>
+          <div className={`${PORTAL_CARD_CLASS} p-6 lg:p-7`}>
+            <p className="text-xs font-semibold uppercase tracking-wide text-[#5B8DB8]">Your booking</p>
+            <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <h1 className={PORTAL_GREETING_CLASS}>{order.serviceName}</h1>
+              <PortalStatusBadge label={order.statusLabel} status={order.status} />
             </div>
+            <p className="mt-3 text-sm text-slate-600">
+              {order.dayLabel}, {order.scheduledDate} · {order.timeRange}
+            </p>
           </div>
 
           <OrderTimeline steps={order.timeline} />
 
-          <section className="space-y-3">
+          {bookingDetails.length > 0 ? <section className="space-y-3">
             <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
-              Included
+              Booking details
             </h2>
             <ul className={`${PORTAL_CARD_CLASS} divide-y divide-slate-100 p-2`}>
-              {order.included.map((item) => (
+              {bookingDetails.map((item) => (
                 <li
                   key={item}
                   className="flex items-start gap-3 px-4 py-3 text-sm text-slate-700"
@@ -275,31 +265,16 @@ export default function PortalOrderDetailView({
                 </li>
               ))}
             </ul>
-          </section>
+          </section> : null}
 
-          {order.extras.length > 0 ? (
-            <section className="space-y-3">
-              <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
-                Extras
-              </h2>
-              <ul className={`${PORTAL_CARD_CLASS} divide-y divide-slate-100 p-2`}>
-                {order.extras.map((item) => (
-                  <li key={item} className="px-4 py-3 text-sm text-slate-700">
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </section>
-          ) : null}
-
-          {order.customerComment ? (
+          {customerNote ? (
             <section className="space-y-3">
               <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
                 Your notes
               </h2>
               <div className={`${PORTAL_CARD_CLASS} flex gap-3 p-5 text-sm text-slate-700`}>
                 <MessageSquare className="mt-0.5 h-4 w-4 shrink-0 text-[#34597E]" />
-                {order.customerComment}
+                {customerNote}
               </div>
             </section>
           ) : null}
@@ -408,7 +383,14 @@ export default function PortalOrderDetailView({
             <p className="text-sm text-rose-600">{cancelError}</p>
           ) : null}
           <p className="text-sm text-slate-600">
-            Are you sure you want to cancel this order? Cancellation terms may apply.
+            {order.cancellationPreview?.feePercent === 0
+              ? "Cancellation is free. No fee will be charged."
+              : order.cancellationPreview
+                ? `A cancellation fee of ${formatPortalMoney(
+                    order.cancellationPreview.feeAmount,
+                    order.currency,
+                  )} (${order.cancellationPreview.feePercent}%) will apply.`
+                : "Please confirm that you want to cancel this booking."}
           </p>
           <div className="mt-4 flex gap-2">
             <button

@@ -90,6 +90,7 @@ function mapRegularCleaning(row: RawDetailRow) {
     ),
     cleaningFrequency: toString(pickValue(row, "cleaning_frequency")),
     propertyType: toString(pickValue(row, "property_type")),
+    floorsCount: toNumber(pickValue(row, "floors_count")),
     cleaningIntensity: toString(pickValue(row, "cleaning_intensity")),
     roomsCount: toNumber(pickValue(row, "rooms_count")),
     bedroomsCount: toNumber(pickValue(row, "bedrooms_count")),

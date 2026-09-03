@@ -18,7 +18,9 @@ export type ClientOrder = {
     city: string;
     street: string;
     house: string;
+    zip: string;
     floor: string | null;
+    apartment: string | null;
     line: string;
   };
   assignedCleaner: {

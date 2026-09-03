@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #f6f8fb;
   --foreground: #334155;
@@ -10,8 +12,33 @@
   --cc-brand-accent: #5b8db8;
   --cc-brand-light: #eef4fa;
   --cc-brand-ring: #c5d9eb;
-  --cc-page-bg: #f6f8fb;
+  --cc-page-bg: #eef2f7;
   --cc-page-bg-alt: #eef2f7;
+  --cc-surface: #ffffff;
+  --cc-surface-muted: #f6f8fb;
+  --cc-border: rgba(226, 232, 240, 0.9);
+  --cc-text: #334155;
+  --cc-text-strong: #1e293b;
+  --cc-text-muted: #64748b;
+}
+
+html.dark {
+  color-scheme: dark;
+  --background: #101820;
+  --foreground: #d7e3ee;
+  --cc-brand: #34597e;
+  --cc-brand-hover: #3d6a94;
+  --cc-brand-accent: #8bb8d6;
+  --cc-brand-light: #1a2836;
+  --cc-brand-ring: #2c4a63;
+  --cc-page-bg: #101820;
+  --cc-page-bg-alt: #121c28;
+  --cc-surface: #182230;
+  --cc-surface-muted: #151e2a;
+  --cc-border: rgba(255, 255, 255, 0.1);
+  --cc-text: #d7e3ee;
+  --cc-text-strong: #eef4fa;
+  --cc-text-muted: #9bb0c3;
 }
 
 @theme inline {
@@ -74,4 +101,79 @@ html {
   .motion-hover-lift:hover {
     transform: none;
   }
+}
+
+gmp-place-autocomplete.google-address-autocomplete {
+  display: block;
+  width: 100%;
+  color-scheme: light;
+  --gmpx-color-surface: #ffffff;
+  --gmpx-color-on-surface: #1e293b;
+  --gmpx-color-primary: #34597e;
+  --gmpx-font-family-base: inherit;
+  --gmpx-font-size-base: 1rem;
+  --gmpx-border-radius: 1rem;
+}
+
+html.dark gmp-place-autocomplete.google-address-autocomplete {
+  color-scheme: dark;
+  --gmpx-color-surface: #182230;
+  --gmpx-color-on-surface: #eef4fa;
+  --gmpx-color-primary: #7eafd4;
+}
+
+/*
+  Dark surfaces for existing light utilities. Footer keeps white chips
+  (logo plate + booking CTA) so they stay readable on the navy block.
+*/
+html.dark :where(.bg-white, .bg-white\/95, .bg-white\/98, .bg-white\/90) {
+  background-color: var(--cc-surface);
+}
+
+html.dark :where(.bg-stone-50, .bg-\[\#F6F8FB\], .bg-\[\#f6f8fb\], .bg-\[\#EEF2F7\], .bg-\[\#eef2f7\], .bg-\[\#F4F7FB\], .bg-\[\#fbfdff\], .bg-\[\#EEF4FA\], .bg-\[\#f8fbff\]) {
+  background-color: var(--cc-surface-muted);
+}
+
+html.dark :where(.text-slate-800, .text-slate-700) {
+  color: var(--cc-text-strong);
+}
+
+html.dark :where(.text-slate-600, .text-slate-500) {
+  color: var(--cc-text-muted);
+}
+
+html.dark :where(.text-\[\#34597E\], .hover\:text-\[\#34597E\]:hover) {
+  color: var(--cc-brand-accent);
+}
+
+html.dark :where(.bg-white\/80) {
+  background-color: color-mix(in srgb, var(--cc-surface) 88%, transparent);
+}
+
+html.dark :where(.bg-\[\#eef5fb\], .bg-\[\#dce9f5\]) {
+  background-color: color-mix(in srgb, var(--cc-brand-accent) 12%, var(--cc-surface));
+}
+
+html.dark :where(.border-slate-200, .border-slate-200\/80, .border-slate-200\/90, .border-stone-200, .border-stone-200\/80, .border-\[\#E5EDF5\], .border-slate-100) {
+  border-color: var(--cc-border);
+}
+
+html.dark footer :where(.bg-white, .bg-white\/95) {
+  background-color: #ffffff;
+}
+
+html.dark footer :where(.hover\:bg-\[\#f3f7fb\]:hover) {
+  background-color: #f3f7fb;
+}
+
+html.dark :where(.hover\:bg-white:hover, .hover\:bg-white\/95:hover) {
+  background-color: color-mix(in srgb, var(--cc-surface) 92%, white);
+}
+
+.google-address-autocomplete-host {
+  min-height: 3rem;
+}
+
+.google-address-autocomplete-host:empty {
+  min-height: 0;
 }

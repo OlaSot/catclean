@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Headphones, MessageCircle } from "lucide-react";
 import { PORTAL_CARD_CLASS } from "../lib/portal-styles";

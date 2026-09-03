@@ -1,4 +1,4 @@
-export const PUBLIC_LOCALES = ["de", "en"] as const;
+export const PUBLIC_LOCALES = ["de", "en", "ru"] as const;
 
 export type PublicLocale = (typeof PUBLIC_LOCALES)[number];
 

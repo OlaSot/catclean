@@ -1,5 +1,5 @@
 export const SCHEDULE_DEFAULT_DURATION_MINUTES = 180;
-export const SCHEDULE_DAY_START_HOUR = 8;
+export const SCHEDULE_DAY_START_HOUR = 7;
 export const SCHEDULE_DAY_END_HOUR = 20;
 
 export function todayIsoLocal(): string {

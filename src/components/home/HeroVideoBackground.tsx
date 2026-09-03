@@ -16,10 +16,10 @@ const MOBILE_SOFT_VIDEO_MASK =
   "linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.2) 45%, rgba(0,0,0,0.08) 72%, transparent 100%)";
 
 const MOBILE_COLOR_FADE =
-  "linear-gradient(to bottom, transparent 0%, transparent 40%, rgba(255,255,255,0.04) 54%, rgba(238,242,247,0.16) 68%, rgba(238,242,247,0.36) 82%, rgba(238,242,247,0.58) 93%, #EEF2F7 100%)";
+  "linear-gradient(to bottom, transparent 0%, transparent 40%, color-mix(in srgb, var(--cc-page-bg) 4%, transparent) 54%, color-mix(in srgb, var(--cc-page-bg) 16%, transparent) 68%, color-mix(in srgb, var(--cc-page-bg) 36%, transparent) 82%, color-mix(in srgb, var(--cc-page-bg) 58%, transparent) 93%, var(--cc-page-bg) 100%)";
 
 const MOBILE_SOFT_COLOR_FADE =
-  "linear-gradient(to bottom, rgba(255,255,255,0.15) 0%, rgba(238,242,247,0.45) 55%, rgba(238,242,247,0.82) 78%, #EEF2F7 100%)";
+  "linear-gradient(to bottom, rgba(255,255,255,0.15) 0%, color-mix(in srgb, var(--cc-page-bg) 45%, transparent) 55%, color-mix(in srgb, var(--cc-page-bg) 82%, transparent) 78%, var(--cc-page-bg) 100%)";
 
 const MOBILE_BLUR_MASK =
   "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.06) 62%, rgba(0,0,0,0.32) 84%, rgba(0,0,0,0.68) 100%)";
@@ -79,7 +79,7 @@ export function HeroVideoBackground({
         />
       </div>
 
-      <div className="absolute inset-x-0 bottom-0 hidden h-[14%] bg-linear-to-t from-[#EEF2F7]/90 via-[#EEF2F7]/25 to-transparent lg:block" aria-hidden />
+      <div className="absolute inset-x-0 bottom-0 hidden h-[14%] bg-linear-to-t from-[var(--cc-page-bg)]/90 via-[var(--cc-page-bg)]/25 to-transparent lg:block" aria-hidden />
     </div>
   );
 }

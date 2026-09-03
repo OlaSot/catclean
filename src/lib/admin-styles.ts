@@ -4,7 +4,7 @@
 import { typography } from "@/lib/design-system/tokens";
 
 export const ADMIN_SHELL_CLASS =
-  "flex h-dvh max-h-dvh overflow-hidden bg-[#F6F8FB] lg:min-h-screen lg:max-h-none";
+  "flex h-dvh max-h-dvh overflow-hidden bg-[var(--cc-page-bg)] lg:min-h-screen lg:max-h-none";
 
 export const ADMIN_MAIN_CLASS = "flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden";
 

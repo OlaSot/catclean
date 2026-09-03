@@ -117,7 +117,7 @@ export function mapOrderToCleanerOrderDetail(
 
   return {
     ...base,
-    customerComment: address?.postal_code?.trim() || null,
+    customerComment: row.customer_comment?.trim() || null,
     doorbell: address?.apartment?.trim() || null,
     serviceDetails: null,
     operationalNotes: EMPTY_OPERATIONAL_NOTES_PUBLIC,

@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { AdminOrderServiceDetails } from "@/entities/order/admin-order-service-details.types";
 import { resolveDetailTableName } from "@/entities/order/map-order-service-details";
-import { normalizeScheduleTime } from "@/lib/orders/schedule-time";
+import { parseClockTime } from "@/lib/orders/schedule-time";
 import { getAdminOrderById } from "@/server/queries/orders/getAdminOrderById";
 
 function toOptionalString(value: unknown): string | null {
@@ -45,6 +45,7 @@ function mapServiceDetailsToDetailUpdate(
   const mappingByType: Record<string, Record<string, string>> = {
     regular_cleaning: {
       propertySizeM2: "property_size_m2",
+      floorsCount: "floors_count",
       cleaningIntensity: "cleaning_intensity",
       roomsCount: "rooms_count",
       bedroomsCount: "bedrooms_count",
@@ -205,22 +206,6 @@ export async function updateAdminOrder(
     }
   }
 
-  // Customer comment is stored in addresses.postal_code (legacy hack used in createOrderAction)
-  if (addressId && input.customer_comment !== undefined) {
-    const comment =
-      input.customer_comment === null
-        ? null
-        : toOptionalString(input.customer_comment);
-    const { error: ccError } = await supabase
-      .from("addresses")
-      .update({ postal_code: comment })
-      .eq("id", addressId);
-    if (ccError) {
-      console.error("updateAdminOrder customerComment:", ccError);
-      return { order: null, error: ccError.message };
-    }
-  }
-
   // Service details patch
   const typedServiceDetails = (input.serviceDetails ??
     null) as AdminOrderServiceDetails | null;
@@ -249,11 +234,11 @@ export async function updateAdminOrder(
         error: "Scheduled time is required",
       };
     }
-    const normalized = normalizeScheduleTime(raw);
+    const normalized = parseClockTime(raw);
     if (!normalized) {
       return {
         order: null,
-        error: "Time must be in 15-minute steps",
+        error: "Enter a valid time",
       };
     }
     scheduledTimePatch = normalized;
@@ -272,6 +257,12 @@ export async function updateAdminOrder(
       input.internal_note === undefined
         ? undefined
         : (input.internal_note === null ? null : toOptionalString(input.internal_note)),
+    customer_comment:
+      input.customer_comment === undefined
+        ? undefined
+        : (input.customer_comment === null
+            ? null
+            : toOptionalString(input.customer_comment)),
   });
 
   if (Object.keys(orderPatch).length > 0) {
@@ -285,6 +276,6 @@ export async function updateAdminOrder(
     }
   }
 
-  return getAdminOrderById(id);
+  return getAdminOrderById(id, supabase);
 }
 

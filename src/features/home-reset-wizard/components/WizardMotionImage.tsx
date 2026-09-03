@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Image, { type ImageProps } from "next/image";
 
 type Props = Omit<ImageProps, "className"> & {
@@ -11,14 +12,31 @@ export function WizardMotionImage({
   wrapperClassName = "",
   imageClassName = "object-cover object-center",
   alt,
+  unoptimized,
+  onError,
   ...imageProps
 }: Props) {
+  const [failed, setFailed] = useState(false);
+  const src = imageProps.src;
+  const isLocalPublicFile =
+    typeof src === "string" && src.startsWith("/") && !src.startsWith("//");
+
   return (
-    <div className={`relative overflow-hidden ${wrapperClassName}`.trim()}>
+    <div
+      className={`hr-wizard-image-enter relative overflow-hidden ${wrapperClassName}`.trim()}
+    >
       <Image
-        key={typeof imageProps.src === "string" ? imageProps.src : undefined}
+        key={`${typeof src === "string" ? src : "img"}-${failed ? "raw" : "opt"}`}
         alt={alt}
-        className={`hr-wizard-image-enter ${imageClassName}`.trim()}
+        className={imageClassName}
+        unoptimized={failed || unoptimized || isLocalPublicFile}
+        onError={(event) => {
+          if (!failed) {
+            setFailed(true);
+            return;
+          }
+          onError?.(event);
+        }}
         {...imageProps}
       />
     </div>

@@ -7,6 +7,10 @@ import {
   calculateCleanerPayout,
   DEFAULT_CLEANER_PAYOUT_PERCENT,
 } from "@/lib/finance/calculate-cleaner-payout";
+import {
+  mapCleanerPayoutRow,
+  type CleanerPayoutRow,
+} from "@/server/queries/finance/map-finance-records";
 
 function parseMoney(value: unknown): number | null {
   const n = typeof value === "number" ? value : Number(String(value));
@@ -176,30 +180,9 @@ export async function createAdminCleanerPayout(
     return { payout: null, error: "Failed to create payout record" };
   }
 
-  const payout: CleanerPayoutRecord = {
-    id: (inserted as any).id,
-    orderId: (inserted as any).order_id,
-    cleanerId: (inserted as any).cleaner_id,
-    amount: Number((inserted as any).amount),
-    currency: String((inserted as any).currency ?? "EUR"),
-    status: (inserted as any).status as CleanerPayoutRecordStatus,
-    payoutPercent:
-      (inserted as any).payout_percent === null ||
-      (inserted as any).payout_percent === undefined
-        ? null
-        : Number((inserted as any).payout_percent),
-    baseAmount:
-      (inserted as any).base_amount === null ||
-      (inserted as any).base_amount === undefined
-        ? null
-        : Number((inserted as any).base_amount),
-    adjustmentAmount: Number((inserted as any).adjustment_amount ?? 0),
-    adjustmentReason: ((inserted as any).adjustment_reason as string | null) ?? null,
-    isManualOverride: Boolean((inserted as any).is_manual_override),
-    note: ((inserted as any).note as string | null) ?? null,
-    recordedBy: ((inserted as any).recorded_by as string | null) ?? null,
-    createdAt: (inserted as any).created_at as string,
-  };
+  const payout: CleanerPayoutRecord = mapCleanerPayoutRow(
+    inserted as unknown as CleanerPayoutRow
+  );
 
   return { payout, error: null };
 }

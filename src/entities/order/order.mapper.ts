@@ -102,7 +102,7 @@ export function mapOrderToCard(
     "Unknown client";
 
   const orderNumber = row.order_number ?? null;
-  const customerComment = address?.postal_code?.trim() || null;
+  const customerComment = row.customer_comment?.trim() || null;
   const bookingProductRaw = row.booking_product?.trim() || null;
   const productKey = resolveBookingProductKey({
     bookingProduct: bookingProductRaw,
@@ -114,6 +114,7 @@ export function mapOrderToCard(
     id: parseOrderId(row.id),
     routeId: String(row.id),
     displayId: formatOrderDisplayId(row.id, orderNumber),
+    createdAt: row.created_at,
     orderNumber,
     draftId: null,
     channel: "Manual",
@@ -139,10 +140,8 @@ export function mapOrderToCard(
       house: address?.house_number?.trim() || "—",
       apartment: address?.apartment?.trim() || undefined,
       floor: address?.floor?.trim() || undefined,
-      zip: undefined,
-      note: [address?.apartment?.trim(), address?.postal_code?.trim()]
-        .filter(Boolean)
-        .join(" • ") || undefined,
+      zip: address?.postal_code?.trim() || undefined,
+      note: address?.apartment?.trim() || undefined,
     },
 
     customer: {

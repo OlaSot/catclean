@@ -25,7 +25,7 @@ export function MobileCatHero({
 
   return (
     <section
-      className="relative w-full shrink-0 overflow-hidden bg-[#F4F7FB]"
+      className="relative w-full shrink-0 overflow-hidden bg-[var(--cc-page-bg)]"
       style={{ height: "clamp(280px, 40dvh, 360px)" }}
     >
       <video
@@ -44,7 +44,7 @@ export function MobileCatHero({
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "linear-gradient(180deg, rgba(255,255,255,0.58) 0%, rgba(255,255,255,0.08) 34%, rgba(244,247,251,0.02) 55%, rgba(238,242,247,0.45) 86%, #EEF2F7 100%), linear-gradient(90deg, rgba(255,255,255,0.72) 0%, rgba(255,255,255,0.28) 42%, transparent 68%)",
+            "linear-gradient(180deg, color-mix(in srgb, var(--cc-page-bg) 58%, transparent) 0%, color-mix(in srgb, var(--cc-page-bg) 8%, transparent) 34%, transparent 55%, color-mix(in srgb, var(--cc-page-bg) 45%, transparent) 86%, var(--cc-page-bg) 100%), linear-gradient(90deg, color-mix(in srgb, var(--cc-page-bg) 72%, transparent) 0%, color-mix(in srgb, var(--cc-page-bg) 28%, transparent) 42%, transparent 68%)",
         }}
         aria-hidden
       />
@@ -54,7 +54,7 @@ export function MobileCatHero({
 
         <div className="relative mt-auto px-5 pb-4">
           <div
-            className="pointer-events-none absolute inset-x-0 bottom-0 h-36 bg-linear-to-t from-[#EEF2F7] via-[#EEF2F7]/70 to-transparent"
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-36 bg-linear-to-t from-[var(--cc-page-bg)] via-[var(--cc-page-bg)]/70 to-transparent"
             aria-hidden
           />
           <div className="relative max-w-[78%] space-y-2 pt-1">{children}</div>

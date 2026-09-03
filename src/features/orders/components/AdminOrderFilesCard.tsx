@@ -77,7 +77,7 @@ export default function AdminOrderFilesCard({
     } finally {
       setLoading(false);
     }
-  }, [orderId]);
+  }, [orderId, t]);
 
   useEffect(() => {
     void loadFiles();

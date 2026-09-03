@@ -28,6 +28,10 @@ export const INITIAL_MOVE_OUT_STATE: MoveOutWizardState = {
     zip: "",
     city: "",
     floor: "",
+    googlePlaceId: "",
+    latitude: null,
+    longitude: null,
+    serviceAreaValidated: false,
   },
   schedule: {
     date: "",

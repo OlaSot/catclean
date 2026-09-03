@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import { SiteHeader } from "@/components/layout/SiteHeader";
+import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SITE_CONTAINER_CLASS } from "@/components/layout/site-layout";
 import { usePublicT } from "@/i18n/public/usePublicT";
 import { HeroVideoBackground } from "./HeroVideoBackground";
 import { HomeBookingSection } from "./HomeBookingSection";
-import { HomeSocialTrust } from "./HomeSocialTrust";
 import { TrustBadges } from "./TrustBadges";
 import { getHomeServiceBookingHref } from "./ServiceCarousel";
 import {
@@ -22,7 +22,7 @@ export function HomeDesktopLayout() {
   const heroVideo = "/videos/catclean-hero.mp4";
 
   return (
-    <main className="bg-[#EEF2F7] text-slate-700">
+    <main className="bg-[var(--cc-page-bg)] text-slate-700">
       <section className="relative min-h-dvh">
         <HeroVideoBackground src={heroVideo} poster="" />
 
@@ -48,7 +48,7 @@ export function HomeDesktopLayout() {
 
           <section
             id="booking"
-            className={`pb-[max(1.5rem,env(safe-area-inset-bottom))] lg:pb-10 ${HOME_BOOKING_PANEL_CLASS}`}
+            className={`mb-6 shrink-0 pb-[max(1.5rem,env(safe-area-inset-bottom))] lg:mb-8 lg:pb-10 ${HOME_BOOKING_PANEL_CLASS}`}
           >
             <h2 className={HOME_BOOKING_TITLE_CLASS}>{t("public.home.booking.title")}</h2>
 
@@ -59,7 +59,7 @@ export function HomeDesktopLayout() {
         </div>
       </section>
 
-      <HomeSocialTrust />
+      <SiteFooter />
     </main>
   );
 }

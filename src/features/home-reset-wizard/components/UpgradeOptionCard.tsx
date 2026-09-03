@@ -50,7 +50,7 @@ export function UpgradeOptionCard({
     .join(" ");
 
   const content = (
-    <>
+    <div className="pointer-events-none relative z-[1] flex h-full flex-col">
       <div className="flex items-start gap-3">
         <span
           className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${
@@ -100,13 +100,13 @@ export function UpgradeOptionCard({
               event.stopPropagation();
               onViewFullScope();
             }}
-            className="text-xs font-medium text-[#5B8DB8] underline-offset-2 hover:text-[#34597E] hover:underline"
+            className="pointer-events-auto text-xs font-medium text-[#5B8DB8] underline-offset-2 hover:text-[#34597E] hover:underline"
           >
             {t("public.homeReset.customize.viewFullScope")}
           </button>
         ) : null}
       </div>
-    </>
+    </div>
   );
 
   if (locked) {
@@ -121,8 +121,15 @@ export function UpgradeOptionCard({
   }
 
   return (
-    <button type="button" onClick={onClick} className={cardClass}>
+    <div className={cardClass}>
+      <button
+        type="button"
+        onClick={onClick}
+        aria-label={title}
+        aria-pressed={selected}
+        className="absolute inset-0 z-0 rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#34597E]"
+      />
       {content}
-    </button>
+    </div>
   );
 }

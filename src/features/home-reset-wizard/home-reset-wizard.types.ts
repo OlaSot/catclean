@@ -25,6 +25,10 @@ export type HomeResetAddress = {
   city: string;
   floor: string;
   accessNotes: string;
+  googlePlaceId: string;
+  latitude: number | null;
+  longitude: number | null;
+  serviceAreaValidated: boolean;
 };
 
 export type HomeResetSchedule = {
@@ -42,6 +46,7 @@ export type HomeResetContact = {
 export type HomeResetWizardState = {
   propertyType: HomeResetPropertyType | null;
   propertySizeM2: number;
+  floorsCount: number;
   deepUpgrades: HomeResetDeepUpgrades;
   petsOption: HomeResetPetsOption;
   enhancements: HomeResetEnhancements;

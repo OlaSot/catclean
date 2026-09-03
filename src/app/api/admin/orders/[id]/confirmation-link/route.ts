@@ -1,8 +1,8 @@
-import { randomBytes } from "crypto";
 import { NextResponse } from "next/server";
 import { requireStaffApiAuth } from "@/lib/api/staff-api-auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/supabaseAdmin";
 import { createStaffNotifications } from "@/server/services/notifications/createNotification";
+import { createOrderConfirmationToken } from "@/server/mutations/orders/createOrderConfirmationToken";
 
 type RouteContext = {
   params: Promise<{ id: string }>;
@@ -107,39 +107,20 @@ export async function POST(request: Request, context: RouteContext) {
     );
   }
 
-  const token = randomBytes(32).toString("base64url");
-  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+  const tokenResult = await createOrderConfirmationToken(
+    admin.supabase,
+    orderId,
+    auth.userId
+  );
 
-  // Policy: only latest active token is valid. Invalidate previous active tokens.
-  const { error: invalidateError } = await admin.supabase
-    .from("order_confirmation_tokens")
-    .update({ expires_at: new Date().toISOString() })
-    .eq("order_id", orderId)
-    .is("used_at", null)
-    .gt("expires_at", new Date().toISOString());
-
-  if (invalidateError) {
+  if (tokenResult.error || !tokenResult.token || !tokenResult.expiresAt) {
     return NextResponse.json(
-      { data: null, error: invalidateError.message },
+      { data: null, error: tokenResult.error ?? "Failed to create confirmation link" },
       { status: 500 }
     );
   }
 
-  const { error: insertError } = await admin.supabase
-    .from("order_confirmation_tokens")
-    .insert({
-      order_id: orderId,
-      token,
-      expires_at: expiresAt,
-      created_by: auth.userId,
-    });
-
-  if (insertError) {
-    return NextResponse.json(
-      { data: null, error: insertError.message },
-      { status: 500 }
-    );
-  }
+  const { token, expiresAt } = tokenResult;
 
   const confirmationUrl = buildConfirmationUrl(request.url, token);
 

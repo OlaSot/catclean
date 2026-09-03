@@ -11,14 +11,15 @@ import { bookingServiceHref } from "@/lib/booking/booking-services";
 type BookingServiceCardProps = {
   service: BookingServiceOption;
   addressId?: string;
+  from?: string;
 };
 
-export function BookingServiceCard({ service, addressId }: BookingServiceCardProps) {
+export function BookingServiceCard({ service, addressId, from }: BookingServiceCardProps) {
   const { t } = usePublicT();
 
   return (
     <Link
-      href={bookingServiceHref(service.param, { addressId })}
+      href={bookingServiceHref(service.param, { addressId, from })}
       className={`${CARD_CLASS} group block overflow-hidden transition hover:shadow-[0_12px_40px_rgba(15,23,42,0.08)] hover:-translate-y-0.5`}
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-[#EEF4FA] sm:aspect-[16/10]">

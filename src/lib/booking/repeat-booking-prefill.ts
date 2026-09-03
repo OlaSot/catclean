@@ -1,5 +1,7 @@
 import type { ClientOrderDetail } from "@/entities/order/client-order.types";
+import type { AdminOrderServiceDetails } from "@/entities/order/admin-order-service-details.types";
 import { mapServiceTypeToPortalId } from "@/features/client-portal/lib/portal-order.mapper";
+import { isHannoverServiceArea } from "@/lib/booking/hannover-service-area";
 
 /** Shared address prefill shape for booking wizards. */
 export type RepeatBookingAddressPrefill = {
@@ -26,6 +28,9 @@ export type RepeatBookingPrefill = {
   contact: RepeatBookingContactPrefill;
   petsInfo: string | null;
   customerComment: string | null;
+  serviceDetails: AdminOrderServiceDetails | null;
+  suppliesNote: string;
+  equipmentNote: string;
 };
 
 type WizardAddressFields = {
@@ -35,6 +40,7 @@ type WizardAddressFields = {
   zip: string;
   city: string;
   floor: string;
+  serviceAreaValidated?: boolean;
 };
 
 type WizardContactFields = {
@@ -55,8 +61,8 @@ export function mapOrderToRepeatPrefill(order: ClientOrderDetail): RepeatBooking
     address: {
       street,
       houseNumber: house,
-      apartment: "",
-      zip: "",
+      apartment: order.address.apartment ?? "",
+      zip: order.address.zip,
       city: order.address.city !== "—" ? order.address.city : "",
       floor: order.address.floor ?? "",
       accessNotes: order.operationalNotes.accessNotes ?? "",
@@ -69,6 +75,9 @@ export function mapOrderToRepeatPrefill(order: ClientOrderDetail): RepeatBooking
     },
     petsInfo: order.operationalNotes.petsInfo,
     customerComment: order.customerComment,
+    serviceDetails: order.serviceDetails,
+    suppliesNote: order.operationalNotes.suppliesNote ?? "",
+    equipmentNote: order.operationalNotes.equipmentNote ?? "",
   };
 }
 
@@ -76,6 +85,8 @@ export function mapOrderToRepeatPrefill(order: ClientOrderDetail): RepeatBooking
 export function applyAddressPrefill<
   T extends { address: WizardAddressFields },
 >(state: T, prefill: RepeatBookingPrefill): T {
+  const zip = prefill.address.zip || state.address.zip;
+  const city = prefill.address.city || state.address.city;
   return {
     ...state,
     address: {
@@ -83,9 +94,10 @@ export function applyAddressPrefill<
       street: prefill.address.street || state.address.street,
       houseNumber: prefill.address.houseNumber || state.address.houseNumber,
       apartment: prefill.address.apartment || state.address.apartment,
-      zip: prefill.address.zip || state.address.zip,
-      city: prefill.address.city || state.address.city,
+      zip,
+      city,
       floor: prefill.address.floor || state.address.floor,
+      serviceAreaValidated: isHannoverServiceArea(zip, city),
     },
   };
 }
@@ -111,6 +123,4 @@ export function applyContactPrefill<
   };
 }
 
-// TODO: map serviceDetails.extras/enhancements into wizard-specific enhancement toggles
-// TODO: map propertyType/propertySizeM2 from serviceDetails when repeat prefill is extended
 // TODO: prefill upholstery/window item selections from prior order serviceDetails

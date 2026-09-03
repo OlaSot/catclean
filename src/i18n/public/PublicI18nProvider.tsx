@@ -44,6 +44,8 @@ export function PublicI18nProvider({ children }: { children: ReactNode }) {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
+    // localStorage is client-only; synchronize it after hydration.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLocaleState(readStoredPublicLocale());
     setHydrated(true);
   }, []);

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/supabaseAdmin";
+import { formatOrderDisplayId } from "@/features/orders/lib/format-order-display-id";
 
 type RouteContext = {
   params: Promise<{ token: string }>;
@@ -71,6 +72,7 @@ export async function GET(_request: Request, context: RouteContext) {
   const expired = isTokenExpired(data.expires_at as string);
   const used = Boolean(data.used_at);
   const terminal =
+    orderStatus === "confirmed" ||
     orderStatus === "completed" ||
     orderStatus === "cancelled_by_admin" ||
     orderStatus === "cancelled_by_client" ||
@@ -96,7 +98,7 @@ export async function GET(_request: Request, context: RouteContext) {
           : null,
         order: {
           id: order.id,
-          displayId: order.order_number ?? order.id.slice(0, 8),
+          displayId: formatOrderDisplayId(order.id, order.order_number),
           status: orderStatus,
           serviceType: order.service_type ?? "",
           scheduledDate: order.scheduled_date,

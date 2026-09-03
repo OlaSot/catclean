@@ -8,7 +8,7 @@ export function HomeSocialTrust() {
   return (
     <section
       aria-label={t("public.home.social.aria")}
-      className="border-t border-white/60 bg-[#EEF2F7] px-5 py-10 sm:px-6 lg:px-8"
+      className="mt-8 border-t border-white/60 bg-[var(--cc-page-bg)] px-5 py-10 sm:mt-10 sm:px-6 lg:mt-12 lg:px-8 dark:border-white/10"
     >
       <div className="mx-auto flex max-w-[1720px] flex-col items-center gap-3 text-center">
         <p className="text-lg tracking-[0.12em] text-[#34597E]/90 sm:text-xl" aria-hidden>

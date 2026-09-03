@@ -1,6 +1,8 @@
 "use client";
 
 import type { BookingWizardState } from "../booking-wizard.types";
+import { GoogleAddressAutocomplete } from "@/components/booking/GoogleAddressAutocomplete";
+import { addressAfterManualEdit } from "@/lib/booking/hannover-service-area";
 
 type Address = BookingWizardState["address"];
 
@@ -34,7 +36,13 @@ export function StepAddress({ value, onChange, errors }: Props) {
     <div className="space-y-4">
       <h2 className="text-3xl font-semibold tracking-tight text-slate-700">Address</h2>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <Input label="Street" value={value.street} onChange={(street) => onChange({ ...value, street })} error={errors?.street} />
+        <GoogleAddressAutocomplete
+          label="Street"
+          value={value.street}
+          onInputChange={(street) => onChange(addressAfterManualEdit(value, { street }))}
+          onAddressSelected={(address) => onChange({ ...value, ...address })}
+          error={errors?.street}
+        />
         <Input
           label="House number"
           value={value.houseNumber}
@@ -42,8 +50,8 @@ export function StepAddress({ value, onChange, errors }: Props) {
           error={errors?.houseNumber}
         />
         <Input label="Apartment" value={value.apartment} onChange={(apartment) => onChange({ ...value, apartment })} />
-        <Input label="ZIP" value={value.zip} onChange={(zip) => onChange({ ...value, zip })} error={errors?.zip} />
-        <Input label="City" value={value.city} onChange={(city) => onChange({ ...value, city })} error={errors?.city} />
+        <Input label="ZIP" value={value.zip} onChange={(zip) => onChange(addressAfterManualEdit(value, { zip }))} error={errors?.zip} />
+        <Input label="City" value={value.city} onChange={(city) => onChange(addressAfterManualEdit(value, { city }))} error={errors?.city} />
         <Input label="Floor" value={value.floor} onChange={(floor) => onChange({ ...value, floor })} />
       </div>
     </div>

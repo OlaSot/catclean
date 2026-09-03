@@ -13,7 +13,7 @@ import type {
 } from "@/features/orders/types/admin-update-order-api.types";
 import { ScheduleTimeSelect } from "@/components/orders/ScheduleTimeSelect";
 import { FormField, inputClassName, textareaClassName } from "@/components/ui/FormField";
-import { normalizeScheduleTime } from "@/lib/orders/schedule-time";
+import { parseClockTime } from "@/lib/orders/schedule-time";
 import { useT } from "@/i18n/useT";
 import {
   CUSTOMIZE_UPGRADE_OPTIONS,
@@ -224,8 +224,7 @@ export default function AdminOrderEditView({ orderId }: { orderId: string }) {
         scheduled_time:
           loaded.scheduledTime === "—"
             ? ""
-            : (normalizeScheduleTime(loaded.scheduledTime) ??
-              loaded.scheduledTime),
+            : (parseClockTime(loaded.scheduledTime) ?? loaded.scheduledTime),
         estimated_price: toInputNumber(loaded.service.estimatedPrice),
         final_price: toInputNumber(loaded.service.finalPrice),
         payment_status: loaded.paymentStatus,
@@ -393,11 +392,15 @@ export default function AdminOrderEditView({ orderId }: { orderId: string }) {
               />
             </FormField>
 
-            <FormField label={t("forms.scheduledTime")} htmlFor="scheduled_time">
+            <FormField
+              label={t("forms.scheduledTime")}
+              htmlFor="scheduled_time"
+              hint={t("forms.scheduledTimeHint")}
+            >
               <ScheduleTimeSelect
                 id="scheduled_time"
                 className={inputClassName}
-                value={normalizeScheduleTime(form.scheduled_time) ?? "09:00"}
+                value={parseClockTime(form.scheduled_time) ?? form.scheduled_time}
                 onChange={(v) => updateForm("scheduled_time", v)}
               />
             </FormField>

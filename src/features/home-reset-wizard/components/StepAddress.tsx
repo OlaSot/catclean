@@ -1,9 +1,12 @@
 "use client";
 
-import { MapPin, ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import { usePublicT } from "@/i18n/public/usePublicT";
 import { WizardStepHeader } from "./WizardStepHeader";
 import type { HomeResetAddress } from "../home-reset-wizard.types";
+import { GoogleAddressAutocomplete } from "@/components/booking/GoogleAddressAutocomplete";
+import { GoogleAddressMap } from "@/components/booking/GoogleAddressMap";
+import { addressAfterManualEdit } from "@/lib/booking/hannover-service-area";
 
 type Props = {
   value: HomeResetAddress;
@@ -53,10 +56,13 @@ export function StepAddress({ value, onChange, errors }: Props) {
         />
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Field
+          <GoogleAddressAutocomplete
             label={t("public.wizard.field.street")}
             value={value.street}
-            onChange={(street) => onChange({ ...value, street })}
+            onInputChange={(street) =>
+              onChange(addressAfterManualEdit(value, { street }))
+            }
+            onAddressSelected={(address) => onChange({ ...value, ...address })}
             error={errors?.street}
             className="sm:col-span-2"
             placeholder={t("public.wizard.placeholder.street")}
@@ -77,13 +83,13 @@ export function StepAddress({ value, onChange, errors }: Props) {
           <Field
             label={t("public.wizard.field.zip")}
             value={value.zip}
-            onChange={(zip) => onChange({ ...value, zip })}
+            onChange={(zip) => onChange(addressAfterManualEdit(value, { zip }))}
             error={errors?.zip}
           />
           <Field
             label={t("public.wizard.field.city")}
             value={value.city}
-            onChange={(city) => onChange({ ...value, city })}
+            onChange={(city) => onChange(addressAfterManualEdit(value, { city }))}
             error={errors?.city}
           />
         </div>
@@ -108,13 +114,12 @@ export function StepAddress({ value, onChange, errors }: Props) {
       </div>
 
       <div className="relative hidden aspect-[4/5] overflow-hidden rounded-3xl border border-stone-200/80 bg-stone-50 shadow-[0_12px_40px_rgba(15,23,42,0.06)] lg:block">
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center">
-          <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-[#34597E] text-white shadow-[0_8px_24px_rgba(52,89,126,0.28)]">
-            <MapPin className="h-5 w-5" aria-hidden />
-          </span>
-          <p className="text-sm font-medium text-slate-600">{t("public.wizard.mapPreview")}</p>
-          <p className="text-xs text-slate-400">{t("public.wizard.mapPreviewHint")}</p>
-        </div>
+        <GoogleAddressMap
+          latitude={value.latitude}
+          longitude={value.longitude}
+          placeholderTitle={t("public.wizard.mapPreview")}
+          placeholderHint={t("public.wizard.mapPreviewHint")}
+        />
       </div>
     </div>
   );

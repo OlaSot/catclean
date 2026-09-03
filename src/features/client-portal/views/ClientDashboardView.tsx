@@ -1,266 +1,119 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
-import { Bell } from "lucide-react";
+import { ArrowRight, Bell, CalendarPlus, MapPin, Repeat2 } from "lucide-react";
 import type { ClientOrder } from "@/entities/order/client-order.types";
-import {
-  fetchClientOrders,
-  fetchNotifications,
-  fetchPreferredCleaner,
-} from "../api/client-portal-api";
-import {
-  computeDashboardStats,
-  getLatestCompletedOrder,
-  getNextUpcomingOrder,
-  mapClientOrderToPortal,
-} from "../lib/portal-order.mapper";
+import { fetchClientOrders } from "../api/client-portal-api";
+import { getNextUpcomingOrder, mapClientOrderToPortal } from "../lib/portal-order.mapper";
 import { buildRepeatBookingHref } from "../lib/repeat-booking";
-import { getGreetingName, getTimeGreeting } from "../lib/portal-utils";
-import { PORTAL_SERVICES, PORTAL_SERVICE_BY_ID } from "../lib/service-catalog";
-import {
-  PORTAL_DESKTOP_GRID_CLASS,
-  PORTAL_DESKTOP_MAIN_CLASS,
-  PORTAL_DESKTOP_SIDEBAR_CLASS,
-  PORTAL_GREETING_CLASS,
-  PORTAL_MUTED_CLASS,
-  PORTAL_SECTION_TITLE_CLASS,
-} from "../lib/portal-styles";
-import type { PortalNotification, PortalPreferredCleaner } from "../types/portal.types";
+import { formatPortalMoney, getGreetingName, getTimeGreeting } from "../lib/portal-utils";
+import { PORTAL_CARD_CLASS, PORTAL_GREETING_CLASS, PORTAL_MUTED_CLASS } from "../lib/portal-styles";
 import { useClientPortal } from "../providers/ClientPortalProvider";
-import NextCleaningHeroCard from "../components/NextCleaningHeroCard";
-import PortalOrderCard from "../components/PortalOrderCard";
-import ServiceBookingCard from "../components/ServiceBookingCard";
-import SupportCard from "../components/SupportCard";
-import DashboardSidebarWidgets from "../components/DashboardSidebarWidgets";
 import PortalEmptyState from "../components/PortalEmptyState";
 import PortalPrimaryButton from "../components/PortalPrimaryButton";
-
-function mapNotification(item: {
-  id: string;
-  type: string;
-  title: string;
-  message: string | null;
-  orderId: string | null;
-  isRead: boolean;
-  createdAt: string;
-}): PortalNotification {
-  return {
-    id: item.id,
-    type: item.type,
-    title: item.title,
-    message: item.message ?? "",
-    orderId: item.orderId ?? undefined,
-    isRead: item.isRead,
-    createdAt: item.createdAt,
-  };
-}
+import PortalStatusBadge from "../components/PortalStatusBadge";
 
 export default function ClientDashboardView() {
   const { profile, unreadCount } = useClientPortal();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [notifications, setNotifications] = useState<PortalNotification[]>([]);
-  const [preferredCleaner, setPreferredCleaner] = useState<PortalPreferredCleaner | null>(null);
   const [orders, setOrders] = useState<ClientOrder[]>([]);
 
   useEffect(() => {
     let cancelled = false;
-
-    async function load() {
-      setLoading(true);
-      setError(null);
-      try {
-        const [ordersData, notificationsData, cleanerData] = await Promise.all([
-          fetchClientOrders(),
-          fetchNotifications(),
-          fetchPreferredCleaner(),
-        ]);
-
-        if (cancelled) return;
-
-        setOrders(ordersData);
-        setNotifications(notificationsData.slice(0, 3).map(mapNotification));
-        setPreferredCleaner(cleanerData);
-      } catch (err) {
-        if (!cancelled) {
-          setError(err instanceof Error ? err.message : "Failed to load dashboard");
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-
-    void load();
-    return () => {
-      cancelled = true;
-    };
+    fetchClientOrders()
+      .then((data) => { if (!cancelled) setOrders(data); })
+      .catch((err) => { if (!cancelled) setError(err instanceof Error ? err.message : "Failed to load bookings"); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
   }, []);
 
   const portalOrders = useMemo(() => orders.map(mapClientOrderToPortal), [orders]);
   const nextRaw = useMemo(() => getNextUpcomingOrder(orders), [orders]);
-  const nextOrder = useMemo(
-    () => (nextRaw ? mapClientOrderToPortal(nextRaw) : null),
-    [nextRaw],
-  );
-  const recentOrders = portalOrders.slice(0, 5);
-  const stats = useMemo(() => computeDashboardStats(orders), [orders]);
-  const latestCompleted = useMemo(() => getLatestCompletedOrder(orders), [orders]);
-  const bookAgainHref = latestCompleted
-    ? buildRepeatBookingHref(mapClientOrderToPortal(latestCompleted))
-    : null;
-
+  const nextOrder = nextRaw ? mapClientOrderToPortal(nextRaw) : null;
+  const repeatSource = portalOrders[0] ?? null;
+  const recentOrders = portalOrders.slice(0, 3);
   const greetingName = profile ? getGreetingName(profile.fullName) : "there";
 
-  if (loading) {
-    return (
-      <div className="py-16 text-center text-sm text-slate-500">Loading your dashboard…</div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-        {error}
-      </div>
-    );
-  }
+  if (loading) return <div className="py-16 text-center text-sm text-slate-500">Loading your bookings…</div>;
+  if (error) return <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div>;
 
   return (
-    <div className={PORTAL_DESKTOP_GRID_CLASS}>
-      <div className={PORTAL_DESKTOP_MAIN_CLASS}>
-        <header className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-          <div>
-            <p className={PORTAL_MUTED_CLASS}>
-              {getTimeGreeting()}, {greetingName} 👋
-            </p>
-            <h1 className={`${PORTAL_GREETING_CLASS} mt-1`}>
-              Your home, cared for
-            </h1>
-          </div>
+    <div className="mx-auto w-full max-w-4xl space-y-8">
+      <header className="flex items-start justify-between gap-4">
+        <div>
+          <p className={PORTAL_MUTED_CLASS}>{getTimeGreeting()}, {greetingName}</p>
+          <h1 className={`${PORTAL_GREETING_CLASS} mt-1`}>Your cleanings</h1>
+          <p className="mt-2 text-sm text-slate-500">Everything important, all in one place.</p>
+        </div>
+        <Link href="/app/client/notifications" className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-white text-[#34597E]" aria-label="Notifications">
+          <Bell className="h-5 w-5" />
+          {unreadCount > 0 ? <span className="absolute right-2 top-2 h-2.5 w-2.5 rounded-full bg-rose-500 ring-2 ring-white" /> : null}
+        </Link>
+      </header>
 
-          <div className="hidden items-center gap-3 lg:flex">
-            <Link
-              href="/app/client/notifications"
-              className="relative flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200/80 bg-white text-[#34597E] shadow-sm transition hover:border-[#C5D9EB] hover:bg-[#f9fcff]"
-              aria-label="Notifications"
-            >
-              <Bell className="h-5 w-5" aria-hidden />
-              {unreadCount > 0 ? (
-                <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-[#34597E]" />
-              ) : null}
-            </Link>
-            <Link
-              href="/app/client/profile"
-              className="flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-white py-2 pl-2 pr-4 shadow-sm transition hover:border-[#C5D9EB]"
-            >
-              <div className="relative h-9 w-9 overflow-hidden rounded-xl bg-[#EEF4FA]">
-                {profile?.avatarUrl ? (
-                  <Image
-                    src={profile.avatarUrl}
-                    alt={profile.fullName}
-                    fill
-                    className="object-cover"
-                    sizes="36px"
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center text-sm font-semibold text-[#34597E]">
-                    {profile?.firstName?.[0] ?? "?"}
-                  </div>
-                )}
+      <section>
+        <h2 className="mb-3 text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">Next cleaning</h2>
+        {nextOrder ? (
+          <div className={`${PORTAL_CARD_CLASS} p-5 sm:p-6`}>
+            <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <div className="flex flex-wrap items-center gap-3">
+                  <h3 className="text-xl font-semibold text-slate-900">{nextOrder.serviceName}</h3>
+                  <PortalStatusBadge label={nextOrder.statusLabel} status={nextOrder.status} size="sm" />
+                </div>
+                <p className="mt-3 font-medium text-slate-700">{nextOrder.dayLabel}, {nextOrder.scheduledDate} · {nextOrder.timeRange}</p>
+                <p className="mt-2 flex items-center gap-2 text-sm text-slate-500"><MapPin className="h-4 w-4" />{nextOrder.address.line}, {nextOrder.address.city}</p>
               </div>
-              <span className="text-sm font-semibold text-slate-800">
-                {profile?.firstName ?? "Profile"}
-              </span>
-            </Link>
+              <Link href={`/app/client/orders/${nextOrder.id}`} className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-[#34597E] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#2d4d6f]">
+                View booking <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
           </div>
-        </header>
+        ) : (
+          <PortalEmptyState title="No upcoming cleaning" description="Choose a service and a convenient time." action={<PortalPrimaryButton href="/booking?from=client-portal">New booking</PortalPrimaryButton>} />
+        )}
+      </section>
 
-        <section aria-labelledby="next-cleaning-heading">
-          <p
-            id="next-cleaning-heading"
-            className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500 lg:sr-only"
-          >
-            Your next cleaning
-          </p>
-          {nextOrder ? (
-            <NextCleaningHeroCard
-              order={nextOrder}
-              imageUrl={PORTAL_SERVICE_BY_ID[nextOrder.serviceId].imageUrl}
-            />
-          ) : (
-            <PortalEmptyState
-              title="You don't have any upcoming cleanings."
-              description="Book your next visit and we'll take care of the rest."
-              action={
-                <PortalPrimaryButton href="/booking">
-                  Book Cleaning
-                </PortalPrimaryButton>
-              }
-            />
-          )}
-        </section>
+      <section className="grid gap-4 sm:grid-cols-2">
+        <ActionCard href="/booking?from=client-portal" icon={<CalendarPlus className="h-5 w-5" />} title="New booking" description="Choose another cleaning service" primary />
+        {repeatSource ? <ActionCard href={buildRepeatBookingHref(repeatSource)} icon={<Repeat2 className="h-5 w-5" />} title="Repeat a booking" description="Reuse service and address" /> : null}
+      </section>
 
-        <section aria-labelledby="book-today-heading">
-          <h2 id="book-today-heading" className={PORTAL_SECTION_TITLE_CLASS}>
-            What would you like to book today?
-          </h2>
-          <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 lg:gap-5">
-            {PORTAL_SERVICES.map((service) => (
-              <ServiceBookingCard key={service.id} service={service} />
+      {recentOrders.length > 0 ? (
+        <section>
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">Recent bookings</h2>
+            <Link href="/app/client/orders" className="text-sm font-semibold text-[#34597E] hover:underline">See all</Link>
+          </div>
+          <div className={`${PORTAL_CARD_CLASS} divide-y divide-slate-100 overflow-hidden`}>
+            {recentOrders.map((order) => (
+              <Link key={order.id} href={`/app/client/orders/${order.id}`} className="flex flex-col gap-3 p-4 transition hover:bg-slate-50 sm:flex-row sm:items-center sm:px-5">
+                <div className="min-w-0 flex-1">
+                  <p className="font-semibold text-slate-800">{order.serviceName}</p>
+                  <p className="mt-1 text-sm text-slate-500">{order.scheduledDate} · {order.timeRange} · {order.address.city}</p>
+                </div>
+                <div className="flex items-center justify-between gap-4 sm:justify-end">
+                  <PortalStatusBadge label={order.statusLabel} status={order.status} size="sm" />
+                  <span className="font-semibold text-slate-800">{formatPortalMoney(order.price, order.currency)}</span>
+                  <ArrowRight className="h-4 w-4 text-slate-400" />
+                </div>
+              </Link>
             ))}
           </div>
         </section>
-
-        <section aria-labelledby="recent-orders-heading">
-          <div className="mb-4 flex items-center justify-between gap-3">
-            <h2 id="recent-orders-heading" className={PORTAL_SECTION_TITLE_CLASS}>
-              Recent Orders
-            </h2>
-            <Link
-              href="/app/client/orders"
-              className="text-sm font-semibold text-[#34597E] hover:underline"
-            >
-              See all
-            </Link>
-          </div>
-          {recentOrders.length === 0 ? (
-            <PortalEmptyState
-              title="No orders yet"
-              description="Your booking history will appear here after your first visit."
-              action={
-                <PortalPrimaryButton href="/booking">
-                  Book Cleaning
-                </PortalPrimaryButton>
-              }
-            />
-          ) : (
-            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-              {recentOrders.map((order) => (
-                <PortalOrderCard key={order.id} order={order} variant="compact" showRepeatBooking />
-              ))}
-            </div>
-          )}
-        </section>
-
-        <section aria-labelledby="support-heading" className="lg:hidden">
-          <h2 id="support-heading" className="sr-only">
-            Support
-          </h2>
-          <SupportCard />
-        </section>
-      </div>
-
-      <aside className={PORTAL_DESKTOP_SIDEBAR_CLASS}>
-        <DashboardSidebarWidgets
-          nextOrder={nextOrder}
-          notifications={notifications}
-          preferredCleaner={preferredCleaner}
-          stats={stats}
-          bookAgainHref={bookAgainHref}
-        />
-      </aside>
+      ) : null}
     </div>
+  );
+}
+
+function ActionCard({ href, icon, title, description, primary = false }: { href: string; icon: React.ReactNode; title: string; description: string; primary?: boolean }) {
+  return (
+    <Link href={href} className={`${PORTAL_CARD_CLASS} group flex items-center gap-4 p-5 transition hover:border-[#C5D9EB]`}>
+      <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${primary ? "bg-[#34597E] text-white" : "bg-[#EEF4FA] text-[#34597E]"}`}>{icon}</span>
+      <span className="min-w-0 flex-1"><span className="block font-semibold text-slate-900">{title}</span><span className="mt-0.5 block text-sm text-slate-500">{description}</span></span>
+      <ArrowRight className="h-5 w-5 text-slate-300 transition group-hover:translate-x-1 group-hover:text-[#34597E]" />
+    </Link>
   );
 }

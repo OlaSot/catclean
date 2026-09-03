@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { getClientInitials } from "@/features/clients/lib/client-initials";
 
 type AdminClientAvatarProps = {
@@ -26,9 +27,12 @@ export default function AdminClientAvatar({
 
   if (showImage && avatarUrl) {
     return (
-      <img
+      <Image
         src={avatarUrl}
         alt=""
+        width={size === "lg" ? 80 : 64}
+        height={size === "lg" ? 80 : 64}
+        unoptimized
         referrerPolicy="no-referrer"
         onError={() => setImageFailed(true)}
         className={`${dim} shrink-0 rounded-full border-2 border-white object-cover shadow-sm ring-2 ring-[#E5EDF5]`}

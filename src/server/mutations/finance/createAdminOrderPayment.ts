@@ -8,6 +8,10 @@ import {
   getAdminOrderFinance,
   updateOrderPaymentStatusFromFinance,
 } from "@/server/queries/finance/getAdminOrderFinance";
+import {
+  mapOrderPaymentRow,
+  type OrderPaymentRow,
+} from "@/server/queries/finance/map-finance-records";
 
 function parseMoney(value: unknown): number | null {
   const n = typeof value === "number" ? value : Number(String(value));
@@ -94,17 +98,9 @@ export async function createAdminOrderPayment(
     return { payment: null, error: "Failed to create payment record" };
   }
 
-  const payment: OrderPaymentRecord = {
-    id: (inserted as any).id,
-    orderId: (inserted as any).order_id,
-    amount: Number((inserted as any).amount),
-    currency: String((inserted as any).currency ?? "EUR"),
-    method: (inserted as any).method as OrderPaymentMethod,
-    status: (inserted as any).status as OrderPaymentRecordStatus,
-    note: ((inserted as any).note as string | null) ?? null,
-    recordedBy: ((inserted as any).recorded_by as string | null) ?? null,
-    createdAt: (inserted as any).created_at as string,
-  };
+  const payment: OrderPaymentRecord = mapOrderPaymentRow(
+    inserted as unknown as OrderPaymentRow
+  );
 
   const finance = await getAdminOrderFinance(supabase, id);
   if (finance.notFound) return { payment, error: null, notFound: true };

@@ -9,6 +9,7 @@ export function BookingServiceSelection() {
   const { t } = usePublicT();
   const searchParams = useSearchParams();
   const addressId = searchParams.get("addressId") ?? undefined;
+  const from = searchParams.get("from") ?? undefined;
 
   return (
     <div className="mx-auto max-w-5xl">
@@ -30,6 +31,7 @@ export function BookingServiceSelection() {
             key={service.param}
             service={service}
             addressId={addressId}
+            from={from}
           />
         ))}
       </div>

@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { requireStaffApiAuth } from "@/lib/api/staff-api-auth";
-import { createSupabaseServerClient } from "@/lib/supabase/supabaseServer";
 import { getClientPreferredCleaners } from "@/lib/dispatch/get-client-preferred-cleaners";
 
 type RouteContext = {

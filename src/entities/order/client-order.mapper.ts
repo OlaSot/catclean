@@ -124,7 +124,9 @@ export function mapOrderToClientOrder(row: SupabaseOrderRow): ClientOrder {
   const city = address?.city?.trim() || "—";
   const street = address?.street?.trim() || "—";
   const house = address?.house_number?.trim() || "—";
+  const zip = address?.postal_code?.trim() || "";
   const floor = address?.floor?.trim() || null;
+  const apartment = address?.apartment?.trim() || null;
 
   const status = normalizeOrderStatus(row.status);
   const paymentStatus = normalizePaymentStatus(row.payment_status);
@@ -150,7 +152,9 @@ export function mapOrderToClientOrder(row: SupabaseOrderRow): ClientOrder {
       city,
       street,
       house,
+      zip,
       floor,
+      apartment,
       line: [city, street, house].filter((part) => part !== "—").join(", ") || "—",
     },
     assignedCleaner: cleanerName
@@ -167,7 +171,6 @@ export function mapOrderToClientOrder(row: SupabaseOrderRow): ClientOrder {
 
 export function mapOrderToClientOrderDetail(row: SupabaseOrderRow): ClientOrderDetail {
   const base = mapOrderToClientOrder(row);
-  const address = unwrapRelation(row.address);
   const preview = buildCancellationPreview(row);
 
   const canCancel = Boolean(preview?.allowed);
@@ -180,7 +183,7 @@ export function mapOrderToClientOrderDetail(row: SupabaseOrderRow): ClientOrderD
     serviceTypeLabel: serviceTypeLabel(row.service_type),
     serviceDetails: null,
     operationalNotes: EMPTY_OPERATIONAL_NOTES_PUBLIC,
-    customerComment: address?.postal_code?.trim() || null,
+    customerComment: row.customer_comment?.trim() || null,
     canCancel,
     canReschedule,
     isProblemStatus: base.status === "problem",

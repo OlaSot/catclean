@@ -3,13 +3,17 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Bell } from "lucide-react";
+import { CalendarPlus } from "lucide-react";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
+import { PublicLanguageSwitcher } from "@/components/i18n/PublicLanguageSwitcher";
+import { useT } from "@/i18n/useT";
 import { useClientPortal } from "../providers/ClientPortalProvider";
-import { CLIENT_PORTAL_NAV_ITEMS } from "../lib/client-portal-nav";
+import { CLIENT_PORTAL_DESKTOP_NAV_ITEMS } from "../lib/client-portal-nav";
 
 export default function ClientPortalDesktopSidebar() {
   const pathname = usePathname();
   const { profile, unreadCount } = useClientPortal();
+  const { t } = useT();
 
   return (
     <aside
@@ -28,8 +32,19 @@ export default function ClientPortalDesktopSidebar() {
         </div>
       </Link>
 
+      <Link
+        href="/booking?from=client-portal"
+        className="mb-7 flex items-center justify-center gap-2 rounded-2xl bg-[#34597E] px-4 py-3 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(52,89,126,0.22)] transition hover:bg-[#2d4d6f]"
+      >
+        <CalendarPlus className="h-4 w-4" aria-hidden />
+        New booking
+      </Link>
+
+      <p className="mb-2 px-3 text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-slate-400">
+        Your account
+      </p>
       <nav className="flex flex-1 flex-col gap-1">
-        {CLIENT_PORTAL_NAV_ITEMS.map((item) => {
+        {CLIENT_PORTAL_DESKTOP_NAV_ITEMS.map((item) => {
           const active = item.match(pathname);
           const Icon = item.icon;
           const showBadge = item.href === "/app/client/notifications" && unreadCount > 0;
@@ -60,32 +75,41 @@ export default function ClientPortalDesktopSidebar() {
         })}
       </nav>
 
-      <Link
-        href="/app/client/profile"
-        className="mt-auto flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-[#F6F8FB] p-3 transition hover:border-[#C5D9EB] hover:bg-white"
-      >
-        <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-xl bg-[#EEF4FA] ring-2 ring-white">
-          {profile?.avatarUrl ? (
-            <Image
-              src={profile.avatarUrl}
-              alt={profile.fullName}
-              fill
-              className="object-cover"
-              sizes="40px"
-            />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center text-sm font-semibold text-[#34597E]">
-              {profile?.firstName?.[0] ?? "?"}
-            </div>
-          )}
+      <div className="mt-auto space-y-3">
+        <div className="flex items-center justify-between rounded-2xl border border-slate-200/80 bg-white p-2">
+          <PublicLanguageSwitcher />
+          <ThemeToggle
+            toDarkLabel={t("admin.theme.toDark")}
+            toLightLabel={t("admin.theme.toLight")}
+          />
         </div>
-        <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-slate-800">
-            {profile?.firstName ?? "Profile"}
-          </p>
-          <p className="truncate text-xs text-slate-500">View profile</p>
-        </div>
-      </Link>
+        <Link
+          href="/app/client/profile"
+          className="flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-[#F6F8FB] p-3 transition hover:border-[#C5D9EB] hover:bg-white"
+        >
+          <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-xl bg-[#EEF4FA] ring-2 ring-white">
+            {profile?.avatarUrl ? (
+              <Image
+                src={profile.avatarUrl}
+                alt={profile.fullName}
+                fill
+                className="object-cover"
+                sizes="40px"
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center text-sm font-semibold text-[#34597E]">
+                {profile?.firstName?.[0] ?? "?"}
+              </div>
+            )}
+          </div>
+          <div className="min-w-0">
+            <p className="truncate text-sm font-semibold text-slate-800">
+              {profile?.firstName ?? "Profile"}
+            </p>
+            <p className="truncate text-xs text-slate-500">View profile</p>
+          </div>
+        </Link>
+      </div>
     </aside>
   );
 }

@@ -97,11 +97,3 @@ export const HOME_CARE_NOT_INCLUDED: string[] = [
   "Post-renovation cleaning",
   "Move out cleaning",
 ];
-
-export const TIME_SLOTS = [
-  { id: "09:00", label: "09:00 – 11:00" },
-  { id: "11:00", label: "11:00 – 13:00" },
-  { id: "13:00", label: "13:00 – 15:00" },
-  { id: "15:00", label: "15:00 – 17:00" },
-  { id: "17:00", label: "17:00 – 19:00" },
-] as const;

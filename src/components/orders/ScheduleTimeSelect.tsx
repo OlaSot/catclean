@@ -1,8 +1,5 @@
 "use client";
 
-import { buildScheduleTimeOptions } from "@/lib/orders/schedule-time";
-import { useMemo } from "react";
-
 type ScheduleTimeSelectProps = {
   value: string;
   onChange: (value: string) => void;
@@ -13,9 +10,9 @@ type ScheduleTimeSelectProps = {
   name?: string;
 };
 
-import { selectNative } from "@/lib/design-system/tokens";
+import { inputMd } from "@/lib/design-system/tokens";
 
-const defaultClassName = `${selectNative} font-semibold`;
+const defaultClassName = `${inputMd} cursor-pointer font-semibold tabular-nums`;
 
 export function ScheduleTimeSelect({
   value,
@@ -26,23 +23,19 @@ export function ScheduleTimeSelect({
   id,
   name,
 }: ScheduleTimeSelectProps) {
-  const options = useMemo(() => buildScheduleTimeOptions(), []);
+  const clock = value.trim().slice(0, 5);
 
   return (
-    <select
+    <input
       id={id}
       name={name}
-      value={value}
+      type="time"
+      step={60}
+      value={clock}
       onChange={(e) => onChange(e.target.value)}
       onBlur={onBlur}
       disabled={disabled}
       className={className}
-    >
-      {options.map((time) => (
-        <option key={time} value={time}>
-          {time}
-        </option>
-      ))}
-    </select>
+    />
   );
 }

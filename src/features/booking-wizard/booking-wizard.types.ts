@@ -45,6 +45,10 @@ export type BookingWizardState = {
     zip: string;
     city: string;
     floor: string;
+    googlePlaceId: string;
+    latitude: number | null;
+    longitude: number | null;
+    serviceAreaValidated: boolean;
   };
   schedule: {
     date: string;

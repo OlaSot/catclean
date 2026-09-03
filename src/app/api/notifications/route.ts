@@ -2,6 +2,18 @@ import { NextResponse } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase/supabaseServer";
 import { isStaffApiRole } from "@/lib/permissions/staff-api";
 
+type NotificationRow = {
+  id: string;
+  user_id: string;
+  role_target: string;
+  type: string;
+  title: string;
+  message: string | null;
+  order_id: string | null;
+  is_read: boolean;
+  created_at: string;
+};
+
 export async function GET(request: Request) {
   const supabase = await createSupabaseServerClient();
 
@@ -49,16 +61,16 @@ export async function GET(request: Request) {
 
   return NextResponse.json(
     {
-      data: (data ?? []).map((row) => ({
-        id: (row as any).id as string,
-        userId: (row as any).user_id as string,
-        roleTarget: (row as any).role_target as string,
-        type: (row as any).type as string,
-        title: (row as any).title as string,
-        message: ((row as any).message as string | null) ?? null,
-        orderId: ((row as any).order_id as string | null) ?? null,
-        isRead: Boolean((row as any).is_read),
-        createdAt: (row as any).created_at as string,
+      data: ((data ?? []) as NotificationRow[]).map((row) => ({
+        id: row.id,
+        userId: row.user_id,
+        roleTarget: row.role_target,
+        type: row.type,
+        title: row.title,
+        message: row.message ?? null,
+        orderId: row.order_id ?? null,
+        isRead: Boolean(row.is_read),
+        createdAt: row.created_at,
       })),
       error: null,
       meta: { isStaff },

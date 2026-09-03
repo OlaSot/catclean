@@ -25,7 +25,7 @@ type ConfirmData = {
 };
 
 export default function ConfirmOrderPage() {
-  const { t } = usePublicT();
+  const { t, locale } = usePublicT();
   const params = useParams<{ token: string }>();
   const [token, setToken] = useState<string>("");
   const [loading, setLoading] = useState(true);
@@ -33,6 +33,9 @@ export default function ConfirmOrderPage() {
   const [data, setData] = useState<ConfirmData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [accessSending, setAccessSending] = useState(false);
+  const [accessSent, setAccessSent] = useState(false);
+  const [accessError, setAccessError] = useState(false);
 
   useEffect(() => {
     setToken(params?.token ?? "");
@@ -73,11 +76,37 @@ export default function ConfirmOrderPage() {
   }, [load]);
 
   const reasonMessage = useMemo(() => {
-    if (!data || data.canConfirm) return null;
+    if (!data || data.canConfirm || success || data.order.status === "confirmed") return null;
     if (data.statusReason === "used") return t("public.confirm.used");
     if (data.statusReason === "expired") return t("public.confirm.expired");
     return t("public.confirm.unavailable");
-  }, [data, t]);
+  }, [data, success, t]);
+
+  const dateTime = useMemo(() => {
+    if (!data?.order.scheduledDate) return "—";
+    const date = new Date(`${data.order.scheduledDate}T12:00:00`);
+    const language = locale === "de" ? "de-DE" : locale === "ru" ? "ru-RU" : "en-GB";
+    return `${new Intl.DateTimeFormat(language, { dateStyle: "long" }).format(date)}${
+      data.order.scheduledTime ? `, ${data.order.scheduledTime.slice(0, 5)}` : ""
+    }`;
+  }, [data, locale]);
+
+  const sendAccessLink = async () => {
+    if (!token) return;
+    setAccessSending(true);
+    setAccessError(false);
+    try {
+      const response = await fetch(`/api/public/order-confirmations/${token}/client-access`, {
+        method: "POST",
+      });
+      if (!response.ok) throw new Error("access link failed");
+      setAccessSent(true);
+    } catch {
+      setAccessError(true);
+    } finally {
+      setAccessSending(false);
+    }
+  };
 
   const confirmOrder = async () => {
     if (!token) return;
@@ -122,14 +151,15 @@ export default function ConfirmOrderPage() {
                 {t("public.confirm.service")}: {serviceTypeLabel(data.order.serviceType)}
               </p>
               <p className="text-sm text-slate-700">
-                {t("public.confirm.schedule")}: {data.order.scheduledDate ?? "—"}{" "}
-                {data.order.scheduledTime ?? ""}
+                {t("public.confirm.schedule")}: {dateTime}
               </p>
               <p className="text-sm text-slate-700">
                 {t("public.confirm.address")}: {data.order.addressLine || "—"}
               </p>
               <p className="text-sm text-slate-700">
-                {t("public.confirm.status")}: {data.order.status}
+                {t("public.confirm.status")}: {data.order.status === "confirmed"
+                  ? t("public.confirm.statusConfirmed")
+                  : t("public.confirm.statusAwaiting")}
               </p>
               <p className="text-sm font-semibold text-slate-800">
                 {t("public.confirm.total")}: {data.order.total.toFixed(2)} {data.order.currency}
@@ -141,20 +171,42 @@ export default function ConfirmOrderPage() {
                 </p>
               ) : null}
 
-              {success ? (
+              {success || data.order.status === "confirmed" ? (
                 <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
                   {t("public.confirm.success")}
                 </p>
               ) : null}
 
-              <button
-                type="button"
-                onClick={confirmOrder}
-                disabled={!data.canConfirm || confirming || success}
-                className="inline-flex items-center justify-center rounded-full bg-[#34597E] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#2d4d6f] disabled:opacity-60"
-              >
-                {confirming ? t("public.confirm.confirming") : t("public.confirm.confirm")}
-              </button>
+              {data.canConfirm && !success ? (
+                <button
+                  type="button"
+                  onClick={confirmOrder}
+                  disabled={confirming}
+                  className="inline-flex items-center justify-center rounded-full bg-[#34597E] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#2d4d6f] disabled:opacity-60"
+                >
+                  {confirming ? t("public.confirm.confirming") : t("public.confirm.confirm")}
+                </button>
+              ) : null}
+
+              {success || data.order.status === "confirmed" ? (
+                <div className="mt-5 border-t border-slate-200 pt-5">
+                  <h2 className="text-base font-semibold text-slate-800">{t("public.confirm.accessTitle")}</h2>
+                  <p className="mt-1 text-sm text-slate-600">{t("public.confirm.accessText")}</p>
+                  {accessSent ? (
+                    <p className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">{t("public.confirm.accessSent")}</p>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={sendAccessLink}
+                      disabled={accessSending}
+                      className="mt-4 inline-flex items-center justify-center rounded-full bg-[#34597E] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#2d4d6f] disabled:opacity-60"
+                    >
+                      {accessSending ? t("public.confirm.accessSending") : t("public.confirm.accessButton")}
+                    </button>
+                  )}
+                  {accessError ? <p className="mt-2 text-sm text-rose-700">{t("public.confirm.accessError")}</p> : null}
+                </div>
+              ) : null}
             </div>
           ) : null}
         </section>

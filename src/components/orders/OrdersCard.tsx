@@ -11,9 +11,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { AdminUpdateOrderApiResponse } from "@/features/orders/types/admin-update-order-api.types";
 import { Bell, BellRing, MoreVertical } from "lucide-react";
 import { ScheduleTimeSelect } from "@/components/orders/ScheduleTimeSelect";
-import { normalizeScheduleTime } from "@/lib/orders/schedule-time";
+import { parseClockTime } from "@/lib/orders/schedule-time";
 import { badgeClass, orderStatusTone, serviceTypeTone } from "@/lib/design-system/badge-variants";
 import { buttonSizes, buttonVariants } from "@/lib/design-system/tokens";
+import { formatOrderCreatedAt } from "@/features/orders/lib/format-order-display";
 
 function formatDate(iso: string) {
   const [y, m, d] = iso.split("-").map(Number);
@@ -87,7 +88,7 @@ type OrderCardProps = {
 };
 
 export default function OrderCard({ order, onChanged }: OrderCardProps) {
-  const { t, orderStatusLabel, paymentLabel, bookingProductLabel } = useT();
+  const { t, locale, orderStatusLabel, paymentLabel, bookingProductLabel } = useT();
   const primaryProductLabel =
     order.productLabel ??
     bookingProductLabel({
@@ -136,7 +137,7 @@ export default function OrderCard({ order, onChanged }: OrderCardProps) {
   const [scheduleDate, setScheduleDate] = useState(order.dateISO);
   const [scheduleTime, setScheduleTime] = useState(() => {
     const raw = order.time === "—" ? "" : order.time;
-    return raw ? (normalizeScheduleTime(raw) ?? raw) : "";
+    return raw ? (parseClockTime(raw) ?? raw) : "";
   });
   const [scheduleSaving, setScheduleSaving] = useState(false);
   const [scheduleError, setScheduleError] = useState<string | null>(null);
@@ -147,7 +148,7 @@ export default function OrderCard({ order, onChanged }: OrderCardProps) {
   useEffect(() => {
     setScheduleDate(order.dateISO);
     const raw = order.time === "—" ? "" : order.time;
-    setScheduleTime(raw ? (normalizeScheduleTime(raw) ?? raw) : "");
+    setScheduleTime(raw ? (parseClockTime(raw) ?? raw) : "");
   }, [order.dateISO, order.time]);
 
   useEffect(() => {
@@ -314,16 +315,16 @@ export default function OrderCard({ order, onChanged }: OrderCardProps) {
   const openTimeEdit = () => {
     setScheduleError(null);
     const raw = order.time === "—" ? "" : order.time;
-    setScheduleTime(raw ? (normalizeScheduleTime(raw) ?? "09:00") : "09:00");
+    setScheduleTime(raw ? (parseClockTime(raw) ?? "09:00") : "09:00");
     setEditingSchedule("time");
   };
 
   const commitTimeEdit = async () => {
-    const next = normalizeScheduleTime(scheduleTime.trim());
+    const next = parseClockTime(scheduleTime.trim());
     const current =
       order.time === "—"
         ? ""
-        : (normalizeScheduleTime(order.time) ?? order.time);
+        : (parseClockTime(order.time) ?? order.time);
     setEditingSchedule(null);
     if (!next) {
       setScheduleError("Select a valid time");
@@ -356,6 +357,11 @@ export default function OrderCard({ order, onChanged }: OrderCardProps) {
           <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
             #{order.displayId}
           </span>
+          {order.createdAt ? (
+            <span className="text-[11px] text-slate-400">
+              {t("orders.createdAt")}: {formatOrderCreatedAt(order.createdAt, locale)}
+            </span>
+          ) : null}
           <span className={serviceBadgeStyle(productBadgeKey(order))}>
             {primaryProductLabel}
           </span>

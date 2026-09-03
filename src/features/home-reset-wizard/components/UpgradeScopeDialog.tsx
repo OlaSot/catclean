@@ -17,6 +17,8 @@ export function UpgradeScopeDialog({ open, title, items, onClose }: Props) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // Portals can only render after the client has mounted.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 

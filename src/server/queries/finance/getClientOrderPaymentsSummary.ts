@@ -1,6 +1,17 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { fetchClientOwnedOrder } from "@/server/mutations/orders/client-order-access";
 
+type OrderSummaryRow = {
+  currency: string | null;
+  final_price: number | string | null;
+  estimated_price: number | string | null;
+};
+
+type PaymentSummaryRow = {
+  amount: number | string;
+  status: string;
+};
+
 function parseMoney(value: unknown): number {
   const n = typeof value === "number" ? value : Number(value);
   if (!Number.isFinite(n)) return 0;
@@ -53,11 +64,9 @@ export async function getClientOrderPaymentsSummary(
     };
   }
 
-  const currency =
-    typeof (orderRow as any)?.currency === "string" && String((orderRow as any).currency).trim()
-      ? String((orderRow as any).currency).trim().toUpperCase()
-      : "EUR";
-  const total = parseMoney((orderRow as any)?.final_price ?? (orderRow as any)?.estimated_price ?? 0);
+  const summaryOrder = orderRow as unknown as OrderSummaryRow;
+  const currency = summaryOrder.currency?.trim().toUpperCase() || "EUR";
+  const total = parseMoney(summaryOrder.final_price ?? summaryOrder.estimated_price ?? 0);
 
   const { data: rows, error } = await supabase
     .from("order_payments")
@@ -77,14 +86,14 @@ export async function getClientOrderPaymentsSummary(
   }
 
   const paidGrossAmount = parseMoney(
-    (rows ?? [])
-      .filter((r) => (r as any).status === "paid")
-      .reduce((sum, r) => sum + parseMoney((r as any).amount), 0)
+    ((rows ?? []) as PaymentSummaryRow[])
+      .filter((row) => row.status === "paid")
+      .reduce((sum, row) => sum + parseMoney(row.amount), 0)
   );
   const refundedAmount = parseMoney(
-    (rows ?? [])
-      .filter((r) => (r as any).status === "refunded")
-      .reduce((sum, r) => sum + parseMoney((r as any).amount), 0)
+    ((rows ?? []) as PaymentSummaryRow[])
+      .filter((row) => row.status === "refunded")
+      .reduce((sum, row) => sum + parseMoney(row.amount), 0)
   );
   const netPaidAmount = parseMoney(paidGrossAmount - refundedAmount);
 

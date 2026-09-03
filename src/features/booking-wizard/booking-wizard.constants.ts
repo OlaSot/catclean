@@ -59,6 +59,10 @@ export const EMPTY_BOOKING_STATE: BookingWizardState = {
     zip: "",
     city: "",
     floor: "",
+    googlePlaceId: "",
+    latitude: null,
+    longitude: null,
+    serviceAreaValidated: false,
   },
   schedule: {
     date: "",

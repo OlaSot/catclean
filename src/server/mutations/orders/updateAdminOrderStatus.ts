@@ -7,6 +7,7 @@ import type { OrderStatus } from "@/entities/order/order.types";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { recordOrderStatusHistory } from "@/server/mutations/orders/recordOrderStatusHistory";
 import { getAdminOrderById } from "@/server/queries/orders/getAdminOrderById";
+import { invalidateActiveOrderConfirmationTokens } from "@/server/mutations/orders/createOrderConfirmationToken";
 
 export type UpdateAdminOrderStatusInput = {
   status: OrderStatus;
@@ -84,5 +85,16 @@ export async function updateAdminOrderStatus(
     return { order: null, error: historyError };
   }
 
-  return getAdminOrderById(id);
+  if (newStatus === "confirmed") {
+    const invalidateError = await invalidateActiveOrderConfirmationTokens(
+      supabase,
+      id
+    );
+    if (invalidateError) {
+      console.error("updateAdminOrderStatus confirmation tokens:", invalidateError);
+      return { order: null, error: invalidateError };
+    }
+  }
+
+  return getAdminOrderById(id, supabase);
 }

@@ -31,6 +31,10 @@ export type MoveOutAddress = {
   zip: string;
   city: string;
   floor: string;
+  googlePlaceId: string;
+  latitude: number | null;
+  longitude: number | null;
+  serviceAreaValidated: boolean;
 };
 
 export type MoveOutSchedule = {

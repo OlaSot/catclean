@@ -70,7 +70,7 @@ function buildAddress(order: ClientOrder): PortalOrder["address"] {
     line: [parts.street, parts.house].filter((p) => p && p !== "—").join(" ") || parts.line,
     city: parts.city !== "—" ? parts.city : "",
     floor: parts.floor,
-    apartment: null,
+    apartment: parts.apartment,
   };
 }
 
@@ -280,5 +280,6 @@ export function mapClientOrderDetailToPortal(order: ClientOrderDetail): PortalOr
     canReschedule: order.canReschedule,
     canLeaveReview: order.canLeaveReview,
     canOpenComplaint: order.canOpenComplaint,
+    cancellationPreview: order.cancellationPreview,
   };
 }

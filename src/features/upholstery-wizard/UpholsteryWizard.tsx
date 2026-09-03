@@ -18,7 +18,8 @@ type UpholsteryWizardProps = {
   repeatPrefill?: RepeatBookingPrefill;
 };
 
-export function UpholsteryWizard({ repeatPrefill: _repeatPrefill }: UpholsteryWizardProps = {}) {
+export function UpholsteryWizard(_props: UpholsteryWizardProps = {}) {
+  void _props;
   const router = useRouter();
   const [selectedId, setSelectedId] = useState<UpholsteryItemId | null>(null);
   const [error, setError] = useState<string | null>(null);

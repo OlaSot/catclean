@@ -68,7 +68,7 @@ async function main() {
 
   let updated = 0;
   let skippedDuplicate = 0;
-  let skippedInvalid = invalid.length;
+  const skippedInvalid = invalid.length;
 
   for (const row of rows) {
     if (invalid.some((i) => i.id === row.id)) continue;

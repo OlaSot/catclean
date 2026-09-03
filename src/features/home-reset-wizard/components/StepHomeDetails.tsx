@@ -2,6 +2,7 @@
 
 import { Building2, Home } from "lucide-react";
 import { usePublicT } from "@/i18n/public/usePublicT";
+import { getHomeResetHouseSurchargeEur } from "@/lib/pricing/pricing.constants";
 import { PremiumSelectCard } from "./PremiumSelectCard";
 import { WizardMotionImage } from "./WizardMotionImage";
 import { WizardStepHeader } from "./WizardStepHeader";
@@ -12,18 +13,22 @@ import type { HomeResetPropertyType } from "../home-reset-wizard.types";
 type Props = {
   propertyType: HomeResetPropertyType | null;
   propertySizeM2: number;
+  floorsCount: number;
   estimatePrice: number | null;
   onPropertyTypeChange: (type: HomeResetPropertyType) => void;
   onSizeChange: (size: number) => void;
+  onFloorsCountChange: (count: number) => void;
   error?: string;
 };
 
 export function StepHomeDetails({
   propertyType,
   propertySizeM2,
+  floorsCount,
   estimatePrice,
   onPropertyTypeChange,
   onSizeChange,
+  onFloorsCountChange,
   error,
 }: Props) {
   const { t } = usePublicT();
@@ -73,6 +78,40 @@ export function StepHomeDetails({
           </div>
           {error ? <p className="text-sm text-rose-600">{error}</p> : null}
         </div>
+
+        {propertyType === "house" ? (
+          <div className="space-y-3 rounded-2xl border border-[#34597E]/15 bg-[#34597E]/5 p-4">
+            <div>
+              <p className="text-sm font-medium text-slate-700">{t("public.homeReset.home.floors")}</p>
+              <p className="mt-1 text-xs leading-relaxed text-slate-500">
+                {t("public.homeReset.home.floorsHint")}
+              </p>
+            </div>
+            <div className="grid grid-cols-4 gap-2">
+              {[1, 2, 3, 4].map((count) => (
+                <button
+                  key={count}
+                  type="button"
+                  aria-pressed={floorsCount === count}
+                  onClick={() => onFloorsCountChange(count)}
+                  className={`rounded-xl border px-3 py-2.5 text-sm font-semibold transition ${
+                    floorsCount === count
+                      ? "border-[#34597E] bg-[#34597E] text-white"
+                      : "border-stone-200 bg-white text-slate-600 hover:border-[#34597E]/40"
+                  }`}
+                >
+                  {count === 4 ? "4+" : count}
+                </button>
+              ))}
+            </div>
+            <p className="text-xs font-medium text-[#34597E]">
+              {t("public.homeReset.home.houseSurcharge").replace(
+                "{amount}",
+                String(getHomeResetHouseSurchargeEur(floorsCount))
+              )}
+            </p>
+          </div>
+        ) : null}
 
         <div className="space-y-4 rounded-3xl border border-stone-200/80 bg-white p-6 shadow-[0_4px_24px_rgba(15,23,42,0.04)]">
           <div className="flex items-end justify-between gap-4">

@@ -48,6 +48,11 @@ export const homeResetPublicDe: Record<string, string> = {
   "public.homeReset.home.house": "Haus",
   "public.homeReset.home.houseSub": "Einfamilienhaus",
   "public.homeReset.home.homeSize": "Wohnfläche",
+  "public.homeReset.home.floors": "Wie viele Etagen werden gereinigt?",
+  "public.homeReset.home.floorsShort": "Etagen",
+  "public.homeReset.home.floorsHint":
+    "Treppen, Podeste und Geländer sind häufig nicht in der Wohnfläche enthalten.",
+  "public.homeReset.home.houseSurcharge": "Haus-Zuschlag: +{amount} €",
   "public.homeReset.home.from": "ab",
   "public.homeReset.home.sizeAria": "Wohnfläche in Quadratmetern",
   "public.homeReset.home.livingAlt": "Helles modernes Wohnzimmer — CatClean Home Reset",

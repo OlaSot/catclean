@@ -20,6 +20,7 @@ import AdminOrderFinanceCard from "@/features/finance/components/AdminOrderFinan
 import { ADMIN_PAGE_TITLE_CLASS } from "@/lib/admin-styles";
 import {
   displayValue,
+  formatOrderCreatedAt,
   formatOrderDate,
   formatOrderMoney,
 } from "@/features/orders/lib/format-order-display";
@@ -133,7 +134,7 @@ function isTerminalStatus(status: AdminOrderDetail["status"]): boolean {
 }
 
 export default function AdminOrderDetailView({ orderId }: AdminOrderDetailViewProps) {
-  const { t, paymentLabel, serviceTypeLabel, bookingProductLabel } = useT();
+  const { t, locale, paymentLabel, serviceTypeLabel, bookingProductLabel } = useT();
   const [loadState, setLoadState] = useState<LoadState>("loading");
   const [order, setOrder] = useState<AdminOrderDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -173,7 +174,7 @@ export default function AdminOrderDetailView({ orderId }: AdminOrderDetailViewPr
     } finally {
       setLoadState("idle");
     }
-  }, [orderId]);
+  }, [orderId, t]);
 
   const loadLatestToken = useCallback(async () => {
     try {
@@ -233,7 +234,7 @@ export default function AdminOrderDetailView({ orderId }: AdminOrderDetailViewPr
         setError(t("common.error"));
       }
     },
-    [order, orderId]
+    [order, orderId, t]
   );
 
   const jumpToSection = useCallback((sectionId: string) => {
@@ -494,6 +495,9 @@ export default function AdminOrderDetailView({ orderId }: AdminOrderDetailViewPr
                 <h1 className={`mt-1 ${ADMIN_PAGE_TITLE_CLASS}`}>
                   #{order.displayId}
                 </h1>
+                <p className="mt-1 text-xs text-slate-500">
+                  {t("orders.createdAt")}: {formatOrderCreatedAt(order.createdAt, locale)}
+                </p>
                 <p className="mt-1 text-sm font-medium text-slate-700">{productLabel}</p>
                 {order.service.bookingProduct || order.service.productKey !== order.service.type ? (
                   <p className="text-xs text-slate-500">

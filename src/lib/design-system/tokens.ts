@@ -19,8 +19,8 @@ export const colors = {
 
 /** Surfaces */
 export const surfaces = {
-  page: "bg-[#F6F8FB]",
-  pageAlt: "bg-[#EEF2F7]",
+  page: "bg-[var(--cc-page-bg)]",
+  pageAlt: "bg-[var(--cc-page-bg)]",
   card: "rounded-3xl border border-slate-200/80 bg-white shadow-[0_8px_30px_rgba(15,23,42,0.04)]",
   cardSoft: "rounded-2xl border border-slate-200/80 bg-[#F6F8FB]",
   cardPanel:

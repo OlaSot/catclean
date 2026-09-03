@@ -3,13 +3,13 @@
 import Link from "next/link";
 import { useState } from "react";
 import { SiteHeader } from "@/components/layout/SiteHeader";
+import { SiteFooter } from "@/components/layout/SiteFooter";
 import { usePublicT } from "@/i18n/public/usePublicT";
 import { MobileCatHero } from "./MobileCatHero";
 import {
   HomeMobileFlagshipCard,
   HomeMobileSecondaryCards,
 } from "./HomeMobileServicePicker";
-import { HomeSocialTrust } from "./HomeSocialTrust";
 import { TrustBadges } from "./TrustBadges";
 import {
   getHomeServiceBookingHref,
@@ -33,7 +33,7 @@ export function HomeMobileLayout() {
   const heroVideo = "/videos/catclean-hero.mp4";
 
   return (
-    <main className="bg-[#EEF2F7] text-slate-700">
+    <main className="bg-[var(--cc-page-bg)] text-slate-700">
       <MobileCatHero
         src={heroVideo}
         header={<SiteHeader compact languageInMenu />}
@@ -77,7 +77,7 @@ export function HomeMobileLayout() {
         </div>
       </section>
 
-      <HomeSocialTrust />
+      <SiteFooter />
     </main>
   );
 }

@@ -39,4 +39,4 @@ export const HOME_SIGNATURE_BADGE_CLASS =
   "mb-1 inline-flex max-w-full items-center gap-1 rounded-full border border-white/30 bg-white/20 px-2 py-0.5 text-[0.625rem] font-medium tracking-wide sm:mb-1.5 sm:gap-1.5 sm:px-2.5 sm:py-0.5 sm:text-[0.6875rem] xl:mb-1 xl:px-2 xl:py-0.5 xl:text-[0.625rem] 2xl:mb-2 2xl:px-3 2xl:py-1 2xl:text-xs";
 
 export const HOME_BOOKING_PANEL_CLASS =
-  "w-full min-w-0 rounded-[28px] border border-white/30 bg-white/22 p-4 shadow-[0_8px_40px_rgba(15,23,42,0.05)] backdrop-blur-2xl sm:p-5 lg:p-6 xl:p-5 2xl:p-7";
+  "w-full min-w-0 rounded-[28px] border border-white/30 bg-white/22 p-4 shadow-[0_8px_40px_rgba(15,23,42,0.05)] backdrop-blur-2xl dark:border-white/10 dark:bg-white/8 sm:p-5 lg:p-6 xl:p-5 2xl:p-7";

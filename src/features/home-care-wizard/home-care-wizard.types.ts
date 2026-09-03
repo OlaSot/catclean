@@ -21,6 +21,10 @@ export type HomeCareAddress = {
   city: string;
   floor: string;
   accessNotes: string;
+  googlePlaceId: string;
+  latitude: number | null;
+  longitude: number | null;
+  serviceAreaValidated: boolean;
 };
 
 export type HomeCareSchedule = {
@@ -39,6 +43,7 @@ export type HomeCareWizardState = {
   frequency: HomeCareFrequency;
   propertyType: HomeCarePropertyType | null;
   propertySizeM2: number;
+  floorsCount: number;
   petsOption: HomeCarePetsOption;
   enhancements: HomeCareEnhancements;
   address: HomeCareAddress;

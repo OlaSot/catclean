@@ -7,6 +7,10 @@ import {
   calculateCleanerPayout,
   DEFAULT_CLEANER_PAYOUT_PERCENT,
 } from "@/lib/finance/calculate-cleaner-payout";
+import {
+  mapCleanerPayoutRow,
+  type CleanerPayoutRow,
+} from "@/server/queries/finance/map-finance-records";
 
 function parseNonNegativeMoney(value: unknown): number | null {
   const n = typeof value === "number" ? value : Number(String(value));
@@ -131,28 +135,9 @@ export async function updateAdminCleanerPayout(
   if (updateError) return { payout: null, error: updateError.message };
   if (!updated?.id) return { payout: null, error: "Failed to update payout", notFound: true };
 
-  const payout: CleanerPayoutRecord = {
-    id: String((updated as any).id),
-    orderId: String((updated as any).order_id),
-    cleanerId: String((updated as any).cleaner_id),
-    amount: Number((updated as any).amount),
-    currency: String((updated as any).currency ?? "EUR"),
-    status: (updated as any).status as CleanerPayoutRecordStatus,
-    payoutPercent:
-      (updated as any).payout_percent === null || (updated as any).payout_percent === undefined
-        ? null
-        : Number((updated as any).payout_percent),
-    baseAmount:
-      (updated as any).base_amount === null || (updated as any).base_amount === undefined
-        ? null
-        : Number((updated as any).base_amount),
-    adjustmentAmount: Number((updated as any).adjustment_amount ?? 0),
-    adjustmentReason: ((updated as any).adjustment_reason as string | null) ?? null,
-    isManualOverride: Boolean((updated as any).is_manual_override),
-    note: ((updated as any).note as string | null) ?? null,
-    recordedBy: ((updated as any).recorded_by as string | null) ?? null,
-    createdAt: String((updated as any).created_at),
-  };
+  const payout: CleanerPayoutRecord = mapCleanerPayoutRow(
+    updated as unknown as CleanerPayoutRow
+  );
 
   return { payout, error: null };
 }

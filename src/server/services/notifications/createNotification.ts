@@ -82,7 +82,6 @@ export async function createStaffNotifications(input: Omit<CreateNotificationInp
       role === "operator" ? ("operator" as const) : ("admin" as const);
 
     // Best-effort: keep going on partial failures
-    // eslint-disable-next-line no-await-in-loop
     await createNotification({ ...input, userId: id, roleTarget });
   }
 

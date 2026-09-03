@@ -10,6 +10,27 @@ export const PRICING_RATE_EUR_PER_M2 = {
 
 export const REGULAR_CLEANING_DEEP_MULTIPLIER = 1.3;
 
+export const HOME_RESET_HOUSE_BASE_SURCHARGE_EUR = 15;
+export const HOME_RESET_ADDITIONAL_FLOOR_SURCHARGE_EUR = 10;
+export const HOME_CARE_HOUSE_BASE_SURCHARGE_EUR = 10;
+export const HOME_CARE_ADDITIONAL_FLOOR_SURCHARGE_EUR = 5;
+
+export function getHomeResetHouseSurchargeEur(floorsCount: number): number {
+  const normalizedFloors = Math.max(1, Math.round(floorsCount));
+  return (
+    HOME_RESET_HOUSE_BASE_SURCHARGE_EUR +
+    (normalizedFloors - 1) * HOME_RESET_ADDITIONAL_FLOOR_SURCHARGE_EUR
+  );
+}
+
+export function getHomeCareHouseSurchargeEur(floorsCount: number): number {
+  const normalizedFloors = Math.max(1, Math.round(floorsCount));
+  return (
+    HOME_CARE_HOUSE_BASE_SURCHARGE_EUR +
+    (normalizedFloors - 1) * HOME_CARE_ADDITIONAL_FLOOR_SURCHARGE_EUR
+  );
+}
+
 export const MINIMUM_ORDER_AMOUNT_EUR: Record<string, number> = {
   regular_cleaning: 75,
   move_in_out: 120,

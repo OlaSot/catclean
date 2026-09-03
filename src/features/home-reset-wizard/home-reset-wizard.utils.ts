@@ -5,6 +5,7 @@ import {
   serializeHomeResetUpgradeIds,
 } from "@/lib/orders/home-reset-upgrade";
 import { tryCalculateOrderPrice } from "@/lib/pricing/calculate-order-price";
+import { getHomeResetHouseSurchargeEur } from "@/lib/pricing/pricing.constants";
 import {
   BATHROOM_DEEP_RESET,
   CUSTOMIZE_UPGRADE_OPTIONS,
@@ -149,6 +150,8 @@ export function buildServiceDetails(state: HomeResetWizardState): Record<string,
 
   return {
     propertySizeM2,
+    propertyType: state.propertyType,
+    floorsCount: state.propertyType === "house" ? state.floorsCount : 1,
     cleaningIntensity: HOME_RESET_PRICING_INTENSITY,
     ovenCleaning: enhancements.oven_refresh,
     fridgeCleaning: enhancements.fridge_refresh,
@@ -166,17 +169,27 @@ export function calculateHomeResetEstimate(state: HomeResetWizardState): HomeRes
   if (!result) return { price: null, durationMinutes: null };
 
   const upgradeSurcharge = getDeepUpgradeSurchargeEur(state);
-  const price = Math.round((result.estimatedPrice + upgradeSurcharge) * 100) / 100;
+  const houseSurcharge =
+    state.propertyType === "house"
+      ? getHomeResetHouseSurchargeEur(state.floorsCount)
+      : 0;
+  const price = Math.round((result.estimatedPrice + upgradeSurcharge + houseSurcharge) * 100) / 100;
+  const houseDurationMinutes =
+    state.propertyType === "house" ? 20 + Math.max(0, state.floorsCount - 1) * 10 : 0;
 
   return {
     price,
-    durationMinutes: result.estimatedDurationMinutes,
+    durationMinutes: result.estimatedDurationMinutes + houseDurationMinutes,
   };
 }
 
 export function serializeHomeResetComment(state: HomeResetWizardState): string {
   const lines: string[] = ["Home Reset booking"];
   lines.push(`Property type: ${propertyTypeLabel(state.propertyType)}`);
+  if (state.propertyType === "house") {
+    const surcharge = getHomeResetHouseSurchargeEur(state.floorsCount);
+    lines.push(`Floors: ${state.floorsCount}${state.floorsCount >= 4 ? "+" : ""} (+€${surcharge})`);
+  }
 
   if (isKitchenDeepResetSelected(state)) {
     const surcharge = HOME_RESET_UPGRADE_SURCHARGE_EUR.kitchen_upgrade;

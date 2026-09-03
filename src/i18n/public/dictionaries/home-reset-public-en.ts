@@ -45,6 +45,11 @@ export const homeResetPublicEn: Record<keyof typeof homeResetPublicDe, string> =
   "public.homeReset.home.house": "House",
   "public.homeReset.home.houseSub": "Standalone homes",
   "public.homeReset.home.homeSize": "Home size",
+  "public.homeReset.home.floors": "How many floors should be cleaned?",
+  "public.homeReset.home.floorsShort": "floors",
+  "public.homeReset.home.floorsHint":
+    "Stairs, landings, and railings are often not included in the stated living area.",
+  "public.homeReset.home.houseSurcharge": "House surcharge: +€{amount}",
   "public.homeReset.home.from": "From",
   "public.homeReset.home.sizeAria": "Home size in square meters",
   "public.homeReset.home.livingAlt": "Bright modern living room — CatClean Home Reset",

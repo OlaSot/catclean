@@ -2,7 +2,7 @@ import {
   collectClientSavedAddresses,
   type ClientSavedAddress,
 } from "@/lib/booking/saved-address";
-import { createSupabaseServerClient } from "@/lib/supabase/supabaseServer";
+import { createSupabaseAdminClient } from "@/lib/supabase/supabaseAdmin";
 
 const CLIENT_SAVED_ADDRESS_SELECT = `
   id,
@@ -29,7 +29,11 @@ export async function getClientSavedAddresses(clientId: string): Promise<{
     return { addresses: [], error: "Invalid client id" };
   }
 
-  const supabase = await createSupabaseServerClient();
+  const admin = createSupabaseAdminClient();
+  if (!admin.supabase) {
+    return { addresses: [], error: admin.error ?? "Supabase admin client is unavailable" };
+  }
+  const supabase = admin.supabase;
 
   const { data: rows, error } = await supabase
     .from("orders")

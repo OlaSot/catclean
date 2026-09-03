@@ -5,6 +5,7 @@ import { useMemo } from "react";
 import { LogOut, Menu } from "lucide-react";
 import { createSupabaseBrowserClient } from "@/lib/supabase/supabaseBrowser";
 import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import NotificationBell from "@/components/notifications/NotificationBell";
 import { useT } from "@/i18n/useT";
 
@@ -54,6 +55,10 @@ export default function AdminHeader({
         </div>
 
         <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+          <ThemeToggle
+            toDarkLabel={t("admin.theme.toDark")}
+            toLightLabel={t("admin.theme.toLight")}
+          />
           <LanguageSwitcher />
           <NotificationBell userRole={userRole} />
           <div className="hidden items-center gap-3 rounded-2xl border border-[#E5EDF5] bg-[#F6F8FB] px-4 py-2 md:flex">

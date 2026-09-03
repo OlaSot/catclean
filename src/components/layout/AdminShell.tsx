@@ -12,7 +12,6 @@ import {
   ADMIN_MAIN_CLASS,
   ADMIN_SHELL_CLASS,
 } from "@/lib/admin-styles";
-import { AdminViewportFit } from "@/components/layout/AdminViewportFit";
 import {
   getAdminPageTitleKey,
   shouldHideAdminHeaderTitle,
@@ -51,9 +50,9 @@ export default function AdminShell({
           userRole={userRole}
           onOpenMobileNav={() => setMobileNavOpen(true)}
         />
-        <main className="min-h-0 flex-1 overflow-hidden">
-          <div className={`${ADMIN_CONTENT_CLASS} flex min-h-0 flex-1 flex-col`}>
-            <AdminViewportFit>{children}</AdminViewportFit>
+        <main className="min-h-0 flex-1 overflow-y-auto">
+          <div className={`${ADMIN_CONTENT_CLASS} min-h-full`}>
+            {children}
           </div>
         </main>
       </div>

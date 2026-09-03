@@ -1,8 +1,9 @@
 import { de } from "@/i18n/public/dictionaries/de";
 import { en } from "@/i18n/public/dictionaries/en";
+import { ru } from "@/i18n/public/dictionaries/ru";
 import type { PublicLocale, PublicTranslateFn } from "@/i18n/public/public-i18n.types";
 
-const dictionaries = { de, en } as const;
+const dictionaries = { de, en, ru } as const;
 
 function lookup(dict: Record<string, string>, key: string): string | undefined {
   if (Object.prototype.hasOwnProperty.call(dict, key)) {

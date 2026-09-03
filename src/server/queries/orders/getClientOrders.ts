@@ -1,7 +1,7 @@
 import { mapOrderToClientOrder } from "@/entities/order/client-order.mapper";
 import type { ClientOrder } from "@/entities/order/client-order.types";
 import type { SupabaseOrderRow } from "@/entities/order/order.supabase.types";
-import { createSupabaseServerClient } from "@/lib/supabase/supabaseServer";
+import { createSupabaseAdminClient } from "@/lib/supabase/supabaseAdmin";
 import { CLIENT_ORDER_SELECT } from "@/server/queries/orders/client-order-select";
 
 export async function getClientOrders(clientId: string): Promise<{
@@ -13,7 +13,11 @@ export async function getClientOrders(clientId: string): Promise<{
     return { orders: [], error: "Invalid client id" };
   }
 
-  const supabase = await createSupabaseServerClient();
+  const admin = createSupabaseAdminClient();
+  if (!admin.supabase) {
+    return { orders: [], error: admin.error ?? "Supabase admin client is unavailable" };
+  }
+  const supabase = admin.supabase;
 
   const { data: rows, error } = await supabase
     .from("orders")

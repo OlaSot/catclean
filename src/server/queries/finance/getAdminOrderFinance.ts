@@ -3,12 +3,15 @@ import type {
   AdminOrderFinanceData,
   AdminOrderFinanceSummary,
   CleanerPayoutRecord,
-  CleanerPayoutRecordStatus,
-  OrderPaymentMethod,
   OrderPaymentRecord,
-  OrderPaymentRecordStatus,
 } from "@/features/finance/types/admin-order-finance.types";
 import type { OrderPaymentStatus } from "@/entities/order/order.types";
+import {
+  mapCleanerPayoutRow,
+  mapOrderPaymentRow,
+  type CleanerPayoutRow,
+  type OrderPaymentRow,
+} from "@/server/queries/finance/map-finance-records";
 
 type OrderRow = {
   id: string;
@@ -144,40 +147,8 @@ export async function getAdminOrderFinance(
     return { data: null, error: payoutsError.message };
   }
 
-  const payments: OrderPaymentRecord[] = (paymentsRows ?? []).map((row) => ({
-    id: (row as any).id as string,
-    orderId: (row as any).order_id as string,
-    amount: parseMoney((row as any).amount),
-    currency: normalizeCurrency((row as any).currency),
-    method: (row as any).method as OrderPaymentMethod,
-    status: (row as any).status as OrderPaymentRecordStatus,
-    note: ((row as any).note as string | null) ?? null,
-    recordedBy: ((row as any).recorded_by as string | null) ?? null,
-    createdAt: (row as any).created_at as string,
-  }));
-
-  const payouts: CleanerPayoutRecord[] = (payoutsRows ?? []).map((row) => ({
-    id: (row as any).id as string,
-    orderId: (row as any).order_id as string,
-    cleanerId: (row as any).cleaner_id as string,
-    amount: parseMoney((row as any).amount),
-    currency: normalizeCurrency((row as any).currency),
-    status: (row as any).status as CleanerPayoutRecordStatus,
-    payoutPercent:
-      (row as any).payout_percent === null || (row as any).payout_percent === undefined
-        ? null
-        : parseMoney((row as any).payout_percent),
-    baseAmount:
-      (row as any).base_amount === null || (row as any).base_amount === undefined
-        ? null
-        : parseMoney((row as any).base_amount),
-    adjustmentAmount: parseMoney((row as any).adjustment_amount ?? 0),
-    adjustmentReason: ((row as any).adjustment_reason as string | null) ?? null,
-    isManualOverride: Boolean((row as any).is_manual_override),
-    note: ((row as any).note as string | null) ?? null,
-    recordedBy: ((row as any).recorded_by as string | null) ?? null,
-    createdAt: (row as any).created_at as string,
-  }));
+  const payments = ((paymentsRows ?? []) as OrderPaymentRow[]).map(mapOrderPaymentRow);
+  const payouts = ((payoutsRows ?? []) as CleanerPayoutRow[]).map(mapCleanerPayoutRow);
 
   const summary = computeFinanceSummary({
     orderTotal,

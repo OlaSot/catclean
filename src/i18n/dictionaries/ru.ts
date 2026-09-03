@@ -13,6 +13,8 @@ export const ru = {
   "nav.admin": "Админ",
 
   "admin.logout": "Выйти",
+  "admin.theme.toDark": "Включить тёмную тему",
+  "admin.theme.toLight": "Включить светлую тему",
   "admin.crmBadge": "Админ CRM",
 
   "common.loading": "Загрузка…",
@@ -74,6 +76,7 @@ export const ru = {
   "orders.client": "Клиент",
   "orders.address": "Адрес",
   "orders.schedule": "Расписание",
+  "orders.createdAt": "Создан",
   "orders.assignedCleaner": "Назначенный клинер",
   "orders.notAssigned": "Не назначен",
   "orders.openAttachmentsManager": "Открыть менеджер вложений",
@@ -174,6 +177,8 @@ export const ru = {
   "forms.selectService": "Выберите услугу",
   "forms.scheduledDate": "Дата",
   "forms.scheduledTime": "Время",
+  "forms.scheduledTimeHint":
+    "Любое время. На сайте клиент видит только 07:30–20:00 и свободные слоты — здесь можно поставить своё.",
   "forms.serviceParameters": "Параметры услуги",
   "forms.autoEstimated": "Автооценка",
   "forms.minimumOrderApplied": "применен минимум заказа",

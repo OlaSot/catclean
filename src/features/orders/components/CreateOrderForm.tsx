@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ScheduleTimeSelect } from "@/components/orders/ScheduleTimeSelect";
 import { FormField, inputClassName, textareaClassName } from "@/components/ui/FormField";
-import { normalizeScheduleTime } from "@/lib/orders/schedule-time";
+import { parseClockTime } from "@/lib/orders/schedule-time";
 import { tryCalculateOrderPrice } from "@/lib/pricing/calculate-order-price";
 import { supportsAutoPricing } from "@/lib/pricing/pricing.constants";
 import CreateOrderServiceFields from "@/features/orders/components/CreateOrderServiceFields";
@@ -313,14 +313,13 @@ export default function CreateOrderForm() {
             label={t("forms.scheduledTime")}
             htmlFor={fieldNames.scheduledTime}
             error={fieldErrors.scheduledTime}
+            hint={t("forms.scheduledTimeHint")}
           >
             <ScheduleTimeSelect
               id={fieldNames.scheduledTime}
               name={fieldNames.scheduledTime}
               className={inputClassName}
-              value={
-                normalizeScheduleTime(values.scheduledTime) ?? "09:00"
-              }
+              value={parseClockTime(values.scheduledTime) ?? values.scheduledTime}
               onChange={(v) => updateField("scheduledTime", v)}
             />
           </FormField>

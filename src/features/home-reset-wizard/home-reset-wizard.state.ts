@@ -3,6 +3,7 @@ import type { HomeResetWizardState } from "./home-reset-wizard.types";
 export const INITIAL_HOME_RESET_STATE: HomeResetWizardState = {
   propertyType: null,
   propertySizeM2: 80,
+  floorsCount: 2,
   deepUpgrades: {
     kitchen: false,
     bathroom: false,
@@ -22,6 +23,10 @@ export const INITIAL_HOME_RESET_STATE: HomeResetWizardState = {
     city: "",
     floor: "",
     accessNotes: "",
+    googlePlaceId: "",
+    latitude: null,
+    longitude: null,
+    serviceAreaValidated: false,
   },
   schedule: {
     date: "",

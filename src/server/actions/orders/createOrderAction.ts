@@ -177,7 +177,7 @@ export async function createOrderAction(
       house_number: houseNumber,
       floor: floor || null,
       apartment: doorbellName || null,
-      postal_code: customerComment || null,
+      postal_code: null,
     })
     .select("id")
     .single();
@@ -199,6 +199,7 @@ export async function createOrderAction(
     currency: DEFAULT_ORDER_CURRENCY,
     payment_status: DEFAULT_PAYMENT_STATUS,
     estimated_price: estimatedPrice,
+    customer_comment: customerComment || null,
     created_by: user.id,
   };
 

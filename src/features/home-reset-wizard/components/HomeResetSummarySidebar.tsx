@@ -68,7 +68,11 @@ export function HomeResetSummarySidebar({
             {state.propertyType ? (
               <SummaryRow
                 label={t("public.homeReset.sidebar.home")}
-                value={translateHomeResetPropertyType(t, state.propertyType)}
+                value={`${translateHomeResetPropertyType(t, state.propertyType)}${
+                  state.propertyType === "house"
+                    ? ` · ${state.floorsCount}${state.floorsCount >= 4 ? "+" : ""} ${t("public.homeReset.home.floorsShort")}`
+                    : ""
+                }`}
               />
             ) : null}
             {state.propertySizeM2 ? (

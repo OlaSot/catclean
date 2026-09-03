@@ -4,6 +4,11 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { usePublicT } from "@/i18n/public/usePublicT";
 import { normalizePhone } from "@/lib/phone/normalize-phone";
+import { isPublicBookingSlotTooSoon } from "@/lib/booking/berlin-datetime";
+import {
+  translatePublicBookingError,
+  usePublicBookingSubmit,
+} from "@/lib/booking/submit-public-booking";
 import { WizardContentPanel } from "@/components/booking/WizardContentPanel";
 import { HomeResetWizardNav } from "@/features/home-reset-wizard/components/HomeResetWizardNav";
 import { StepAddress } from "@/features/home-reset-wizard/components/StepAddress";
@@ -20,10 +25,9 @@ import { StepExtras } from "./components/StepExtras";
 import { StepFrequency } from "./components/StepFrequency";
 import { StepHomeDetails } from "./components/StepHomeDetails";
 import { StepPets } from "./components/StepPets";
-import { StepSuccess } from "./components/StepSuccess";
 import { HOME_CARE_TOTAL_STEPS } from "./home-care-wizard.constants";
 import { INITIAL_HOME_CARE_STATE } from "./home-care-wizard.state";
-import type { HomeCareWizardState, SubmitResult } from "./home-care-wizard.types";
+import type { HomeCareWizardState } from "./home-care-wizard.types";
 import { BOOKING_PRODUCT_HOME_CARE } from "./home-care-wizard.constants";
 import {
   buildServiceDetails,
@@ -41,18 +45,47 @@ type ValidationErrors = Record<string, string>;
 
 type HomeCareWizardProps = {
   repeatPrefill?: RepeatBookingPrefill;
+  returnHref?: string;
 };
 
 function buildInitialState(repeatPrefill?: RepeatBookingPrefill): HomeCareWizardState {
   if (!repeatPrefill) return INITIAL_HOME_CARE_STATE;
-  return applyContactPrefill(
+  const prefilled = applyContactPrefill(
     applyAddressPrefill(INITIAL_HOME_CARE_STATE, repeatPrefill),
     repeatPrefill,
   );
-  // TODO: map serviceDetails enhancements and petsOption from repeatPrefill.petsInfo
+  const details = repeatPrefill.serviceDetails?.type === "regular_cleaning"
+    ? repeatPrefill.serviceDetails.data
+    : null;
+  const propertyType = details?.propertyType === "house" || details?.propertyType === "apartment"
+    ? details.propertyType
+    : prefilled.propertyType;
+  const frequency = ["one_time", "weekly", "biweekly", "monthly"].includes(details?.cleaningFrequency ?? "")
+    ? details?.cleaningFrequency as HomeCareWizardState["frequency"]
+    : prefilled.frequency;
+  const petType = details?.petType;
+  const petsOption = petType === "cat" || petType === "dog" || petType === "multiple"
+    ? petType
+    : "no_pets";
+  return {
+    ...prefilled,
+    frequency,
+    propertyType,
+    propertySizeM2: details?.propertySizeM2 && details.propertySizeM2 > 0 ? details.propertySizeM2 : prefilled.propertySizeM2,
+    floorsCount: details?.floorsCount && details.floorsCount > 0 ? details.floorsCount : prefilled.floorsCount,
+    petsOption,
+    enhancements: {
+      oven_refresh: Boolean(details?.ovenCleaning),
+      fridge_refresh: Boolean(details?.fridgeCleaning),
+      inside_cabinets: Boolean(details?.insideCabinets),
+      balcony_cleaning: Boolean(details?.balconyIncluded),
+      window_cleaning: Boolean(details?.windowsInside),
+    },
+    schedule: { date: "", time: "" },
+  };
 }
 
-export function HomeCareWizard({ repeatPrefill }: HomeCareWizardProps = {}) {
+export function HomeCareWizard({ repeatPrefill, returnHref = "/" }: HomeCareWizardProps = {}) {
   const { t } = usePublicT();
   const router = useRouter();
   const { progressStep, displayStep, phase, goToStep, handleStepAnimationEnd } =
@@ -61,7 +94,7 @@ export function HomeCareWizard({ repeatPrefill }: HomeCareWizardProps = {}) {
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [submitSuccess, setSubmitSuccess] = useState<SubmitResult | null>(null);
+  const { submit } = usePublicBookingSubmit({ returnToPortal: returnHref === "/app/client" });
 
   const estimate = useMemo(() => calculateHomeCareEstimate(state), [state]);
   const showSidebar = progressStep >= 2 && progressStep <= 7;
@@ -77,10 +110,16 @@ export function HomeCareWizard({ repeatPrefill }: HomeCareWizardProps = {}) {
     if (step === 5) {
       if (!state.schedule.date) nextErrors.date = t("public.validation.chooseDate");
       if (!state.schedule.time) nextErrors.time = t("public.validation.chooseTime");
+      else if (state.schedule.date && isPublicBookingSlotTooSoon(state.schedule.date, state.schedule.time)) {
+        nextErrors.time = t("public.validation.slotTooSoon");
+      }
     }
 
     if (step === 6) {
       if (!state.address.street.trim()) nextErrors.street = t("public.validation.required");
+      else if (!state.address.serviceAreaValidated) {
+        nextErrors.street = t("public.validation.regionHannoverAddress");
+      }
       if (!state.address.houseNumber.trim()) nextErrors.houseNumber = t("public.validation.required");
       if (!state.address.zip.trim()) nextErrors.zip = t("public.validation.required");
       if (!state.address.city.trim()) nextErrors.city = t("public.validation.required");
@@ -91,7 +130,8 @@ export function HomeCareWizard({ repeatPrefill }: HomeCareWizardProps = {}) {
       const normalized = normalizePhone(state.contact.phone);
       if (!normalized) nextErrors.phone = t("public.validation.invalidPhone");
       const email = state.contact.email.trim();
-      if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      if (!email) nextErrors.email = t("public.validation.required");
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         nextErrors.email = t("public.validation.invalidEmail");
       }
     }
@@ -103,7 +143,7 @@ export function HomeCareWizard({ repeatPrefill }: HomeCareWizardProps = {}) {
   function handleBack() {
     if (phase === "exit") return;
     if (displayStep === 1) {
-      router.push("/");
+      router.push(returnHref);
       return;
     }
     goToStep(displayStep - 1);
@@ -123,8 +163,12 @@ export function HomeCareWizard({ repeatPrefill }: HomeCareWizardProps = {}) {
   }
 
   async function handleSubmit() {
-    if (phase === "exit") return;
+    if (phase === "exit" || submitting) return;
 
+    if (!validateStep(5)) {
+      goToStep(5);
+      return;
+    }
     if (!validateStep(7)) {
       goToStep(7);
       return;
@@ -159,23 +203,18 @@ export function HomeCareWizard({ repeatPrefill }: HomeCareWizardProps = {}) {
       floor: state.address.floor.trim(),
       estimatedPrice: estimate.price,
       customerComment: serializeHomeCareComment(state),
+      repeatFromOrderId: repeatPrefill?.orderId || undefined,
     };
 
     try {
-      const response = await fetch("/api/public/bookings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const body = (await response.json()) as {
-        data: SubmitResult | null;
-        error: string | null;
-      };
-      if (!response.ok || body.error || !body.data) {
-        setSubmitError(body.error ?? "Failed to create booking");
-        return;
+      const result = await submit(payload);
+      if (!result.ok && !("blocked" in result && result.blocked)) {
+        if (result.error === "public.validation.slotTooSoon") {
+          setErrors({ time: t("public.validation.slotTooSoon") });
+          goToStep(5);
+        }
+        setSubmitError(translatePublicBookingError(t, result.error));
       }
-      setSubmitSuccess(body.data);
     } catch {
       setSubmitError(t("public.homeCare.submitError"));
     } finally {
@@ -197,12 +236,16 @@ export function HomeCareWizard({ repeatPrefill }: HomeCareWizardProps = {}) {
           <StepHomeDetails
             propertyType={state.propertyType}
             propertySizeM2={state.propertySizeM2}
-            estimatePrice={estimate.price}
+            floorsCount={state.floorsCount}
+            estimatePrice={state.propertyType ? estimate.price : null}
             onPropertyTypeChange={(propertyType) =>
               setState((prev) => ({ ...prev, propertyType }))
             }
             onSizeChange={(propertySizeM2) =>
               setState((prev) => ({ ...prev, propertySizeM2 }))
+            }
+            onFloorsCountChange={(floorsCount) =>
+              setState((prev) => ({ ...prev, floorsCount }))
             }
             error={errors.propertyType}
           />
@@ -227,6 +270,7 @@ export function HomeCareWizard({ repeatPrefill }: HomeCareWizardProps = {}) {
             value={state.schedule}
             onChange={(schedule) => setState((prev) => ({ ...prev, schedule }))}
             errors={{ date: errors.date, time: errors.time }}
+            durationMinutes={estimate.durationMinutes}
           />
         );
       case 6:
@@ -263,25 +307,11 @@ export function HomeCareWizard({ repeatPrefill }: HomeCareWizardProps = {}) {
     </WizardStepTransition>
   );
 
-  if (submitSuccess) {
-    return (
-      <div className="space-y-10">
-        <HomeCareProgress currentStep={HOME_CARE_TOTAL_STEPS} />
-        <WizardContentPanel>
-          <div className="hr-wizard-step-enter">
-            <StepSuccess result={submitSuccess} />
-          </div>
-        </WizardContentPanel>
-        <TrustStrip />
-      </div>
-    );
-  }
-
   const sidebar = (
     <HomeCareSummarySidebar
       state={state}
-      estimatePrice={estimate.price}
-      estimateDurationMinutes={estimate.durationMinutes}
+      estimatePrice={state.propertyType ? estimate.price : null}
+      estimateDurationMinutes={state.propertyType ? estimate.durationMinutes : null}
     />
   );
 

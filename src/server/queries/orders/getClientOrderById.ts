@@ -9,7 +9,7 @@ import {
   canLeaveReviewForStatus,
   canOpenComplaintForStatus,
 } from "@/lib/orders/reviews-complaints-rules";
-import { createSupabaseServerClient } from "@/lib/supabase/supabaseServer";
+import { createSupabaseAdminClient } from "@/lib/supabase/supabaseAdmin";
 import { CLIENT_ORDER_SELECT } from "@/server/queries/orders/client-order-select";
 import { getClientOrderPaymentsSummary } from "@/server/queries/finance/getClientOrderPaymentsSummary";
 
@@ -28,12 +28,21 @@ export async function getClientOrderById(
     return { order: null, error: "Invalid order id", forbidden: false };
   }
 
-  const supabase = await createSupabaseServerClient();
+  const admin = createSupabaseAdminClient();
+  if (!admin.supabase) {
+    return {
+      order: null,
+      error: admin.error ?? "Supabase admin client is unavailable",
+      forbidden: false,
+    };
+  }
+  const supabase = admin.supabase;
 
   const { data: row, error } = await supabase
     .from("orders")
     .select(CLIENT_ORDER_SELECT)
     .eq("id", id)
+    .eq("client_id", client)
     .maybeSingle();
 
   if (error) {
@@ -46,10 +55,6 @@ export async function getClientOrderById(
   }
 
   const orderRow = row as unknown as SupabaseOrderRow;
-
-  if (orderRow.client_id !== client) {
-    return { order: null, error: "Forbidden", forbidden: true };
-  }
 
   const [{ data: reviewRow }, { data: openComplaint }, serviceDetails] =
     await Promise.all([

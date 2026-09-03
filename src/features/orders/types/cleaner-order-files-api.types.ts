@@ -1,8 +1,6 @@
 import type {
   AdminOrderFile,
   AdminOrderFileDeleteApiResponse,
-  AdminOrderFileUploadApiResponse,
-  AdminOrderFilesListApiResponse,
 } from "@/features/orders/types/admin-order-files-api.types";
 
 export type CleanerOrderFile = AdminOrderFile & {

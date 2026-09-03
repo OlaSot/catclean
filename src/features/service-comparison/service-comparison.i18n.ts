@@ -99,7 +99,7 @@ export function getLocalizedServiceProfiles(
       included,
       addOns: Array.from({ length: ADD_ON_COUNTS[id] }, (_, i) => {
         const n = i + 1;
-        const addonBase = `${base}.addOn${n}`;
+        const addonBase = `${base}.addon${n}`;
         return {
           title: t(`${addonBase}.title`),
           description: t(`${addonBase}.description`),

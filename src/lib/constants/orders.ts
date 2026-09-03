@@ -1,5 +1,5 @@
 export const ORDER_SERVICE_TYPES = [
-  { value: "regular_cleaning", label: "Regular Cleaning" },
+  { value: "regular_cleaning", label: "Home Care" },
   { value: "move_in_out", label: "Move In / Out" },
   { value: "airbnb_turnover", label: "Airbnb Turnover" },
   { value: "office_cleaning", label: "Office Cleaning" },

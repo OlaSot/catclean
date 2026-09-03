@@ -61,7 +61,8 @@ export function StepWelcome({ onStart }: Props) {
           fill
           priority
           sizes="(max-width: 1024px) 100vw, 50vw"
-          wrapperClassName="aspect-[4/5] rounded-3xl bg-stone-100 shadow-[0_20px_60px_rgba(15,23,42,0.10)] sm:aspect-[5/6]"
+          imageClassName="object-cover object-[50%_42%]"
+          wrapperClassName="aspect-[4/5] rounded-3xl bg-stone-100 shadow-[0_20px_60px_rgba(15,23,42,0.12)] ring-1 ring-black/5 sm:aspect-[5/6]"
         />
       </div>
     </div>

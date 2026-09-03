@@ -14,7 +14,6 @@ import {
   getSelectedEnhancements,
 } from "../home-care-wizard.utils";
 import { getTimeSlotLabel } from "@/i18n/public/schedule-i18n";
-import { TIME_SLOTS } from "../home-care-wizard.constants";
 import type { HomeCareWizardState } from "../home-care-wizard.types";
 
 type Props = {
@@ -71,7 +70,11 @@ export function HomeCareSummarySidebar({
         {state.propertyType ? (
           <SummaryRow
             label={t("public.homeCare.summary.home")}
-            value={translatePropertyType(t, state.propertyType)}
+            value={`${translatePropertyType(t, state.propertyType)}${
+              state.propertyType === "house"
+                ? ` · ${state.floorsCount}${state.floorsCount >= 4 ? "+" : ""} ${t("public.homeCare.floorsShort")}`
+                : ""
+            }`}
           />
         ) : null}
         {state.propertySizeM2 ? (

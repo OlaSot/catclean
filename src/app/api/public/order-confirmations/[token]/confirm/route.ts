@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/supabaseAdmin";
 import { recordOrderStatusHistory } from "@/server/mutations/orders/recordOrderStatusHistory";
 import { createStaffNotifications } from "@/server/services/notifications/createNotification";
+import { sendOrderConfirmedTelegramNotification } from "@/lib/telegram/send-order-event-notification";
+import { formatOrderDisplayId } from "@/features/orders/lib/format-order-display-id";
 
 type RouteContext = {
   params: Promise<{ token: string }>;
@@ -22,7 +24,7 @@ function isTerminalStatus(status: string): boolean {
   );
 }
 
-export async function POST(_request: Request, context: RouteContext) {
+export async function POST(request: Request, context: RouteContext) {
   const { token } = await context.params;
   const normalizedToken = token?.trim();
   if (!normalizedToken) {
@@ -58,7 +60,7 @@ export async function POST(_request: Request, context: RouteContext) {
 
   const { data: orderRow, error: orderError } = await admin.supabase
     .from("orders")
-    .select("id, status, client_id, order_number")
+    .select("id, status, client_id, order_number, scheduled_date, scheduled_time")
     .eq("id", tokenRow.order_id)
     .maybeSingle();
 
@@ -70,6 +72,12 @@ export async function POST(_request: Request, context: RouteContext) {
   }
 
   const oldStatus = String(orderRow.status ?? "new").toLowerCase();
+  if (oldStatus === "confirmed") {
+    return NextResponse.json(
+      { data: null, error: "Order is already confirmed" },
+      { status: 409 }
+    );
+  }
   if (isTerminalStatus(oldStatus)) {
     return NextResponse.json(
       { data: null, error: "Order can no longer be confirmed" },
@@ -124,6 +132,13 @@ export async function POST(_request: Request, context: RouteContext) {
     title: `Order #${orderRow.order_number ?? String(orderRow.id).slice(0, 8)} confirmed`,
     message: "Client confirmed order via confirmation link.",
     orderId: String(orderRow.id),
+  });
+
+  await sendOrderConfirmedTelegramNotification({
+    orderNumber: formatOrderDisplayId(orderRow.id, orderRow.order_number),
+    scheduledDate: orderRow.scheduled_date,
+    scheduledTime: orderRow.scheduled_time,
+    adminUrl: `${new URL(request.url).origin}/app/admin/orders/${orderRow.id}`,
   });
 
   return NextResponse.json(
